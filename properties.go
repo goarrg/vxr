@@ -79,11 +79,9 @@ func (id VendorID) String() string {
 
 type (
 	Limits struct {
-		MinPointSize float32
-		MaxPointSize float32
-		MinLineWidth float32
-		MaxLineWidth float32
-		Global       struct {
+		PointSize gmath.Bounds[float32]
+		LineWidth gmath.Bounds[float32]
+		Global    struct {
 			MaxAllocationSize         uint64
 			MaxMemoryAllocationCount  uint32
 			MaxSamplerAllocationCount uint32
@@ -123,8 +121,7 @@ type (
 		Compute struct {
 			MaxDispatchSize gmath.Extent3u32
 			MaxLocalSize    gmath.Extent3u32
-			MinSubgroupSize uint32
-			MaxSubgroupSize uint32
+			SubgroupSize    gmath.Bounds[uint32]
 			Workgroup       struct {
 				MaxInvocations   uint32
 				MaxSubgroupCount uint32

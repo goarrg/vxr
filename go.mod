@@ -3,7 +3,7 @@ module goarrg.com/rhi/vxr
 go 1.23.0
 
 require (
-	goarrg.com v0.0.0-20250219110414-440a8fea5eb3
+	goarrg.com v0.0.0-20250221173207-d476119d45a0
 	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa
 )
 

@@ -71,9 +71,9 @@ func NewComputePipeline(pipelineLayout *PipelineLayout, s *Shader, entryPoint Sh
 			localSize.X, localSize.Y, localSize.Z, limit.X, limit.Y, limit.Z)
 	}
 	if info.RequiredSubgroupSize > 0 {
-		if !gmath.InRange(info.RequiredSubgroupSize, instance.deviceProperties.Limits.Compute.MinSubgroupSize, instance.deviceProperties.Limits.Compute.MaxSubgroupSize) {
-			abort("ComputePipelineCreateInfo.RequiredSubgroupSize [%d] is not within Properties.Limits.Compute.MinSubgroupSize [%d] and Properties.Limits.Compute.MaxSubgroupSize [%d]",
-				info.RequiredSubgroupSize, instance.deviceProperties.Limits.Compute.MinSubgroupSize, instance.deviceProperties.Limits.Compute.MaxSubgroupSize)
+		if !instance.deviceProperties.Limits.Compute.SubgroupSize.CheckValue(info.RequiredSubgroupSize) {
+			abort("ComputePipelineCreateInfo.RequiredSubgroupSize [%d] is not within Properties.Limits.Compute.SubgroupSize [%+v] ",
+				info.RequiredSubgroupSize, instance.deviceProperties.Limits.Compute.SubgroupSize)
 		}
 		if maxWorkgroupThreads := info.RequiredSubgroupSize * instance.deviceProperties.Limits.Compute.Workgroup.MaxSubgroupCount; localSize.Volume() > maxWorkgroupThreads {
 			abort("Shader's local sizes [%d*%d*%d] is greater than ComputePipelineCreateInfo.RequiredSubgroupSize * Properties.Limits.Compute..Workgroup.MaxSubgroupCount [%d]",
