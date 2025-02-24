@@ -426,6 +426,7 @@ extern VXR_FN void vxr_vk_destroySemaphore(vxr_vk_instance, VkSemaphore);
 extern VXR_FN void vxr_vk_createHostBuffer(vxr_vk_instance, size_t, const char*, vxr_vk_bufferCreateInfo, vxr_vk_hostBuffer*);
 extern VXR_FN void vxr_vk_destroyHostBuffer(vxr_vk_instance, vxr_vk_hostBuffer);
 extern VXR_FN void vxr_vk_hostBuffer_write(vxr_vk_instance, vxr_vk_hostBuffer, size_t, size_t, void*);
+extern VXR_FN void vxr_vk_hostBuffer_read(vxr_vk_instance, vxr_vk_hostBuffer, size_t, size_t, void*);
 extern VXR_FN void vxr_vk_createDeviceBuffer(vxr_vk_instance, size_t, const char*, vxr_vk_bufferCreateInfo, vxr_vk_deviceBuffer*);
 extern VXR_FN void vxr_vk_destroyDeviceBuffer(vxr_vk_instance, vxr_vk_deviceBuffer);
 

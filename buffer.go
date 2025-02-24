@@ -97,7 +97,10 @@ type HostBuffer struct {
 	cBuffer    C.vxr_vk_hostBuffer
 }
 
-var _ Buffer = (*HostBuffer)(nil)
+var _ interface {
+	Buffer
+	Destroyer
+} = (*HostBuffer)(nil)
 
 func validateBufferCreation(size uint64, usage BufferUsageFlags) error {
 	switch usage {
@@ -139,6 +142,16 @@ func (b *HostBuffer) HostWrite(offset uintptr, data []byte) {
 	}
 
 	C.vxr_vk_hostBuffer_write(instance.cInstance, b.cBuffer, C.size_t(offset), C.size_t(len(data)), unsafe.Pointer(unsafe.SliceData(data)))
+	runtime.KeepAlive(data)
+}
+
+func (b *HostBuffer) HostRead(offset uintptr, data []byte) {
+	b.noCopy.check()
+	if (uint64(len(data)) + uint64(offset)) > b.bufferSize {
+		abort("HostRead(%d, len(data): %d) will overflow buffer of size %d", offset, len(data), b.bufferSize)
+	}
+
+	C.vxr_vk_hostBuffer_read(instance.cInstance, b.cBuffer, C.size_t(offset), C.size_t(len(data)), unsafe.Pointer(unsafe.SliceData(data)))
 	runtime.KeepAlive(data)
 }
 

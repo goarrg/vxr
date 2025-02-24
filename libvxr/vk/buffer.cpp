@@ -75,6 +75,9 @@ VXR_FN void vxr_vk_destroyHostBuffer(vxr_vk_instance instanceHandle, vxr_vk_host
 VXR_FN void vxr_vk_hostBuffer_write(vxr_vk_instance, vxr_vk_hostBuffer buffer, size_t offset, size_t sz, void* data) {
 	memcpy(static_cast<void*>(static_cast<uint8_t*>(buffer.ptr) + offset), data, sz);
 }
+VXR_FN void vxr_vk_hostBuffer_read(vxr_vk_instance, vxr_vk_hostBuffer buffer, size_t offset, size_t sz, void* data) {
+	memcpy(data, static_cast<void*>(static_cast<uint8_t*>(buffer.ptr) + offset), sz);
+}
 VXR_FN void vxr_vk_createDeviceBuffer(vxr_vk_instance instanceHandle, size_t nameSz, const char* name,
 									  vxr_vk_bufferCreateInfo info, vxr_vk_deviceBuffer* b) {
 	auto* instance = vxr::vk::instance::fromHandle(instanceHandle);
