@@ -31,6 +31,15 @@ import (
 	"goarrg.com/rhi/vxr/internal/vk"
 )
 
+type ImageType C.VkImageType
+
+const (
+	ImageTypeAuto ImageType = iota
+	ImageType1D
+	ImageType2D
+	ImageType3D
+)
+
 type ImageViewType C.VkImageViewType
 
 const (
@@ -396,6 +405,7 @@ type ImageCreateInfo struct {
 	Usage          ImageUsageFlags
 	Flags          ImageCreateFlags
 	ViewFlags      ImageViewCreateFlags
+	ImageType      ImageType
 	Extent         gmath.Extent3i32
 	NumMipLevels   int32
 	NumArrayLayers int32
@@ -419,10 +429,22 @@ func newImage(name string, format C.VkFormat, aspect C.VkImageAspectFlags, info 
 			info.NumArrayLayers, instance.deviceProperties.Limits.PerDesctiptor.MaxImageArrayLayers)
 	}
 
-	if info.Extent.Z > 1 {
-		vkImageType = vk.IMAGE_TYPE_3D
-	} else if info.Extent.Y > 1 {
+	switch info.ImageType {
+	case ImageTypeAuto:
+		if info.Extent.Z > 1 {
+			vkImageType = vk.IMAGE_TYPE_3D
+		} else if info.Extent.Y > 1 {
+			vkImageType = vk.IMAGE_TYPE_2D
+		}
+	case ImageType1D:
+		vkImageType = vk.IMAGE_TYPE_1D
+	case ImageType2D:
 		vkImageType = vk.IMAGE_TYPE_2D
+	case ImageType3D:
+		vkImageType = vk.IMAGE_TYPE_3D
+
+	default:
+		abort("Trying to create image with invalid ImageType: %d", info.ImageType)
 	}
 
 	switch vkImageType {
