@@ -387,7 +387,7 @@ extern VXR_FN void vxr_stdlib_init(vxr_loggerCallback, vxr_loggerCallback, vxr_l
 extern VXR_FN void vxr_vk_init(uintptr_t, uintptr_t, PFN_vkDebugUtilsMessengerCallbackEXT, vxr_vk_instance*);
 extern VXR_FN void vxr_vk_destroy(vxr_vk_instance);
 
-extern VXR_FN void vxr_vk_device_vkPhysicalDeviceFromUUID(vxr_vk_instance, uint8_t (*)[VK_UUID_SIZE], uintptr_t*);
+extern VXR_FN VkResult vxr_vk_device_vkPhysicalDeviceFromUUID(vxr_vk_instance, uint8_t (*)[VK_UUID_SIZE], uintptr_t*);
 
 extern VXR_FN void vxr_vk_device_createSelector(uintptr_t, uint32_t, uint64_t, vxr_vk_device_selector*);
 extern VXR_FN void vxr_vk_device_destroySelector(vxr_vk_device_selector);

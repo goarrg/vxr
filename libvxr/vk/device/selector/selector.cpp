@@ -282,32 +282,34 @@ void selector::findAndCreateDevice(vxr::vk::instance* instance) {
 }  // namespace vxr::vk::device::selector
 
 extern "C" {
-VXR_FN void vxr_vk_device_vkPhysicalDeviceFromUUID(vxr_vk_instance instanceHandle, uint8_t (*wantUUID)[VK_UUID_SIZE], uintptr_t* physicalDevice) {
+VXR_FN VkResult vxr_vk_device_vkPhysicalDeviceFromUUID(vxr_vk_instance instanceHandle, uint8_t (*wantUUID)[VK_UUID_SIZE], uintptr_t* physicalDevice) {
 	auto* instance = vxr::vk::instance::fromHandle(instanceHandle);
 
 	uint32_t numDevices = 0;
 	VkResult ret = VK_PROC(vkEnumeratePhysicalDevices)(instance->vkInstance, &numDevices, nullptr);
 	if (ret != VK_SUCCESS) {
-		vxr::std::abortPopup(
-			vxr::std::sourceLocation::current(), "Failed to get list of GPU devices: %s", vxr::vk::vkResultStr(ret).cStr());
+		vxr::std::ePrintf("Failed to get list of GPU devices: %s", vxr::vk::vkResultStr(ret).cStr());
+		return ret;
 	}
 	if (numDevices == 0) {
-		vxr::std::abortPopup(vxr::std::sourceLocation::current(), "Failed to get list of GPU devices: List is empty");
+		vxr::std::ePrintf("Failed to get list of GPU devices: List is empty");
+		return VK_ERROR_INCOMPATIBLE_DRIVER;
 	}
 	vxr::std::vector<VkPhysicalDevice> devices(numDevices);
 	ret = VK_PROC(vkEnumeratePhysicalDevices)(instance->vkInstance, &numDevices, devices.get());
 	if (ret != VK_SUCCESS) {
-		vxr::std::abortPopup(
-			vxr::std::sourceLocation::current(), "Failed to get list of GPU devices: %s", vxr::vk::vkResultStr(ret).cStr());
+		vxr::std::ePrintf("Failed to get list of GPU devices: %s", vxr::vk::vkResultStr(ret).cStr());
+		return ret;
 	}
 	for (uint16_t i = 0; i < uint16_t(numDevices); i++) {
 		auto uuid = getDeviceUUID(devices[i], i);
 		if (memcmp(*wantUUID, uuid.get(), VK_UUID_SIZE) == 0) {
 			*physicalDevice = reinterpret_cast<uintptr_t>(devices[i]);
-			return;
+			return VK_SUCCESS;
 		}
 	}
 	*physicalDevice = 0;
+	return VK_ERROR_DEVICE_LOST;
 }
 VXR_FN void vxr_vk_device_createSelector(uintptr_t preferredDevice, uint32_t api, uint64_t targetSurface, vxr_vk_device_selector* selectorHandle) {
 	// NOLINTBEGIN(performance-no-int-to-ptr)

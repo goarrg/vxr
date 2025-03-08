@@ -62,6 +62,7 @@ func (d destroyFunc) Destroy() {
 type state struct {
 	platform        goarrg.PlatformInterface
 	logger          *debug.Logger
+	vkInstance      goarrg.VkInstance
 	config          config
 	cSurface        uint64
 	cInstance       C.vxr_vk_instance
@@ -147,42 +148,56 @@ func SetLogLevel(l uint32) {
 	instance.logger.SetLevel(l)
 }
 
-// Searches for and returns a VkPhysicalDevice with a matching UUID or 0 if none found.
-// The input UUID must have come from Properties.UUID as the UUID is non standard
-// and may not have been provided by a vulkan function call.
-func LookupVkPhysicalDeviceFromUUID(platform goarrg.PlatformInterface, vkInstance goarrg.VkInstance, uuid UUID) uintptr {
+func InitInstance(platform goarrg.PlatformInterface, vkInstance goarrg.VkInstance) {
 	instanceInitOnce.Do(func() {
 		instance.platform = platform
+		instance.vkInstance = vkInstance
 		instance.logger.IPrintf("vxr_stdlib_init")
 		C.vxr_stdlib_init(cGoAbort, cGoAbortPopup, cGoLogV, cGoLogI, cGoLogW, cGoLogE)
 		instance.logger.IPrintf("vxr_vk_init")
-		C.vxr_vk_init(C.uintptr_t(vkInstance.Uintptr()), C.uintptr_t(vkInstance.ProcAddr()),
+		C.vxr_vk_init(C.uintptr_t(instance.vkInstance.Uintptr()), C.uintptr_t(instance.vkInstance.ProcAddr()),
 			cGoVkLog, &instance.cInstance)
 	})
-
-	var device C.uintptr_t
-	C.vxr_vk_device_vkPhysicalDeviceFromUUID(instance.cInstance, (*[unsafe.Sizeof(UUID{})]C.uint8_t)(unsafe.Pointer(&uuid)), &device)
-	return uintptr(device)
 }
 
-func Init(platform goarrg.PlatformInterface, vkInstance goarrg.VkInstance, config Config) {
+type ErrorDeviceNotFound struct{}
+
+func (ErrorDeviceNotFound) Is(target error) bool {
+	_, ok := target.(ErrorDeviceNotFound)
+	return ok
+}
+
+func (ErrorDeviceNotFound) Error() string {
+	return "Device Not Found"
+}
+
+// Searches for and returns a VkPhysicalDevice with a matching UUID or error if none found.
+// The input UUID must have come from Properties.UUID as the UUID is non standard
+// and may not have been provided by a vulkan function call.
+func LookupVkPhysicalDeviceFromUUID(uuid UUID) (uintptr, error) {
+	var device C.uintptr_t
+	ret := C.vxr_vk_device_vkPhysicalDeviceFromUUID(instance.cInstance, (*[unsafe.Sizeof(UUID{})]C.uint8_t)(unsafe.Pointer(&uuid)), &device)
+	switch ret {
+	case vk.SUCCESS:
+		return uintptr(device), nil
+
+	case vk.ERROR_DEVICE_LOST:
+		return 0, debug.ErrorWrapf(ErrorDeviceNotFound{}, "Failed to lookup UUID")
+
+	default:
+		return 0, debug.Errorf("Failed to get list of devices: %s", vkResultStr(ret))
+	}
+}
+
+func InitDevice(config Config) {
 	config.validate()
 	instance.logger.IPrintf("User requested config: %s", prettyString(&config))
 
 	var err error
 	instance.logger.IPrintf("CreateSurface")
-	if instance.cSurface, err = vkInstance.CreateSurface(); err != nil {
+	if instance.cSurface, err = instance.vkInstance.CreateSurface(); err != nil {
 		abort("Failed to create surface: %v", err)
 	}
-
-	instanceInitOnce.Do(func() {
-		instance.platform = platform
-		instance.logger.IPrintf("vxr_stdlib_init")
-		C.vxr_stdlib_init(cGoAbort, cGoAbortPopup, cGoLogV, cGoLogI, cGoLogW, cGoLogE)
-		instance.logger.IPrintf("vxr_vk_init")
-		C.vxr_vk_init(C.uintptr_t(vkInstance.Uintptr()), C.uintptr_t(vkInstance.ProcAddr()),
-			cGoVkLog, &instance.cInstance)
-	})
 
 	instance.logger.IPrintf("vxr_vk_device_init")
 	selector := config.createDeviceSelector(instance.cSurface)
