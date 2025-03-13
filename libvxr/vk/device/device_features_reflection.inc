@@ -158,6 +158,12 @@ static constexpr internal::structChainTypeImpl<5> typeVkPhysicalDeviceBufferDevi
 	structField{type::vkBool32, offsetof(VkPhysicalDeviceBufferDeviceAddressFeaturesEXT, bufferDeviceAddressCaptureReplay), "bufferDeviceAddressCaptureReplay"},
 	structField{type::vkBool32, offsetof(VkPhysicalDeviceBufferDeviceAddressFeaturesEXT, bufferDeviceAddressMultiDevice), "bufferDeviceAddressMultiDevice"},
 };
+static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceClusterAccelerationStructureFeaturesNV {
+	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_ACCELERATION_STRUCTURE_FEATURES_NV, "VkPhysicalDeviceClusterAccelerationStructureFeaturesNV", sizeof(VkPhysicalDeviceClusterAccelerationStructureFeaturesNV),
+	structField{type::vkStructureType, offsetof(VkPhysicalDeviceClusterAccelerationStructureFeaturesNV, sType), "sType"},
+	structField{type::voidPtr, offsetof(VkPhysicalDeviceClusterAccelerationStructureFeaturesNV, pNext), "pNext"},
+	structField{type::vkBool32, offsetof(VkPhysicalDeviceClusterAccelerationStructureFeaturesNV, clusterAccelerationStructure), "clusterAccelerationStructure"},
+};
 static constexpr internal::structChainTypeImpl<4> typeVkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI {
 	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_FEATURES_HUAWEI, "VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI", sizeof(VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI),
 	structField{type::vkStructureType, offsetof(VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI, sType), "sType"},
@@ -229,6 +235,13 @@ static constexpr internal::structChainTypeImpl<4> typeVkPhysicalDeviceCooperativ
 	structField{type::vkBool32, offsetof(VkPhysicalDeviceCooperativeMatrixFeaturesNV, cooperativeMatrix), "cooperativeMatrix"},
 	structField{type::vkBool32, offsetof(VkPhysicalDeviceCooperativeMatrixFeaturesNV, cooperativeMatrixRobustBufferAccess), "cooperativeMatrixRobustBufferAccess"},
 };
+static constexpr internal::structChainTypeImpl<4> typeVkPhysicalDeviceCooperativeVectorFeaturesNV {
+	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_VECTOR_FEATURES_NV, "VkPhysicalDeviceCooperativeVectorFeaturesNV", sizeof(VkPhysicalDeviceCooperativeVectorFeaturesNV),
+	structField{type::vkStructureType, offsetof(VkPhysicalDeviceCooperativeVectorFeaturesNV, sType), "sType"},
+	structField{type::voidPtr, offsetof(VkPhysicalDeviceCooperativeVectorFeaturesNV, pNext), "pNext"},
+	structField{type::vkBool32, offsetof(VkPhysicalDeviceCooperativeVectorFeaturesNV, cooperativeVector), "cooperativeVector"},
+	structField{type::vkBool32, offsetof(VkPhysicalDeviceCooperativeVectorFeaturesNV, cooperativeVectorTraining), "cooperativeVectorTraining"},
+};
 static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceCopyMemoryIndirectFeaturesNV {
 	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_NV, "VkPhysicalDeviceCopyMemoryIndirectFeaturesNV", sizeof(VkPhysicalDeviceCopyMemoryIndirectFeaturesNV),
 	structField{type::vkStructureType, offsetof(VkPhysicalDeviceCopyMemoryIndirectFeaturesNV, sType), "sType"},
@@ -259,12 +272,6 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceCubicWeigh
 	structField{type::voidPtr, offsetof(VkPhysicalDeviceCubicWeightsFeaturesQCOM, pNext), "pNext"},
 	structField{type::vkBool32, offsetof(VkPhysicalDeviceCubicWeightsFeaturesQCOM, selectableCubicWeights), "selectableCubicWeights"},
 };
-static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceCudaKernelLaunchFeaturesNV {
-	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUDA_KERNEL_LAUNCH_FEATURES_NV, "VkPhysicalDeviceCudaKernelLaunchFeaturesNV", sizeof(VkPhysicalDeviceCudaKernelLaunchFeaturesNV),
-	structField{type::vkStructureType, offsetof(VkPhysicalDeviceCudaKernelLaunchFeaturesNV, sType), "sType"},
-	structField{type::voidPtr, offsetof(VkPhysicalDeviceCudaKernelLaunchFeaturesNV, pNext), "pNext"},
-	structField{type::vkBool32, offsetof(VkPhysicalDeviceCudaKernelLaunchFeaturesNV, cudaKernelLaunchFeatures), "cudaKernelLaunchFeatures"},
-};
 static constexpr internal::structChainTypeImpl<4> typeVkPhysicalDeviceCustomBorderColorFeaturesEXT {
 	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUSTOM_BORDER_COLOR_FEATURES_EXT, "VkPhysicalDeviceCustomBorderColorFeaturesEXT", sizeof(VkPhysicalDeviceCustomBorderColorFeaturesEXT),
 	structField{type::vkStructureType, offsetof(VkPhysicalDeviceCustomBorderColorFeaturesEXT, sType), "sType"},
@@ -293,11 +300,11 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceDepthClamp
 	structField{type::voidPtr, offsetof(VkPhysicalDeviceDepthClampControlFeaturesEXT, pNext), "pNext"},
 	structField{type::vkBool32, offsetof(VkPhysicalDeviceDepthClampControlFeaturesEXT, depthClampControl), "depthClampControl"},
 };
-static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceDepthClampZeroOneFeaturesEXT {
-	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_ZERO_ONE_FEATURES_EXT, "VkPhysicalDeviceDepthClampZeroOneFeaturesEXT", sizeof(VkPhysicalDeviceDepthClampZeroOneFeaturesEXT),
-	structField{type::vkStructureType, offsetof(VkPhysicalDeviceDepthClampZeroOneFeaturesEXT, sType), "sType"},
-	structField{type::voidPtr, offsetof(VkPhysicalDeviceDepthClampZeroOneFeaturesEXT, pNext), "pNext"},
-	structField{type::vkBool32, offsetof(VkPhysicalDeviceDepthClampZeroOneFeaturesEXT, depthClampZeroOne), "depthClampZeroOne"},
+static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceDepthClampZeroOneFeaturesKHR {
+	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_ZERO_ONE_FEATURES_KHR, "VkPhysicalDeviceDepthClampZeroOneFeaturesKHR", sizeof(VkPhysicalDeviceDepthClampZeroOneFeaturesKHR),
+	structField{type::vkStructureType, offsetof(VkPhysicalDeviceDepthClampZeroOneFeaturesKHR, sType), "sType"},
+	structField{type::voidPtr, offsetof(VkPhysicalDeviceDepthClampZeroOneFeaturesKHR, pNext), "pNext"},
+	structField{type::vkBool32, offsetof(VkPhysicalDeviceDepthClampZeroOneFeaturesKHR, depthClampZeroOne), "depthClampZeroOne"},
 };
 static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceDepthClipControlFeaturesEXT {
 	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLIP_CONTROL_FEATURES_EXT, "VkPhysicalDeviceDepthClipControlFeaturesEXT", sizeof(VkPhysicalDeviceDepthClipControlFeaturesEXT),
@@ -710,6 +717,12 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceMaintenanc
 	structField{type::voidPtr, offsetof(VkPhysicalDeviceMaintenance7FeaturesKHR, pNext), "pNext"},
 	structField{type::vkBool32, offsetof(VkPhysicalDeviceMaintenance7FeaturesKHR, maintenance7), "maintenance7"},
 };
+static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceMaintenance8FeaturesKHR {
+	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_8_FEATURES_KHR, "VkPhysicalDeviceMaintenance8FeaturesKHR", sizeof(VkPhysicalDeviceMaintenance8FeaturesKHR),
+	structField{type::vkStructureType, offsetof(VkPhysicalDeviceMaintenance8FeaturesKHR, sType), "sType"},
+	structField{type::voidPtr, offsetof(VkPhysicalDeviceMaintenance8FeaturesKHR, pNext), "pNext"},
+	structField{type::vkBool32, offsetof(VkPhysicalDeviceMaintenance8FeaturesKHR, maintenance8), "maintenance8"},
+};
 static constexpr internal::structChainTypeImpl<5> typeVkPhysicalDeviceMapMemoryPlacedFeaturesEXT {
 	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAP_MEMORY_PLACED_FEATURES_EXT, "VkPhysicalDeviceMapMemoryPlacedFeaturesEXT", sizeof(VkPhysicalDeviceMapMemoryPlacedFeaturesEXT),
 	structField{type::vkStructureType, offsetof(VkPhysicalDeviceMapMemoryPlacedFeaturesEXT, sType), "sType"},
@@ -819,6 +832,12 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDevicePageableDe
 	structField{type::voidPtr, offsetof(VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT, pNext), "pNext"},
 	structField{type::vkBool32, offsetof(VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT, pageableDeviceLocalMemory), "pageableDeviceLocalMemory"},
 };
+static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDevicePartitionedAccelerationStructureFeaturesNV {
+	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PARTITIONED_ACCELERATION_STRUCTURE_FEATURES_NV, "VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV", sizeof(VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV),
+	structField{type::vkStructureType, offsetof(VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV, sType), "sType"},
+	structField{type::voidPtr, offsetof(VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV, pNext), "pNext"},
+	structField{type::vkBool32, offsetof(VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV, partitionedAccelerationStructure), "partitionedAccelerationStructure"},
+};
 static constexpr internal::structChainTypeImpl<4> typeVkPhysicalDevicePerStageDescriptorSetFeaturesNV {
 	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PER_STAGE_DESCRIPTOR_SET_FEATURES_NV, "VkPhysicalDevicePerStageDescriptorSetFeaturesNV", sizeof(VkPhysicalDevicePerStageDescriptorSetFeaturesNV),
 	structField{type::vkStructureType, offsetof(VkPhysicalDevicePerStageDescriptorSetFeaturesNV, sType), "sType"},
@@ -856,6 +875,12 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDevicePipelineLi
 	structField{type::vkStructureType, offsetof(VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT, sType), "sType"},
 	structField{type::voidPtr, offsetof(VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT, pNext), "pNext"},
 	structField{type::vkBool32, offsetof(VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT, pipelineLibraryGroupHandles), "pipelineLibraryGroupHandles"},
+};
+static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDevicePipelineOpacityMicromapFeaturesARM {
+	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_OPACITY_MICROMAP_FEATURES_ARM, "VkPhysicalDevicePipelineOpacityMicromapFeaturesARM", sizeof(VkPhysicalDevicePipelineOpacityMicromapFeaturesARM),
+	structField{type::vkStructureType, offsetof(VkPhysicalDevicePipelineOpacityMicromapFeaturesARM, sType), "sType"},
+	structField{type::voidPtr, offsetof(VkPhysicalDevicePipelineOpacityMicromapFeaturesARM, pNext), "pNext"},
+	structField{type::vkBool32, offsetof(VkPhysicalDevicePipelineOpacityMicromapFeaturesARM, pipelineOpacityMicromap), "pipelineOpacityMicromap"},
 };
 static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDevicePipelinePropertiesFeaturesEXT {
 	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROPERTIES_FEATURES_EXT, "VkPhysicalDevicePipelinePropertiesFeaturesEXT", sizeof(VkPhysicalDevicePipelinePropertiesFeaturesEXT),
@@ -964,6 +989,13 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceRayTracing
 	structField{type::vkStructureType, offsetof(VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV, sType), "sType"},
 	structField{type::voidPtr, offsetof(VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV, pNext), "pNext"},
 	structField{type::vkBool32, offsetof(VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV, rayTracingInvocationReorder), "rayTracingInvocationReorder"},
+};
+static constexpr internal::structChainTypeImpl<4> typeVkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV {
+	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_LINEAR_SWEPT_SPHERES_FEATURES_NV, "VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV", sizeof(VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV),
+	structField{type::vkStructureType, offsetof(VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV, sType), "sType"},
+	structField{type::voidPtr, offsetof(VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV, pNext), "pNext"},
+	structField{type::vkBool32, offsetof(VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV, spheres), "spheres"},
+	structField{type::vkBool32, offsetof(VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV, linearSweptSpheres), "linearSweptSpheres"},
 };
 static constexpr internal::structChainTypeImpl<4> typeVkPhysicalDeviceRayTracingMaintenance1FeaturesKHR {
 	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_MAINTENANCE_1_FEATURES_KHR, "VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR", sizeof(VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR),
@@ -1367,6 +1399,12 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceVideoMaint
 	structField{type::voidPtr, offsetof(VkPhysicalDeviceVideoMaintenance1FeaturesKHR, pNext), "pNext"},
 	structField{type::vkBool32, offsetof(VkPhysicalDeviceVideoMaintenance1FeaturesKHR, videoMaintenance1), "videoMaintenance1"},
 };
+static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceVideoMaintenance2FeaturesKHR {
+	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_MAINTENANCE_2_FEATURES_KHR, "VkPhysicalDeviceVideoMaintenance2FeaturesKHR", sizeof(VkPhysicalDeviceVideoMaintenance2FeaturesKHR),
+	structField{type::vkStructureType, offsetof(VkPhysicalDeviceVideoMaintenance2FeaturesKHR, sType), "sType"},
+	structField{type::voidPtr, offsetof(VkPhysicalDeviceVideoMaintenance2FeaturesKHR, pNext), "pNext"},
+	structField{type::vkBool32, offsetof(VkPhysicalDeviceVideoMaintenance2FeaturesKHR, videoMaintenance2), "videoMaintenance2"},
+};
 static constexpr internal::structChainTypeImpl<14> typeVkPhysicalDeviceVulkan11Features {
 	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES, "VkPhysicalDeviceVulkan11Features", sizeof(VkPhysicalDeviceVulkan11Features),
 	structField{type::vkStructureType, offsetof(VkPhysicalDeviceVulkan11Features, sType), "sType"},
@@ -1553,6 +1591,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return &typeVkPhysicalDeviceBufferDeviceAddressFeatures;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES_EXT:
 			return &typeVkPhysicalDeviceBufferDeviceAddressFeaturesEXT;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_ACCELERATION_STRUCTURE_FEATURES_NV:
+			return &typeVkPhysicalDeviceClusterAccelerationStructureFeaturesNV;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_FEATURES_HUAWEI:
 			return &typeVkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_VRS_FEATURES_HUAWEI:
@@ -1573,6 +1613,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return &typeVkPhysicalDeviceCooperativeMatrixFeaturesKHR;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_FEATURES_NV:
 			return &typeVkPhysicalDeviceCooperativeMatrixFeaturesNV;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_VECTOR_FEATURES_NV:
+			return &typeVkPhysicalDeviceCooperativeVectorFeaturesNV;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_NV:
 			return &typeVkPhysicalDeviceCopyMemoryIndirectFeaturesNV;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV:
@@ -1583,8 +1625,6 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return &typeVkPhysicalDeviceCubicClampFeaturesQCOM;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUBIC_WEIGHTS_FEATURES_QCOM:
 			return &typeVkPhysicalDeviceCubicWeightsFeaturesQCOM;
-		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUDA_KERNEL_LAUNCH_FEATURES_NV:
-			return &typeVkPhysicalDeviceCudaKernelLaunchFeaturesNV;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUSTOM_BORDER_COLOR_FEATURES_EXT:
 			return &typeVkPhysicalDeviceCustomBorderColorFeaturesEXT;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEDICATED_ALLOCATION_IMAGE_ALIASING_FEATURES_NV:
@@ -1593,8 +1633,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return &typeVkPhysicalDeviceDepthBiasControlFeaturesEXT;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_CONTROL_FEATURES_EXT:
 			return &typeVkPhysicalDeviceDepthClampControlFeaturesEXT;
-		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_ZERO_ONE_FEATURES_EXT:
-			return &typeVkPhysicalDeviceDepthClampZeroOneFeaturesEXT;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_ZERO_ONE_FEATURES_KHR:
+			return &typeVkPhysicalDeviceDepthClampZeroOneFeaturesKHR;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLIP_CONTROL_FEATURES_EXT:
 			return &typeVkPhysicalDeviceDepthClipControlFeaturesEXT;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLIP_ENABLE_FEATURES_EXT:
@@ -1707,6 +1747,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return &typeVkPhysicalDeviceMaintenance6Features;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_7_FEATURES_KHR:
 			return &typeVkPhysicalDeviceMaintenance7FeaturesKHR;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_8_FEATURES_KHR:
+			return &typeVkPhysicalDeviceMaintenance8FeaturesKHR;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAP_MEMORY_PLACED_FEATURES_EXT:
 			return &typeVkPhysicalDeviceMapMemoryPlacedFeaturesEXT;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_FEATURES_NV:
@@ -1739,6 +1781,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return &typeVkPhysicalDeviceOpticalFlowFeaturesNV;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PAGEABLE_DEVICE_LOCAL_MEMORY_FEATURES_EXT:
 			return &typeVkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PARTITIONED_ACCELERATION_STRUCTURE_FEATURES_NV:
+			return &typeVkPhysicalDevicePartitionedAccelerationStructureFeaturesNV;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PER_STAGE_DESCRIPTOR_SET_FEATURES_NV:
 			return &typeVkPhysicalDevicePerStageDescriptorSetFeaturesNV;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PERFORMANCE_QUERY_FEATURES_KHR:
@@ -1751,6 +1795,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return &typeVkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_LIBRARY_GROUP_HANDLES_FEATURES_EXT:
 			return &typeVkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_OPACITY_MICROMAP_FEATURES_ARM:
+			return &typeVkPhysicalDevicePipelineOpacityMicromapFeaturesARM;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROPERTIES_FEATURES_EXT:
 			return &typeVkPhysicalDevicePipelinePropertiesFeaturesEXT;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROTECTED_ACCESS_FEATURES:
@@ -1785,6 +1831,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return &typeVkPhysicalDeviceRayQueryFeaturesKHR;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_FEATURES_NV:
 			return &typeVkPhysicalDeviceRayTracingInvocationReorderFeaturesNV;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_LINEAR_SWEPT_SPHERES_FEATURES_NV:
+			return &typeVkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_MAINTENANCE_1_FEATURES_KHR:
 			return &typeVkPhysicalDeviceRayTracingMaintenance1FeaturesKHR;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_MOTION_BLUR_FEATURES_NV:
@@ -1905,6 +1953,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return &typeVkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_MAINTENANCE_1_FEATURES_KHR:
 			return &typeVkPhysicalDeviceVideoMaintenance1FeaturesKHR;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_MAINTENANCE_2_FEATURES_KHR:
+			return &typeVkPhysicalDeviceVideoMaintenance2FeaturesKHR;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES:
 			return &typeVkPhysicalDeviceVulkan11Features;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES:
@@ -1964,6 +2014,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceBufferDeviceAddressFeatures.numField()>{&typeVkPhysicalDeviceBufferDeviceAddressFeatures, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES_EXT:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceBufferDeviceAddressFeaturesEXT.numField()>{&typeVkPhysicalDeviceBufferDeviceAddressFeaturesEXT, ptr};
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_ACCELERATION_STRUCTURE_FEATURES_NV:
+			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceClusterAccelerationStructureFeaturesNV.numField()>{&typeVkPhysicalDeviceClusterAccelerationStructureFeaturesNV, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_FEATURES_HUAWEI:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI.numField()>{&typeVkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_VRS_FEATURES_HUAWEI:
@@ -1984,6 +2036,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceCooperativeMatrixFeaturesKHR.numField()>{&typeVkPhysicalDeviceCooperativeMatrixFeaturesKHR, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_FEATURES_NV:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceCooperativeMatrixFeaturesNV.numField()>{&typeVkPhysicalDeviceCooperativeMatrixFeaturesNV, ptr};
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_VECTOR_FEATURES_NV:
+			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceCooperativeVectorFeaturesNV.numField()>{&typeVkPhysicalDeviceCooperativeVectorFeaturesNV, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_NV:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceCopyMemoryIndirectFeaturesNV.numField()>{&typeVkPhysicalDeviceCopyMemoryIndirectFeaturesNV, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV:
@@ -1994,8 +2048,6 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceCubicClampFeaturesQCOM.numField()>{&typeVkPhysicalDeviceCubicClampFeaturesQCOM, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUBIC_WEIGHTS_FEATURES_QCOM:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceCubicWeightsFeaturesQCOM.numField()>{&typeVkPhysicalDeviceCubicWeightsFeaturesQCOM, ptr};
-		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUDA_KERNEL_LAUNCH_FEATURES_NV:
-			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceCudaKernelLaunchFeaturesNV.numField()>{&typeVkPhysicalDeviceCudaKernelLaunchFeaturesNV, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUSTOM_BORDER_COLOR_FEATURES_EXT:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceCustomBorderColorFeaturesEXT.numField()>{&typeVkPhysicalDeviceCustomBorderColorFeaturesEXT, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEDICATED_ALLOCATION_IMAGE_ALIASING_FEATURES_NV:
@@ -2004,8 +2056,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceDepthBiasControlFeaturesEXT.numField()>{&typeVkPhysicalDeviceDepthBiasControlFeaturesEXT, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_CONTROL_FEATURES_EXT:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceDepthClampControlFeaturesEXT.numField()>{&typeVkPhysicalDeviceDepthClampControlFeaturesEXT, ptr};
-		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_ZERO_ONE_FEATURES_EXT:
-			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceDepthClampZeroOneFeaturesEXT.numField()>{&typeVkPhysicalDeviceDepthClampZeroOneFeaturesEXT, ptr};
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_ZERO_ONE_FEATURES_KHR:
+			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceDepthClampZeroOneFeaturesKHR.numField()>{&typeVkPhysicalDeviceDepthClampZeroOneFeaturesKHR, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLIP_CONTROL_FEATURES_EXT:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceDepthClipControlFeaturesEXT.numField()>{&typeVkPhysicalDeviceDepthClipControlFeaturesEXT, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLIP_ENABLE_FEATURES_EXT:
@@ -2118,6 +2170,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceMaintenance6Features.numField()>{&typeVkPhysicalDeviceMaintenance6Features, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_7_FEATURES_KHR:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceMaintenance7FeaturesKHR.numField()>{&typeVkPhysicalDeviceMaintenance7FeaturesKHR, ptr};
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_8_FEATURES_KHR:
+			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceMaintenance8FeaturesKHR.numField()>{&typeVkPhysicalDeviceMaintenance8FeaturesKHR, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAP_MEMORY_PLACED_FEATURES_EXT:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceMapMemoryPlacedFeaturesEXT.numField()>{&typeVkPhysicalDeviceMapMemoryPlacedFeaturesEXT, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_FEATURES_NV:
@@ -2150,6 +2204,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceOpticalFlowFeaturesNV.numField()>{&typeVkPhysicalDeviceOpticalFlowFeaturesNV, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PAGEABLE_DEVICE_LOCAL_MEMORY_FEATURES_EXT:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT.numField()>{&typeVkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT, ptr};
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PARTITIONED_ACCELERATION_STRUCTURE_FEATURES_NV:
+			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDevicePartitionedAccelerationStructureFeaturesNV.numField()>{&typeVkPhysicalDevicePartitionedAccelerationStructureFeaturesNV, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PER_STAGE_DESCRIPTOR_SET_FEATURES_NV:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDevicePerStageDescriptorSetFeaturesNV.numField()>{&typeVkPhysicalDevicePerStageDescriptorSetFeaturesNV, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PERFORMANCE_QUERY_FEATURES_KHR:
@@ -2162,6 +2218,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR.numField()>{&typeVkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_LIBRARY_GROUP_HANDLES_FEATURES_EXT:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT.numField()>{&typeVkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT, ptr};
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_OPACITY_MICROMAP_FEATURES_ARM:
+			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDevicePipelineOpacityMicromapFeaturesARM.numField()>{&typeVkPhysicalDevicePipelineOpacityMicromapFeaturesARM, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROPERTIES_FEATURES_EXT:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDevicePipelinePropertiesFeaturesEXT.numField()>{&typeVkPhysicalDevicePipelinePropertiesFeaturesEXT, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROTECTED_ACCESS_FEATURES:
@@ -2196,6 +2254,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceRayQueryFeaturesKHR.numField()>{&typeVkPhysicalDeviceRayQueryFeaturesKHR, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_FEATURES_NV:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceRayTracingInvocationReorderFeaturesNV.numField()>{&typeVkPhysicalDeviceRayTracingInvocationReorderFeaturesNV, ptr};
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_LINEAR_SWEPT_SPHERES_FEATURES_NV:
+			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV.numField()>{&typeVkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_MAINTENANCE_1_FEATURES_KHR:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceRayTracingMaintenance1FeaturesKHR.numField()>{&typeVkPhysicalDeviceRayTracingMaintenance1FeaturesKHR, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_MOTION_BLUR_FEATURES_NV:
@@ -2316,6 +2376,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR.numField()>{&typeVkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_MAINTENANCE_1_FEATURES_KHR:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceVideoMaintenance1FeaturesKHR.numField()>{&typeVkPhysicalDeviceVideoMaintenance1FeaturesKHR, ptr};
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_MAINTENANCE_2_FEATURES_KHR:
+			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceVideoMaintenance2FeaturesKHR.numField()>{&typeVkPhysicalDeviceVideoMaintenance2FeaturesKHR, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceVulkan11Features.numField()>{&typeVkPhysicalDeviceVulkan11Features, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES:

@@ -46,11 +46,12 @@ import (
 )
 
 type extension struct {
-	name     string
-	kind     string
-	promoted string
-	depends  []string
-	structs  []string
+	name        string
+	kind        string
+	promoted    string
+	provisional bool
+	depends     []string
+	structs     []string
 }
 
 type format struct {
@@ -66,15 +67,16 @@ func main() {
 	types := parseHeader()
 	{
 		genInternalConst(types)
-		genFeatureReflection(types)
 	}
 
 	// vk.xml
 	extensions, formats := parseXML()
 	{
+		// TODO: genConst does not filter out provisional extensions
 		genConst(types, formats)
 		genStruct(types, extensions)
 		genExtensions(types, extensions)
+		genFeatureReflection(types, extensions)
 	}
 }
 
@@ -259,6 +261,7 @@ func parseXML() ([]extension, map[string]format) {
 					rootSupported := findAttribute("supported", start.Attr)
 					rootPromoted := findAttribute("promotedto", start.Attr)
 					rootDeprecated := findAttribute("deprecatedby", start.Attr)
+					rootProvisional := findAttribute("provisional", start.Attr)
 
 					if !slices.Contains(strings.Split(rootSupported.Value, ","), "vulkan") {
 						decoder.Skip()
@@ -270,6 +273,9 @@ func parseXML() ([]extension, map[string]format) {
 						kind:     rootKind.Value,
 						promoted: rootPromoted.Value,
 						depends:  strings.Split(strings.NewReplacer("(", "", ")", "", ",", "+").Replace(rootDepends.Value), "+"),
+					}
+					if rootProvisional.Value == "true" {
+						e.provisional = true
 					}
 					if rootDeprecated.Value != "" {
 						if e.promoted != "" {
@@ -478,7 +484,7 @@ const(
 	}
 }
 
-func genFeatureReflection(types map[string][]string) {
+func genFeatureReflection(types map[string][]string, extensions []extension) {
 	p := golang.CallersPackage(packages.NeedModule | packages.NeedName)
 	fOut, err := os.Create(filepath.Join(p.Module.Dir, strings.TrimPrefix(p.PkgPath, p.Module.Path),
 		"libvxr", "vk", "device", "device_features_reflection.inc"))
@@ -517,7 +523,24 @@ func genFeatureReflection(types map[string][]string) {
 	slices.Sort(typeNames)
 
 	sTypes := map[string]string{}
+	provisional := map[string]bool{}
 	structs := []string{}
+
+	{
+		for _, e := range extensions {
+			if !e.provisional {
+				continue
+			}
+			for _, s := range e.structs {
+				isPhysicalDevice := strings.HasPrefix(s, "VkPhysicalDevice")
+				isFeatures := strings.Contains(s, "Features")
+				if !(isPhysicalDevice && isFeatures) {
+					continue
+				}
+				provisional[s] = true
+			}
+		}
+	}
 
 	// map struct name to stype
 	for _, t := range types["VkStructureType"] {
@@ -543,7 +566,7 @@ func genFeatureReflection(types map[string][]string) {
 		if !(isPhysicalDevice && isFeatures) {
 			continue
 		}
-		if stype, ok := sTypes[strings.ToUpper(k)]; ok {
+		if stype, ok := sTypes[strings.ToUpper(k)]; ok && !provisional[k] {
 			structs = append(structs, k)
 			structFields := types[k]
 			fmt.Fprintf(fOut, "static constexpr internal::structChainTypeImpl<%d> type%s {\n", len(structFields), k)
@@ -1057,6 +1080,9 @@ func genStruct(types map[string][]string, extensions []extension) {
 			}
 			{
 				e := structExtensionMap[k]
+				if e.provisional {
+					continue
+				}
 				for e.promoted != "" && !strings.HasPrefix(e.promoted, "VK_VERSION_") {
 					e = extensionNameMap[e.promoted]
 				}
@@ -1181,7 +1207,7 @@ func genExtensions(_ map[string][]string, extensions []extension) {
 	{
 		extensionMap := map[string][]string{}
 		for _, e := range extensions {
-			if e.kind == "device" {
+			if e.kind == "device" && !e.provisional {
 				extensionMap[e.name] = e.depends
 			}
 		}
@@ -1216,7 +1242,7 @@ func genExtensions(_ map[string][]string, extensions []extension) {
 	{
 		extensionMap := map[string]uint64{}
 		for _, e := range extensions {
-			if e.kind == "device" {
+			if e.kind == "device" && !e.provisional {
 				if e.promoted != "" && strings.HasPrefix(e.promoted, "VK_VERSION_") {
 					versionPair := strings.Split(strings.TrimPrefix(e.promoted, "VK_VERSION_"), "_")
 					major, err := strconv.ParseUint(versionPair[0], 10, 0)

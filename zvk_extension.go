@@ -7,8 +7,6 @@ import "slices"
 
 func getExtensionDependencies(name string) []string {
 	switch (name) {
-	case "VK_AMDX_shader_enqueue":
-		return []string{"VK_KHR_synchronization2", "VK_KHR_spirv_1_4", "VK_EXT_extended_dynamic_state", "VK_KHR_maintenance5", "VK_KHR_pipeline_library"}
 	case "VK_AMD_display_native_hdr":
 		return []string{"VK_KHR_swapchain"}
 	case "VK_AMD_shader_core_properties2":
@@ -17,6 +15,8 @@ func getExtensionDependencies(name string) []string {
 		return []string{"VK_ANDROID_external_memory_android_hardware_buffer"}
 	case "VK_ANDROID_external_memory_android_hardware_buffer":
 		return []string{"VK_KHR_sampler_ycbcr_conversion", "VK_KHR_external_memory", "VK_KHR_dedicated_allocation", "VK_EXT_queue_family_foreign"}
+	case "VK_ARM_pipeline_opacity_micromap":
+		return []string{"VK_EXT_opacity_micromap"}
 	case "VK_ARM_render_pass_striped":
 		return []string{"VK_KHR_synchronization2"}
 	case "VK_ARM_scheduling_controls":
@@ -40,6 +40,8 @@ func getExtensionDependencies(name string) []string {
 	case "VK_EXT_external_memory_dma_buf":
 		return []string{"VK_KHR_external_memory_fd"}
 	case "VK_EXT_external_memory_host":
+		return []string{"VK_KHR_external_memory"}
+	case "VK_EXT_external_memory_metal":
 		return []string{"VK_KHR_external_memory"}
 	case "VK_EXT_fragment_density_map2":
 		return []string{"VK_EXT_fragment_density_map"}
@@ -205,12 +207,16 @@ func getExtensionDependencies(name string) []string {
 		return []string{"VK_KHR_video_queue", "VK_KHR_synchronization2"}
 	case "VK_KHR_video_maintenance1":
 		return []string{"VK_KHR_video_queue"}
+	case "VK_KHR_video_maintenance2":
+		return []string{"VK_KHR_video_queue"}
 	case "VK_KHR_video_queue":
 		return []string{"VK_KHR_synchronization2"}
 	case "VK_KHR_win32_keyed_mutex":
 		return []string{"VK_KHR_external_memory_win32"}
 	case "VK_NVX_multiview_per_view_attributes":
 		return []string{"VK_KHR_multiview"}
+	case "VK_NV_cluster_acceleration_structure":
+		return []string{"VK_KHR_acceleration_structure"}
 	case "VK_NV_cooperative_matrix2":
 		return []string{"VK_KHR_cooperative_matrix"}
 	case "VK_NV_copy_memory_indirect":
@@ -223,8 +229,6 @@ func getExtensionDependencies(name string) []string {
 		return []string{"VK_KHR_buffer_device_address"}
 	case "VK_NV_device_generated_commands_compute":
 		return []string{"VK_NV_device_generated_commands"}
-	case "VK_NV_displacement_micromap":
-		return []string{"VK_EXT_opacity_micromap"}
 	case "VK_NV_external_memory_rdma":
 		return []string{"VK_KHR_external_memory"}
 	case "VK_NV_external_memory_win32":
@@ -237,6 +241,8 @@ func getExtensionDependencies(name string) []string {
 		return []string{"VK_KHR_buffer_device_address"}
 	case "VK_NV_optical_flow":
 		return []string{"VK_KHR_format_feature_flags2", "VK_KHR_synchronization2"}
+	case "VK_NV_partitioned_acceleration_structure":
+		return []string{"VK_KHR_acceleration_structure"}
 	case "VK_NV_per_stage_descriptor_set":
 		return []string{"VK_KHR_maintenance6"}
 	case "VK_NV_present_barrier":
@@ -244,6 +250,8 @@ func getExtensionDependencies(name string) []string {
 	case "VK_NV_ray_tracing":
 		return []string{"VK_KHR_get_memory_requirements2"}
 	case "VK_NV_ray_tracing_invocation_reorder":
+		return []string{"VK_KHR_ray_tracing_pipeline"}
+	case "VK_NV_ray_tracing_linear_swept_spheres":
 		return []string{"VK_KHR_ray_tracing_pipeline"}
 	case "VK_NV_ray_tracing_motion_blur":
 		return []string{"VK_KHR_ray_tracing_pipeline"}
