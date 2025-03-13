@@ -35,6 +35,7 @@ limitations under the License.
 
 inline static void setupVMA(vxr::vk::instance* instance) {
 	// VMA version check to make sure we update the function struct.
+	// NOLINTNEXTLINE(misc-redundant-expression)
 	static_assert(VMA_VULKAN_VERSION == 1004000);
 	const VmaVulkanFunctions vkFns = {
 		VK_PROC(vkGetInstanceProcAddr),
