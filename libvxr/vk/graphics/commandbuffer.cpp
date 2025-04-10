@@ -197,7 +197,7 @@ VXR_FN void vxr_vk_graphics_drawIndexedIndirect(vxr_vk_instance instanceHandle, 
 
 	setupDraw(info.parameters, cb);
 	instance->device.fnTable.bindIndexBuffer(cb, info.indexBuffer);
-	VK_PROC_DEVICE(vkCmdDrawIndexedIndirect)(cb, info.indirectBuffer.vkBuffer, info.indexBuffer.offset,
+	VK_PROC_DEVICE(vkCmdDrawIndexedIndirect)(cb, info.indirectBuffer.vkBuffer, info.indirectBuffer.offset,
 											 info.indirectBuffer.drawCount, sizeof(VkDrawIndexedIndirectCommand));
 }
 VXR_FN void vxr_vk_graphics_renderPassEnd(vxr_vk_instance, VkCommandBuffer cb) {
