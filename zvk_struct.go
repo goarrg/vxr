@@ -1524,6 +1524,22 @@ func (s VkPhysicalDeviceFragmentDensityMapFeaturesEXT) enabledList() []C.size_t 
 	}
 	return list
 }
+type VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT struct {
+	FragmentDensityMapOffset bool
+}
+func (VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT) extension() string {
+	return "VK_EXT_fragment_density_map_offset"
+}
+func (VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_OFFSET_FEATURES_EXT
+}
+func (s VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.FragmentDensityMapOffset {
+		list = append(list, 2)
+	}
+	return list
+}
 type VkPhysicalDeviceFragmentDensityMapOffsetFeaturesQCOM struct {
 	FragmentDensityMapOffset bool
 }
@@ -3556,6 +3572,30 @@ func (s VkPhysicalDeviceShaderAtomicInt64Features) enabledList() []C.size_t {
 	}
 	return list
 }
+type VkPhysicalDeviceShaderBfloat16FeaturesKHR struct {
+	ShaderBFloat16Type bool
+	ShaderBFloat16DotProduct bool
+	ShaderBFloat16CooperativeMatrix bool
+}
+func (VkPhysicalDeviceShaderBfloat16FeaturesKHR) extension() string {
+	return "VK_KHR_shader_bfloat16"
+}
+func (VkPhysicalDeviceShaderBfloat16FeaturesKHR) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_BFLOAT16_FEATURES_KHR
+}
+func (s VkPhysicalDeviceShaderBfloat16FeaturesKHR) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 3)
+	if s.ShaderBFloat16Type {
+		list = append(list, 2)
+	}
+	if s.ShaderBFloat16DotProduct {
+		list = append(list, 3)
+	}
+	if s.ShaderBFloat16CooperativeMatrix {
+		list = append(list, 4)
+	}
+	return list
+}
 type VkPhysicalDeviceShaderClockFeaturesKHR struct {
 	ShaderSubgroupClock bool
 	ShaderDeviceClock bool
@@ -4136,6 +4176,22 @@ func (s VkPhysicalDeviceTextureCompressionASTCHDRFeatures) enabledList() []C.siz
 	}
 	return list
 }
+type VkPhysicalDeviceTileMemoryHeapFeaturesQCOM struct {
+	TileMemoryHeap bool
+}
+func (VkPhysicalDeviceTileMemoryHeapFeaturesQCOM) extension() string {
+	return "VK_QCOM_tile_memory_heap"
+}
+func (VkPhysicalDeviceTileMemoryHeapFeaturesQCOM) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_TILE_MEMORY_HEAP_FEATURES_QCOM
+}
+func (s VkPhysicalDeviceTileMemoryHeapFeaturesQCOM) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.TileMemoryHeap {
+		list = append(list, 2)
+	}
+	return list
+}
 type VkPhysicalDeviceTilePropertiesFeaturesQCOM struct {
 	TileProperties bool
 }
@@ -4149,6 +4205,74 @@ func (s VkPhysicalDeviceTilePropertiesFeaturesQCOM) enabledList() []C.size_t {
 	list := make([]C.size_t, 0, 1)
 	if s.TileProperties {
 		list = append(list, 2)
+	}
+	return list
+}
+type VkPhysicalDeviceTileShadingFeaturesQCOM struct {
+	TileShading bool
+	TileShadingFragmentStage bool
+	TileShadingColorAttachments bool
+	TileShadingDepthAttachments bool
+	TileShadingStencilAttachments bool
+	TileShadingInputAttachments bool
+	TileShadingSampledAttachments bool
+	TileShadingPerTileDraw bool
+	TileShadingPerTileDispatch bool
+	TileShadingDispatchTile bool
+	TileShadingApron bool
+	TileShadingAnisotropicApron bool
+	TileShadingAtomicOps bool
+	TileShadingImageProcessing bool
+}
+func (VkPhysicalDeviceTileShadingFeaturesQCOM) extension() string {
+	return "VK_QCOM_tile_shading"
+}
+func (VkPhysicalDeviceTileShadingFeaturesQCOM) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_TILE_SHADING_FEATURES_QCOM
+}
+func (s VkPhysicalDeviceTileShadingFeaturesQCOM) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 14)
+	if s.TileShading {
+		list = append(list, 2)
+	}
+	if s.TileShadingFragmentStage {
+		list = append(list, 3)
+	}
+	if s.TileShadingColorAttachments {
+		list = append(list, 4)
+	}
+	if s.TileShadingDepthAttachments {
+		list = append(list, 5)
+	}
+	if s.TileShadingStencilAttachments {
+		list = append(list, 6)
+	}
+	if s.TileShadingInputAttachments {
+		list = append(list, 7)
+	}
+	if s.TileShadingSampledAttachments {
+		list = append(list, 8)
+	}
+	if s.TileShadingPerTileDraw {
+		list = append(list, 9)
+	}
+	if s.TileShadingPerTileDispatch {
+		list = append(list, 10)
+	}
+	if s.TileShadingDispatchTile {
+		list = append(list, 11)
+	}
+	if s.TileShadingApron {
+		list = append(list, 12)
+	}
+	if s.TileShadingAnisotropicApron {
+		list = append(list, 13)
+	}
+	if s.TileShadingAtomicOps {
+		list = append(list, 14)
+	}
+	if s.TileShadingImageProcessing {
+		list = append(list, 15)
 	}
 	return list
 }

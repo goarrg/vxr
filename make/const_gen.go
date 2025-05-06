@@ -64,9 +64,9 @@ func main() {
 	fmt.Fprintf(fOut, "package vxr\n\n")
 	fmt.Fprintf(fOut, "const(")
 
-	sdkVersion := "vulkan-sdk-1.4.309"
+	sdkVersion := "vulkan-sdk-1.4.313"
 
-	writeConst(fOut, "https://github.com/google/shaderc/archive/refs/tags/", "shaderc", "shaderc", "v2025.1")
+	writeConst(fOut, "https://github.com/google/shaderc/archive/refs/tags/", "shaderc", "shaderc", "v2025.2")
 	writeConst(fOut, "https://github.com/KhronosGroup/glslang/archive/refs/heads/", "glslang", "glslang", sdkVersion)
 	writeConst(fOut, "https://github.com/KhronosGroup/SPIRV-Headers/archive/refs/heads/", "spirvHeaders", "spirv-headers", sdkVersion)
 	writeConst(fOut, "https://github.com/KhronosGroup/SPIRV-Tools/archive/refs/heads/", "spirvTools", "spirv-tools", sdkVersion)

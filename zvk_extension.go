@@ -45,6 +45,8 @@ func getExtensionDependencies(name string) []string {
 		return []string{"VK_KHR_external_memory"}
 	case "VK_EXT_fragment_density_map2":
 		return []string{"VK_EXT_fragment_density_map"}
+	case "VK_EXT_fragment_density_map_offset":
+		return []string{"VK_EXT_fragment_density_map", "VK_KHR_create_renderpass2", "VK_KHR_dynamic_rendering"}
 	case "VK_EXT_full_screen_exclusive":
 		return []string{"VK_KHR_swapchain"}
 	case "VK_EXT_global_priority_query":
@@ -269,6 +271,10 @@ func getExtensionDependencies(name string) []string {
 		return []string{"VK_QCOM_image_processing"}
 	case "VK_QCOM_rotated_copy_commands":
 		return []string{"VK_KHR_copy_commands2"}
+	case "VK_QCOM_tile_memory_heap":
+		return []string{"VK_KHR_get_memory_requirements2"}
+	case "VK_QCOM_tile_shading":
+		return []string{"VK_QCOM_tile_properties"}
 	case "VK_QNX_external_memory_screen_buffer":
 		return []string{"VK_KHR_sampler_ycbcr_conversion", "VK_KHR_external_memory", "VK_KHR_dedicated_allocation", "VK_EXT_queue_family_foreign"}
 	case "VK_VALVE_mutable_descriptor_type":
