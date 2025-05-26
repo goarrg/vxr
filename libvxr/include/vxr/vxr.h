@@ -494,7 +494,7 @@ extern VXR_FN void vxr_vk_graphics_destroy(vxr_vk_instance);
 
 extern VXR_FN void vxr_vk_graphics_getSurfaceInfo(vxr_vk_instance, vxr_vk_surfaceInfo*);
 
-extern VXR_FN void vxr_vk_graphics_createVertexInputPipeline(vxr_vk_instance, size_t, const char*, VkPrimitiveTopology, VkPipeline*);
+extern VXR_FN void vxr_vk_graphics_createVertexInputPipeline(vxr_vk_instance, size_t, const char*, VkPrimitiveTopology, VkBool32, VkPipeline*);
 extern VXR_FN void vxr_vk_graphics_createShaderPipeline(vxr_vk_instance, size_t, const char*,
 														vxr_vk_graphics_shaderPipelineCreateInfo, VkPipeline*);
 extern VXR_FN void vxr_vk_graphics_createFragmentOutputPipeline(vxr_vk_instance, size_t, const char*,

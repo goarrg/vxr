@@ -31,7 +31,7 @@ limitations under the License.
 
 extern "C" {
 VXR_FN void vxr_vk_graphics_createVertexInputPipeline(vxr_vk_instance instanceHandle, size_t nameSz, const char* name,
-													  VkPrimitiveTopology topology, VkPipeline* pipeline) {
+													  VkPrimitiveTopology topology, VkBool32 restart, VkPipeline* pipeline) {
 	auto* instance = vxr::vk::instance::fromHandle(instanceHandle);
 
 	static constexpr vxr::std::array dynamicStates = {
@@ -55,7 +55,7 @@ VXR_FN void vxr_vk_graphics_createVertexInputPipeline(vxr_vk_instance instanceHa
 	const VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = {
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
 		.topology = topology,
-		.primitiveRestartEnable = VK_FALSE,
+		.primitiveRestartEnable = restart,
 	};
 
 	const VkGraphicsPipelineCreateInfo pipelineCreateInfo = {

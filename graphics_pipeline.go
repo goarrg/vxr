@@ -48,8 +48,40 @@ const (
 	VertexTopologyPatchList                  VertexTopology = vk.PRIMITIVE_TOPOLOGY_PATCH_LIST
 )
 
+func (t VertexTopology) String() string {
+	switch t {
+	case VertexTopologyPointList:
+		return "PointList"
+	case VertexTopologyLineList:
+		return "LintList"
+	case VertexTopologyLineStrip:
+		return "LineStrip"
+	case VertexTopologyTriangleList:
+		return "TriangleList"
+	case VertexTopologyTriangleStrip:
+		return "TriangleStrip"
+	case VertexTopologyTriangleFan:
+		return "TriangleFan"
+	case VertexTopologyLineListWithAdjacency:
+		return "LineListWithAdjacency"
+	case VertexTopologyLineStripWithAdjacency:
+		return "LineStripWithAdjacency"
+	case VertexTopologyTriangleListWithAdjacency:
+		return "TriangleListWithAdjacency"
+	case VertexTopologyTriangleStripWithAdjacency:
+		return "TriangleStripWithAdjacency:"
+	case VertexTopologyPatchList:
+		return "PatchList"
+
+	default:
+		abort("Unknown VertexTopology: %d", t)
+		return ""
+	}
+}
+
 type VertexInputPipelineCreateInfo struct {
-	Topology VertexTopology
+	Topology               VertexTopology
+	PrimitiveRestartEnable bool
 }
 
 type VertexInputPipeline struct {
@@ -67,23 +99,43 @@ func NewVertexInputPipeline(info VertexInputPipelineCreateInfo) *VertexInputPipe
 		topology: C.VkPrimitiveTopology(info.Topology),
 	}
 
-	switch info.Topology {
-	case VertexTopologyPointList:
-		p.name = "[vertex_input:point]"
-	case VertexTopologyLineList, VertexTopologyLineStrip, VertexTopologyLineListWithAdjacency, VertexTopologyLineStripWithAdjacency:
-		p.name = "[vertex_input:line]"
-	case VertexTopologyTriangleList, VertexTopologyTriangleStrip, VertexTopologyTriangleFan, VertexTopologyTriangleListWithAdjacency,
-		VertexTopologyTriangleStripWithAdjacency:
-		p.name = "[vertex_input:triangle]"
-	case VertexTopologyPatchList:
-		p.name = "[vertex_input:patch]"
-	}
+	if info.PrimitiveRestartEnable {
+		switch info.Topology {
+		case VertexTopologyLineStrip, VertexTopologyLineStripWithAdjacency:
+			p.name = "[vertex_input:line,restart]"
+		case VertexTopologyTriangleStrip, VertexTopologyTriangleFan,
+			VertexTopologyTriangleStripWithAdjacency:
+			p.name = "[vertex_input:triangle,restart]"
+		case VertexTopologyPatchList:
+			p.name = "[vertex_input:patch,restart]"
+		default:
+			abort("PrimitiveRestart is invalid for topology: %s", info.Topology.String())
+		}
 
-	p.vkPipeline = instance.graphics.pipelineCache.createOrRetrievePipeline(p.name, func() C.VkPipeline {
-		C.vxr_vk_graphics_createVertexInputPipeline(instance.cInstance, C.size_t(len(p.name)), (*C.char)(unsafe.Pointer(unsafe.StringData(p.name))),
-			C.VkPrimitiveTopology(info.Topology), &p.vkPipeline)
-		return p.vkPipeline
-	})
+		p.vkPipeline = instance.graphics.pipelineCache.createOrRetrievePipeline(p.name, func() C.VkPipeline {
+			C.vxr_vk_graphics_createVertexInputPipeline(instance.cInstance, C.size_t(len(p.name)), (*C.char)(unsafe.Pointer(unsafe.StringData(p.name))),
+				C.VkPrimitiveTopology(info.Topology), vk.TRUE, &p.vkPipeline)
+			return p.vkPipeline
+		})
+	} else {
+		switch info.Topology {
+		case VertexTopologyPointList:
+			p.name = "[vertex_input:point]"
+		case VertexTopologyLineList, VertexTopologyLineStrip, VertexTopologyLineListWithAdjacency, VertexTopologyLineStripWithAdjacency:
+			p.name = "[vertex_input:line]"
+		case VertexTopologyTriangleList, VertexTopologyTriangleStrip, VertexTopologyTriangleFan, VertexTopologyTriangleListWithAdjacency,
+			VertexTopologyTriangleStripWithAdjacency:
+			p.name = "[vertex_input:triangle]"
+		case VertexTopologyPatchList:
+			p.name = "[vertex_input:patch]"
+		}
+
+		p.vkPipeline = instance.graphics.pipelineCache.createOrRetrievePipeline(p.name, func() C.VkPipeline {
+			C.vxr_vk_graphics_createVertexInputPipeline(instance.cInstance, C.size_t(len(p.name)), (*C.char)(unsafe.Pointer(unsafe.StringData(p.name))),
+				C.VkPrimitiveTopology(info.Topology), vk.FALSE, &p.vkPipeline)
+			return p.vkPipeline
+		})
+	}
 	p.id = genID(p.vkPipeline)
 
 	return p
