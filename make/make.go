@@ -43,16 +43,44 @@ func InstallGeneratorDeps() {
 	}
 }
 
-func Install(t toolchain.Target, b toolchain.Build) {
-	if err := installShaderc(t); err != nil {
-		panic(debug.ErrorWrapf(err, "Failed to install shaderc"))
+type DisableFeatures struct {
+	ShaderCompiler bool // If true, shader compiler and all related functions are removed.
+}
+type BuildOptions struct {
+	Build   toolchain.Build
+	Disable DisableFeatures
+}
+
+type Config struct {
+	Target       toolchain.Target
+	BuildOptions BuildOptions
+}
+
+func buildTags(b BuildOptions) string {
+	var str string
+
+	{
+		if b.Disable.ShaderCompiler {
+			str += "goarrg_vxr_disable_shadercompiler,"
+		}
 	}
-	if err := installSPIRVCross(t); err != nil {
-		panic(debug.ErrorWrapf(err, "Failed to install spirv-cross"))
+
+	return strings.TrimSuffix(str, ",")
+}
+
+func Install(c Config) string {
+	if !c.BuildOptions.Disable.ShaderCompiler {
+		if err := installShaderc(c.Target); err != nil {
+			panic(debug.ErrorWrapf(err, "Failed to install shaderc"))
+		}
+		if err := installSPIRVCross(c.Target); err != nil {
+			panic(debug.ErrorWrapf(err, "Failed to install spirv-cross"))
+		}
 	}
-	if err := installVXR(t, b); err != nil {
+	if err := installVXR(c); err != nil {
 		panic(debug.ErrorWrapf(err, "Failed to install vxr"))
 	}
+	return buildTags(c.BuildOptions)
 }
 
 func scanDirModTime(dir string, ignore []string) time.Time {
@@ -136,7 +164,7 @@ func processSrc(t toolchain.Target, srcDir string, p func(string, []string) erro
 	})
 }
 
-func installVXR(t toolchain.Target, b toolchain.Build) error {
+func installVXR(c Config) error {
 	module := golang.CallersModule()
 	srcDir := filepath.Join(module.Dir, "libvxr")
 	includeDir := filepath.Join(srcDir, "include")
@@ -144,10 +172,13 @@ func installVXR(t toolchain.Target, b toolchain.Build) error {
 	makeVersion := scanDirModTime(filepath.Join(module.Dir, "make"), nil)
 
 	version := strconv.FormatInt(srcVersion.Unix(), 16) + "-" + strconv.FormatInt(makeVersion.Unix(), 16)
-	installDir := cgodep.InstallDir("vxr", t, b)
+	if c.BuildOptions.Disable.ShaderCompiler {
+		version += "-noshadercompiler"
+	}
+	installDir := cgodep.InstallDir("vxr", c.Target, c.BuildOptions.Build)
 	installedVersion := cgodep.ReadVersion(installDir)
 	if installedVersion == version {
-		return cgodep.SetActiveBuild("vxr", t, b)
+		return cgodep.SetActiveBuild("vxr", c.Target, c.BuildOptions.Build)
 	}
 
 	if err := os.RemoveAll(installDir); err != nil {
@@ -160,6 +191,7 @@ func installVXR(t toolchain.Target, b toolchain.Build) error {
 		File      string   `json:"file"`
 	}
 	var cmds []cmd
+	var compileCmds []cmd
 	var cFlags, ldFlags []string
 
 	{
@@ -169,14 +201,24 @@ func installVXR(t toolchain.Target, b toolchain.Build) error {
 			return err
 		}
 		defer os.RemoveAll(buildDir)
-		cFlags, ldFlags, err = processSrc(t, srcDir, func(path string, args []string) error {
+		cFlags, ldFlags, err = processSrc(c.Target, srcDir, func(path string, args []string) error {
 			path = strings.TrimPrefix(path, srcDir+string(filepath.Separator))
+			if c.BuildOptions.Disable.ShaderCompiler && strings.HasPrefix(path, filepath.Join("vk", "shader", "toolchain")) {
+				return nil
+			}
 			switch filepath.Ext(path) {
 			case ".c":
 				objs = append(objs, path+".o")
 				cmds = append(cmds, cmd{Directory: srcDir, Arguments: append([]string{os.Getenv("CC")}, args...), File: path})
+				compileCmds = append(compileCmds, cmd{Directory: srcDir, Arguments: append([]string{os.Getenv("CC")}, args...), File: path})
 			case ".cpp":
 				objs = append(objs, path+".o")
+				cmds = append(cmds, cmd{Directory: srcDir, Arguments: append([]string{os.Getenv("CXX")}, args...), File: path})
+				compileCmds = append(compileCmds, cmd{Directory: srcDir, Arguments: append([]string{os.Getenv("CXX")}, args...), File: path})
+
+			case ".h":
+				cmds = append(cmds, cmd{Directory: srcDir, Arguments: append([]string{os.Getenv("CC")}, args...), File: path})
+			case ".hpp":
 				cmds = append(cmds, cmd{Directory: srcDir, Arguments: append([]string{os.Getenv("CXX")}, args...), File: path})
 			}
 			return nil
@@ -186,6 +228,7 @@ func installVXR(t toolchain.Target, b toolchain.Build) error {
 		}
 
 		if fOut, err := os.Create(filepath.Join(srcDir, "compile_commands.json")); err == nil {
+			defer fOut.Close()
 			enc := json.NewEncoder(fOut)
 			err = enc.Encode(cmds)
 			if err != nil {
@@ -197,7 +240,7 @@ func installVXR(t toolchain.Target, b toolchain.Build) error {
 		}
 
 		wg := sync.WaitGroup{}
-		for i, c := range cmds {
+		for i, c := range compileCmds {
 			obj := filepath.Join(buildDir, objs[i])
 			if err := os.MkdirAll(filepath.Dir(obj), 0o755); err != nil {
 				return err
@@ -222,7 +265,7 @@ func installVXR(t toolchain.Target, b toolchain.Build) error {
 	}
 
 	golang.SetShouldCleanCache()
-	return cgodep.WriteMetaFile("vxr", t, b, cgodep.Meta{
+	return cgodep.WriteMetaFile("vxr", c.Target, c.BuildOptions.Build, cgodep.Meta{
 		Version: version,
 		Flags: cgodep.Flags{
 			CFlags:        append([]string{"-I" + includeDir}, cFlags...),

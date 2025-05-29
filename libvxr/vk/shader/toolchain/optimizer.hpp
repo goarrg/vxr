@@ -23,29 +23,31 @@ limitations under the License.
 #include <stddef.h>
 #include <stdint.h>
 
-#include "vk/vk.hpp"
+#include "vk/shader/toolchain/compiler.hpp"
 
-using shadercCompilationResult = struct shaderc_compilation_result*;
-using shadercCompiler = struct shaderc_compiler*;
-using shadercCompileOptions = struct shaderc_compile_options*;
+using spvOptimizer = struct spv_optimizer_t*;
+using spvOptimizerOptions = struct spv_optimizer_options_t*;
+using spvValidatorOptions = struct spv_validator_options_t*;
+using spvBinary = struct spv_binary_t*;
 
 namespace vxr::vk::shader {
-class compiler {
+class optimizer {
    private:
-	::shadercCompiler shadercCompiler;
-	::shadercCompileOptions shadercOptions;
+	::spvOptimizer spvOptimizer;
+	::spvOptimizerOptions spvOptions;
+	::spvValidatorOptions spvValidatorOptions;
 
    public:
 	class result {
 	   private:
-		shadercCompilationResult shadercResult = nullptr;
+		spvBinary spvResult;
 
 	   public:
 		result() noexcept = default;
-		result(shadercCompilationResult shaderc) noexcept : shadercResult(shaderc) {}
+		result(spvBinary spvResult) noexcept : spvResult(spvResult) {}
 		constexpr result(result&& other) noexcept {
-			this->shadercResult = other.shadercResult;
-			other.shadercResult = nullptr;
+			this->spvResult = other.spvResult;
+			other.spvResult = nullptr;
 		}
 		~result() noexcept;
 
@@ -53,9 +55,9 @@ class compiler {
 		[[nodiscard]] const uint32_t* get() const noexcept;
 	};
 
-	compiler(uint32_t) noexcept;
-	~compiler() noexcept;
+	optimizer(vxr_vk_shader_toolchainOptions) noexcept;
+	~optimizer() noexcept;
 
-	[[nodiscard]] result compile(vxr_vk_shader_compileInfo) const noexcept;
+	[[nodiscard]] result optimize(compiler::result&) const noexcept;
 };
 }  // namespace vxr::vk::shader

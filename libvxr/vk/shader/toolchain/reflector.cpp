@@ -28,7 +28,7 @@ limitations under the License.
 #include "std/utility.hpp"
 
 #include "vxr/vxr.h"
-#include "vk/shader/reflector.hpp"
+#include "vk/shader/toolchain/reflector.hpp"
 
 inline static VkDescriptorType spvcResrouceToVkDescriptor(spvc_resource_type tid, spvc_compiler compiler, spvc_variable_id vid) {
 	switch (tid) {

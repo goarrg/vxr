@@ -26,9 +26,9 @@ limitations under the License.
 #include "std/utility.hpp"
 
 #include "vk/vk.hpp"
-#include "vk/shader/compiler.hpp"
-#include "vk/shader/reflector.hpp"
-#include "vk/shader/optimizer.hpp"
+#include "vk/shader/toolchain/compiler.hpp"
+#include "vk/shader/toolchain/reflector.hpp"
+#include "vk/shader/toolchain/optimizer.hpp"
 
 namespace vxr::vk::shader {
 class toolchain {
@@ -52,7 +52,7 @@ class toolchain {
 		}
 	};
 
-	toolchain(uint32_t vkVersion) noexcept : compiler(vkVersion), optimizer(vkVersion) {}
+	toolchain(vxr_vk_shader_toolchainOptions options) noexcept : compiler(options), optimizer(options) {}
 	~toolchain() noexcept = default;
 
 	[[nodiscard]] compileResult* compile(vxr_vk_shader_compileInfo info) const noexcept {

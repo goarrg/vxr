@@ -26,7 +26,7 @@ limitations under the License.
 #include "std/log.hpp"
 
 #include "vk/vk.hpp"
-#include "vk/shader/compiler.hpp"
+#include "vk/shader/toolchain/compiler.hpp"
 
 static shaderc_include_result* shadercIncludeResolver(void* data, const char* requestedSource, int type,
 													  const char* requestingSource, size_t /*include_depth*/) {
@@ -56,17 +56,17 @@ static void shadercIncludeResultRelease(void* data, shaderc_include_result* shad
 }
 
 namespace vxr::vk::shader {
-compiler::compiler(uint32_t vkVersion) noexcept {
+compiler::compiler(vxr_vk_shader_toolchainOptions options) noexcept {
 	this->shadercCompiler = shaderc_compiler_initialize();
 	this->shadercOptions = shaderc_compile_options_initialize();
 
-	shaderc_compile_options_set_target_env(this->shadercOptions, shaderc_target_env_vulkan, vkVersion);
+	shaderc_compile_options_set_target_env(this->shadercOptions, shaderc_target_env_vulkan, options.api);
 	shaderc_compile_options_set_warnings_as_errors(this->shadercOptions);
 	shaderc_compile_options_set_preserve_bindings(this->shadercOptions, true);
 
-#ifndef NDEBUG
-	shaderc_compile_options_set_generate_debug_info(this->shadercOptions);
-#endif
+	if (options.strip == VK_FALSE) {
+		shaderc_compile_options_set_generate_debug_info(this->shadercOptions);
+	}
 }
 
 compiler::~compiler() noexcept {
@@ -78,6 +78,10 @@ compiler::result compiler::compile(vxr_vk_shader_compileInfo info) const noexcep
 	auto* options = shaderc_compile_options_clone(this->shadercOptions);
 	DEFER([&] { shaderc_compile_options_release(options); });
 	shaderc_compile_options_set_include_callbacks(options, shadercIncludeResolver, shadercIncludeResultRelease, &info);
+	for (size_t i = 0; i < info.numMacros; i++) {
+		const auto& m = info.macros[i];
+		shaderc_compile_options_add_macro_definition(options, m.name, m.nameSize, m.value, m.valueSize);
+	}
 	shaderc_compilation_result_t result = shaderc_compile_into_spv(
 		// NOLINTNEXTLINE(performance-no-int-to-ptr)
 		this->shadercCompiler, reinterpret_cast<const char*>(info.content), info.contentSize,

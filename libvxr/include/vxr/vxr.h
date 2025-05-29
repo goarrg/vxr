@@ -195,6 +195,13 @@ typedef struct {
 	VkSemaphore releaseSemaphore;
 } vxr_vk_surface;
 
+typedef struct {
+	uint32_t api;
+	VkBool32 strip;
+	VkBool32 optimizePerformance;
+	VkBool32 optimizeSize;
+} vxr_vk_shader_toolchainOptions;
+
 typedef enum {
 	vxr_vk_shader_includeType_relative,
 	vxr_vk_shader_includeType_system,
@@ -214,8 +221,18 @@ typedef void (*vxr_vk_shaderIncludeResultReleaser)(uintptr_t, vxr_vk_shader_incl
 typedef struct {
 	size_t nameSize;
 	const char* name;
+	size_t valueSize;
+	const char* value;
+} vxr_vk_shader_macro;
+
+typedef struct {
+	size_t nameSize;
+	const char* name;
 	size_t contentSize;
 	uintptr_t content;
+
+	size_t numMacros;
+	vxr_vk_shader_macro* macros;
 
 	vxr_vk_shaderIncludeResolver includeResolver;
 	vxr_vk_shaderIncludeResultReleaser resultReleaser;
@@ -440,7 +457,7 @@ extern VXR_FN void vxr_vk_destroyImageView(vxr_vk_instance, VkImageView);
 extern VXR_FN void vxr_vk_createSampler(vxr_vk_instance, size_t, const char*, vxr_vk_samplerCreateInfo, VkSampler*);
 extern VXR_FN void vxr_vk_destroySampler(vxr_vk_instance, VkSampler);
 
-extern VXR_FN void vxr_vk_shader_initToolchain(uint32_t, vxr_vk_shader_toolchain*);
+extern VXR_FN void vxr_vk_shader_initToolchain(vxr_vk_shader_toolchainOptions, vxr_vk_shader_toolchain*);
 extern VXR_FN void vxr_vk_shader_destroyToolchain(vxr_vk_shader_toolchain);
 
 extern VXR_FN void vxr_vk_shader_compile(vxr_vk_shader_toolchain, vxr_vk_shader_compileInfo,

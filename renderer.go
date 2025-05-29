@@ -82,10 +82,16 @@ type state struct {
 	sizeY float64
 }
 
+type platform struct{}
+
+func (platform) Abort()                           { panic("Fatal Error") }
+func (platform) AbortPopup(f string, args ...any) { panic("Fatal Error") }
+
 var instanceInitOnce sync.Once
 
 var instance = state{
-	logger: debug.NewLogger("vxr"),
+	platform: platform{},
+	logger:   debug.NewLogger("vxr"),
 
 	formatProperties: formatProperties{
 		color: colorFormatProperties{
@@ -152,8 +158,6 @@ func InitInstance(platform goarrg.PlatformInterface, vkInstance goarrg.VkInstanc
 	instanceInitOnce.Do(func() {
 		instance.platform = platform
 		instance.vkInstance = vkInstance
-		instance.logger.IPrintf("vxr_stdlib_init")
-		C.vxr_stdlib_init(cGoAbort, cGoAbortPopup, cGoLogV, cGoLogI, cGoLogW, cGoLogE)
 		instance.logger.IPrintf("vxr_vk_init")
 		C.vxr_vk_init(C.uintptr_t(instance.vkInstance.Uintptr()), C.uintptr_t(instance.vkInstance.ProcAddr()),
 			cGoVkLog, &instance.cInstance)
@@ -229,9 +233,6 @@ func InitDevice(config Config) {
 		instance.logger.IPrintf("%s", prettyString(&instance.deviceProperties))
 	}
 
-	instance.logger.IPrintf("vxr_vk_shader_initToolchain")
-	C.vxr_vk_shader_initToolchain(C.uint32_t(instance.deviceProperties.API), &instance.cShaderCompiler)
-
 	instance.logger.IPrintf("Initializing Configuration")
 	instance.config.use(config)
 	initFramesInFlight(1)
@@ -306,8 +307,6 @@ func Destroy() {
 
 	instance.logger.IPrintf("vxr_vk_graphics_destroy")
 	C.vxr_vk_graphics_destroy(instance.cInstance)
-	instance.logger.IPrintf("vxr_vk_destroyShaderCompiler")
-	C.vxr_vk_shader_destroyToolchain(instance.cShaderCompiler)
 	instance.logger.IPrintf("vxr_vk_device_destroy")
 	C.vxr_vk_device_destroy(instance.cInstance)
 	instance.logger.IPrintf("vxr_vk_destroy")

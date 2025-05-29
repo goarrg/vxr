@@ -25,11 +25,11 @@ limitations under the License.
 #include "std/utility.hpp"
 #include "std/algorithm.hpp"
 
-#include "vk/shader/toolchain.hpp"
+#include "vk/shader/toolchain/toolchain.hpp"
 
 extern "C" {
-VXR_FN void vxr_vk_shader_initToolchain(uint32_t vkVersion, vxr_vk_shader_toolchain* toolchainHandle) {
-	auto* toolchain = new (::std::nothrow) vxr::vk::shader::toolchain(vkVersion);
+VXR_FN void vxr_vk_shader_initToolchain(vxr_vk_shader_toolchainOptions options, vxr_vk_shader_toolchain* toolchainHandle) {
+	auto* toolchain = new (::std::nothrow) vxr::vk::shader::toolchain(options);
 	*toolchainHandle = toolchain->handle();
 }
 VXR_FN void vxr_vk_shader_destroyToolchain(vxr_vk_shader_toolchain handle) {

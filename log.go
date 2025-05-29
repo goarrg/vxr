@@ -18,6 +18,7 @@ package vxr
 
 /*
 	#cgo pkg-config: vxr
+	#cgo CFLAGS: -fvisibility=hidden -Wno-dll-attribute-on-redeclaration
 
 	#include "vxr/vxr.h"
 
@@ -45,6 +46,10 @@ import (
 
 	"goarrg.com/rhi/vxr/internal/vk"
 )
+
+func init() {
+	C.vxr_stdlib_init(cGoAbort, cGoAbortPopup, cGoLogV, cGoLogI, cGoLogW, cGoLogE)
+}
 
 func abort(fmt string, args ...any) {
 	instance.logger.EPrintf(fmt, args...)

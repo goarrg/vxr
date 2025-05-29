@@ -22,8 +22,8 @@ limitations under the License.
 #include "std/log.hpp"
 
 #include "vxr/vxr.h"
-#include "vk/shader/optimizer.hpp"
-#include "vk/shader/compiler.hpp"
+#include "vk/shader/toolchain/optimizer.hpp"
+#include "vk/shader/toolchain/compiler.hpp"
 
 static void spvLogger(spv_message_level_t level, const char* /*file*/, const spv_position_t* /*pos*/, const char* msg) {
 	switch (level) {
@@ -45,12 +45,12 @@ static void spvLogger(spv_message_level_t level, const char* /*file*/, const spv
 }
 
 namespace vxr::vk::shader {
-optimizer::optimizer(uint32_t vkVersion) noexcept {
+optimizer::optimizer(vxr_vk_shader_toolchainOptions options) noexcept {
 	// Check to make sure we update the switch below.
 	static_assert(VK_API_VERSION_1_4 == VXR_VK_MAX_API);  // NOLINT(misc-redundant-expression)
 
 	spv_target_env env;
-	switch (VK_VERSION_MINOR(vkVersion)) {
+	switch (VK_VERSION_MINOR(options.api)) {
 		case 0:
 			env = SPV_ENV_VULKAN_1_0;
 			break;
@@ -82,17 +82,22 @@ optimizer::optimizer(uint32_t vkVersion) noexcept {
 	spvOptimizerOptionsSetValidatorOptions(this->spvOptions, this->spvValidatorOptions);
 	spvOptimizerOptionsSetPreserveBindings(this->spvOptions, true);
 
-#ifdef NDEBUG
-	if (!spvOptimizerRegisterPassFromFlag(this->spvOptimizer, "--strip-debug")) {
-		vxr::std::ePrintf("Failed to add strip-debug optimization pass");
-		vxr::std::abort();
+	if (options.strip == VK_TRUE) {
+		if (!spvOptimizerRegisterPassFromFlag(this->spvOptimizer, "--strip-debug")) {
+			vxr::std::ePrintf("Failed to add strip-debug optimization pass");
+			vxr::std::abort();
+		}
+		if (!spvOptimizerRegisterPassFromFlag(this->spvOptimizer, "--strip-nonsemantic")) {
+			vxr::std::ePrintf("Failed to add strip-nonsemantic optimization pass");
+			vxr::std::abort();
+		}
 	}
-	if (!spvOptimizerRegisterPassFromFlag(this->spvOptimizer, "--strip-nonsemantic")) {
-		vxr::std::ePrintf("Failed to add strip-nonsemantic optimization pass");
-		vxr::std::abort();
+	if (options.optimizePerformance == VK_TRUE) {
+		spvOptimizerRegisterPerformancePasses(this->spvOptimizer);
 	}
-	spvOptimizerRegisterPerformancePasses(this->spvOptimizer);
-#endif
+	if (options.optimizeSize == VK_TRUE) {
+		spvOptimizerRegisterSizePasses(this->spvOptimizer);
+	}
 }
 
 optimizer::~optimizer() noexcept {
