@@ -117,15 +117,18 @@ func scanDirModTime(dir string, ignore []string) time.Time {
 	return latestMod
 }
 
-func processSrc(t toolchain.Target, srcDir string, p func(string, []string) error) ([]string, []string, error) {
+func processSrc(c Config, srcDir string, p func(string, []string) error) ([]string, []string, error) {
 	includeDir := filepath.Join(srcDir, "include")
 
-	deps := []string{"vulkan-headers", "shaderc", "spirv-cross"}
-	cFlags, err := cgodep.Resolve(t, cgodep.ResolveCFlags, deps...)
+	deps := []string{"vulkan-headers"}
+	if !c.BuildOptions.Disable.ShaderCompiler {
+		deps = append(deps, "shaderc", "spirv-cross")
+	}
+	cFlags, err := cgodep.Resolve(c.Target, cgodep.ResolveCFlags, deps...)
 	if err != nil {
 		return nil, nil, err
 	}
-	ldFlags, err := cgodep.Resolve(t, cgodep.ResolveLDFlags, deps...)
+	ldFlags, err := cgodep.Resolve(c.Target, cgodep.ResolveLDFlags, deps...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -201,7 +204,7 @@ func installVXR(c Config) error {
 			return err
 		}
 		defer os.RemoveAll(buildDir)
-		cFlags, ldFlags, err = processSrc(c.Target, srcDir, func(path string, args []string) error {
+		cFlags, ldFlags, err = processSrc(c, srcDir, func(path string, args []string) error {
 			path = strings.TrimPrefix(path, srcDir+string(filepath.Separator))
 			if c.BuildOptions.Disable.ShaderCompiler && strings.HasPrefix(path, filepath.Join("vk", "shader", "toolchain")) {
 				return nil
@@ -279,7 +282,7 @@ func Lint() error {
 	module := golang.CallersModule()
 	srcDir := filepath.Join(module.Dir, "libvxr")
 	wg := sync.WaitGroup{}
-	_, _, err := processSrc(toolchain.Target{OS: os.Getenv("GOOS"), Arch: os.Getenv("GOARCH")}, srcDir, func(path string, args []string) error {
+	_, _, err := processSrc(Config{Target: toolchain.Target{OS: os.Getenv("GOOS"), Arch: os.Getenv("GOARCH")}}, srcDir, func(path string, args []string) error {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()

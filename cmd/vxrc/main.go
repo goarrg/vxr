@@ -85,8 +85,7 @@ func (m macros) MarshalText() (text []byte, err error) {
 	for _, i := range m {
 		str += fmt.Sprintf("%s=%s\n", i.Name, i.Value)
 	}
-	strings.TrimSuffix(str, "\n")
-	return ([]byte)(str), nil
+	return ([]byte)(strings.TrimSuffix(str, "\n")), nil
 }
 
 type generator uint32

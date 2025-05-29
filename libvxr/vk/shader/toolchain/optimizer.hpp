@@ -23,6 +23,7 @@ limitations under the License.
 #include <stddef.h>
 #include <stdint.h>
 
+#include "vk/vk.hpp"
 #include "vk/shader/toolchain/compiler.hpp"
 
 using spvOptimizer = struct spv_optimizer_t*;
