@@ -210,6 +210,7 @@ func help() {
 		"\nShader reflection works best with non-optimized spirv files, so the old way would involve at least 3 different programs and libs.\n"+
 		"vxr.CompileShader and thus this cli was created to streamline the process.\n"+
 		"\nvxrc only supports glsl comp,vert,frag shaders as those are the pipelines vxr currently supports.\n"+
+		"Shader stage is determined by the #pragma shader_stage(...) line in the file.\n"+
 		"\n")
 	args := ""
 	flags.VisitAll(func(f *flag.Flag) {
