@@ -297,6 +297,42 @@ const (
 	FrontFaceClockwise        FrontFace = vk.FRONT_FACE_CLOCKWISE
 )
 
+type CompareOp C.VkCompareOp
+
+const (
+	CompareOpNever          CompareOp = vk.COMPARE_OP_NEVER
+	CompareOpLess           CompareOp = vk.COMPARE_OP_LESS
+	CompareOpEqual          CompareOp = vk.COMPARE_OP_EQUAL
+	CompareOpLessOrEqual    CompareOp = vk.COMPARE_OP_LESS_OR_EQUAL
+	CompareOpGreater        CompareOp = vk.COMPARE_OP_GREATER
+	CompareOpNotEqual       CompareOp = vk.COMPARE_OP_NOT_EQUAL
+	CompareOpGreaterOrEqual CompareOp = vk.COMPARE_OP_GREATER_OR_EQUAL
+	CompareOpAlways         CompareOp = vk.COMPARE_OP_ALWAYS
+)
+
+type StencilOp C.VkStencilOp
+
+const (
+	StencilOpKeep              StencilOp = vk.STENCIL_OP_KEEP
+	StencilOpZero              StencilOp = vk.STENCIL_OP_ZERO
+	StencilOpReplace           StencilOp = vk.STENCIL_OP_REPLACE
+	StencilOpIncrementAndClamp StencilOp = vk.STENCIL_OP_INCREMENT_AND_CLAMP
+	StencilOpDecrementAndClamp StencilOp = vk.STENCIL_OP_DECREMENT_AND_CLAMP
+	StencilOpInvert            StencilOp = vk.STENCIL_OP_INVERT
+	StencilOpIncrementAndWrap  StencilOp = vk.STENCIL_OP_INCREMENT_AND_WRAP
+	StencilOpDecrementAndWrap  StencilOp = vk.STENCIL_OP_DECREMENT_AND_WRAP
+)
+
+type StencilTestParameters struct {
+	FailOp      StencilOp
+	PassOp      StencilOp
+	DepthFailOp StencilOp
+	CompareOp   CompareOp
+	CompareMask uint32
+	WriteMask   uint32
+	Reference   uint32
+}
+
 type DrawParameters struct {
 	PushConstants  []byte
 	DescriptorSets []*DescriptorSet
@@ -306,6 +342,11 @@ type DrawParameters struct {
 
 	DepthTestEnable  bool
 	DepthWriteEnable bool
+	DepthCompareOp   CompareOp
+
+	StencilTestEnable          bool
+	StencilFrontFaceParameters StencilTestParameters
+	StencilBackFaceParameters  StencilTestParameters
 }
 
 func (cb *GraphicsCommandBuffer) draw(p GraphicsPipelineLibrary, info DrawParameters, fn func(C.vxr_vk_graphics_drawParameters)) {
@@ -339,6 +380,27 @@ func (cb *GraphicsCommandBuffer) draw(p GraphicsPipelineLibrary, info DrawParame
 		cullMode:  C.VkCullModeFlags(info.CullMode),
 		frontFace: C.VkFrontFace(info.FrontFace),
 
+		depthCompareOp: C.VkCompareOp(info.DepthCompareOp),
+
+		stencilTestFrontFace: C.VkStencilOpState{
+			failOp:      C.VkStencilOp(info.StencilFrontFaceParameters.FailOp),
+			passOp:      C.VkStencilOp(info.StencilFrontFaceParameters.PassOp),
+			depthFailOp: C.VkStencilOp(info.StencilFrontFaceParameters.DepthFailOp),
+			compareOp:   C.VkCompareOp(info.StencilFrontFaceParameters.CompareOp),
+			compareMask: C.uint32_t(info.StencilFrontFaceParameters.CompareMask),
+			writeMask:   C.uint32_t(info.StencilFrontFaceParameters.WriteMask),
+			reference:   C.uint32_t(info.StencilFrontFaceParameters.Reference),
+		},
+		stencilTestBackFace: C.VkStencilOpState{
+			failOp:      C.VkStencilOp(info.StencilBackFaceParameters.FailOp),
+			passOp:      C.VkStencilOp(info.StencilBackFaceParameters.PassOp),
+			depthFailOp: C.VkStencilOp(info.StencilBackFaceParameters.DepthFailOp),
+			compareOp:   C.VkCompareOp(info.StencilBackFaceParameters.CompareOp),
+			compareMask: C.uint32_t(info.StencilBackFaceParameters.CompareMask),
+			writeMask:   C.uint32_t(info.StencilBackFaceParameters.WriteMask),
+			reference:   C.uint32_t(info.StencilBackFaceParameters.Reference),
+		},
+
 		numDescriptorSets: C.uint32_t(len(descriptorSets)),
 		descriptorSets:    unsafe.SliceData(descriptorSets),
 	}
@@ -353,6 +415,9 @@ func (cb *GraphicsCommandBuffer) draw(p GraphicsPipelineLibrary, info DrawParame
 	}
 	if info.DepthWriteEnable {
 		cParameters.depthWriteEnable = vk.TRUE
+	}
+	if info.StencilTestEnable {
+		cParameters.stencilTestEnable = vk.TRUE
 	}
 	fn(cParameters)
 }

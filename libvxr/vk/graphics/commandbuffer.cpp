@@ -164,6 +164,46 @@ inline static VXR_FN void setupDraw(vxr_vk_graphics_drawParameters parameters, V
 
 	VK_PROC_DEVICE(vkCmdSetDepthTestEnable)(cb, parameters.depthTestEnable);
 	VK_PROC_DEVICE(vkCmdSetDepthWriteEnable)(cb, parameters.depthWriteEnable);
+	VK_PROC_DEVICE(vkCmdSetDepthCompareOp)(cb, parameters.depthCompareOp);
+
+	VK_PROC_DEVICE(vkCmdSetStencilTestEnable)(cb, parameters.stencilTestEnable);
+	if (parameters.stencilTestEnable == VK_TRUE) {
+		if ((parameters.stencilTestFrontFace.failOp == parameters.stencilTestBackFace.failOp) &&
+			(parameters.stencilTestFrontFace.passOp == parameters.stencilTestBackFace.passOp) &&
+			(parameters.stencilTestFrontFace.depthFailOp == parameters.stencilTestBackFace.depthFailOp) &&
+			(parameters.stencilTestFrontFace.compareOp == parameters.stencilTestBackFace.compareOp)) {
+			VK_PROC_DEVICE(vkCmdSetStencilOp)(
+				cb, VK_STENCIL_FACE_FRONT_AND_BACK, parameters.stencilTestFrontFace.failOp,
+				parameters.stencilTestFrontFace.passOp, parameters.stencilTestFrontFace.depthFailOp,
+				parameters.stencilTestFrontFace.compareOp);
+		} else {
+			VK_PROC_DEVICE(vkCmdSetStencilOp)(
+				cb, VK_STENCIL_FACE_FRONT_BIT, parameters.stencilTestFrontFace.failOp, parameters.stencilTestFrontFace.passOp,
+				parameters.stencilTestFrontFace.depthFailOp, parameters.stencilTestFrontFace.compareOp);
+			VK_PROC_DEVICE(vkCmdSetStencilOp)(
+				cb, VK_STENCIL_FACE_BACK_BIT, parameters.stencilTestBackFace.failOp, parameters.stencilTestBackFace.passOp,
+				parameters.stencilTestBackFace.depthFailOp, parameters.stencilTestBackFace.compareOp);
+		}
+		if (parameters.stencilTestFrontFace.compareMask == parameters.stencilTestBackFace.compareMask) {
+			VK_PROC_DEVICE(vkCmdSetStencilCompareMask)(
+				cb, VK_STENCIL_FACE_FRONT_AND_BACK, parameters.stencilTestFrontFace.compareMask);
+		} else {
+			VK_PROC_DEVICE(vkCmdSetStencilCompareMask)(cb, VK_STENCIL_FACE_FRONT_BIT, parameters.stencilTestFrontFace.compareMask);
+			VK_PROC_DEVICE(vkCmdSetStencilCompareMask)(cb, VK_STENCIL_FACE_BACK_BIT, parameters.stencilTestBackFace.compareMask);
+		}
+		if (parameters.stencilTestFrontFace.writeMask == parameters.stencilTestBackFace.writeMask) {
+			VK_PROC_DEVICE(vkCmdSetStencilWriteMask)(cb, VK_STENCIL_FACE_FRONT_AND_BACK, parameters.stencilTestFrontFace.writeMask);
+		} else {
+			VK_PROC_DEVICE(vkCmdSetStencilWriteMask)(cb, VK_STENCIL_FACE_FRONT_BIT, parameters.stencilTestFrontFace.writeMask);
+			VK_PROC_DEVICE(vkCmdSetStencilWriteMask)(cb, VK_STENCIL_FACE_BACK_BIT, parameters.stencilTestBackFace.writeMask);
+		}
+		if (parameters.stencilTestFrontFace.reference == parameters.stencilTestBackFace.reference) {
+			VK_PROC_DEVICE(vkCmdSetStencilReference)(cb, VK_STENCIL_FACE_FRONT_AND_BACK, parameters.stencilTestFrontFace.reference);
+		} else {
+			VK_PROC_DEVICE(vkCmdSetStencilReference)(cb, VK_STENCIL_FACE_FRONT_BIT, parameters.stencilTestFrontFace.reference);
+			VK_PROC_DEVICE(vkCmdSetStencilReference)(cb, VK_STENCIL_FACE_BACK_BIT, parameters.stencilTestBackFace.reference);
+		}
+	}
 
 	if (parameters.pushConstantRange.size > 0) {
 		VK_PROC_DEVICE(vkCmdPushConstants)

@@ -356,6 +356,11 @@ typedef struct {
 
 	VkBool32 depthTestEnable;
 	VkBool32 depthWriteEnable;
+	VkCompareOp depthCompareOp;
+
+	VkBool32 stencilTestEnable;
+	VkStencilOpState stencilTestFrontFace;
+	VkStencilOpState stencilTestBackFace;
 
 	VkPushConstantRange pushConstantRange;
 	void* pushConstantData;

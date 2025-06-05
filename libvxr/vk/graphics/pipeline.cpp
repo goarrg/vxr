@@ -97,8 +97,10 @@ VXR_FN void vxr_vk_graphics_createShaderPipeline(vxr_vk_instance instanceHandle,
 	};
 
 	static constexpr vxr::std::array fragmentDynamicStates = {
-		VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE,
-		VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE,
+		VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE,	 VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE,
+		VK_DYNAMIC_STATE_DEPTH_COMPARE_OP,	 VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE,
+		VK_DYNAMIC_STATE_STENCIL_OP,		 VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK,
+		VK_DYNAMIC_STATE_STENCIL_WRITE_MASK, VK_DYNAMIC_STATE_STENCIL_REFERENCE,
 	};
 	static constexpr VkPipelineDynamicStateCreateInfo fragmentDynamicInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
@@ -131,9 +133,9 @@ VXR_FN void vxr_vk_graphics_createShaderPipeline(vxr_vk_instance instanceHandle,
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
 		// .depthTestEnable = VK_TRUE,
 		// .depthWriteEnable = VK_TRUE,
-		.depthCompareOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
+		// .depthCompareOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
 		.depthBoundsTestEnable = VK_FALSE,
-		.stencilTestEnable = VK_FALSE,
+		// .stencilTestEnable = VK_FALSE,
 		.minDepthBounds = 0.0f,
 		.maxDepthBounds = 1.0f,
 	};
