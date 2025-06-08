@@ -611,7 +611,12 @@ func NewDepthStencilImage(name string, format DepthStencilFormat, aspect ImageAs
 			format.String(), info.Usage.FormatFeatureFlags().String(), info.Usage.String())
 	}
 	instance.logger.VPrintf("Creating depth image with format [%s] and info: %+v", format.String(), info)
-	name = "depth_" + name
+	if img.Aspect().HasBits(vk.IMAGE_ASPECT_STENCIL_BIT) {
+		name = "stencil_" + name
+	}
+	if img.Aspect().HasBits(vk.IMAGE_ASPECT_DEPTH_BIT) {
+		name = "depth_" + name
+	}
 	img.image = newImage(name, C.VkFormat(format), C.VkImageAspectFlags(img.Aspect()), info)
 	img.noCopy.init()
 	return img
