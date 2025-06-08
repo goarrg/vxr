@@ -31,6 +31,32 @@ import (
 	"goarrg.com/rhi/vxr/internal/vk"
 )
 
+type ImageAspectFlags C.VkImageAspectFlags
+
+const (
+	ImageAspectColor   ImageAspectFlags = vk.IMAGE_ASPECT_COLOR_BIT
+	ImageAspectDepth   ImageAspectFlags = vk.IMAGE_ASPECT_DEPTH_BIT
+	ImageAspectStencil ImageAspectFlags = vk.IMAGE_ASPECT_STENCIL_BIT
+)
+
+func (a ImageAspectFlags) HasBits(want ImageAspectFlags) bool {
+	return (a & want) == want
+}
+
+func (a ImageAspectFlags) String() string {
+	str := ""
+	if a.HasBits(ImageAspectColor) {
+		str += "Color|"
+	}
+	if a.HasBits(ImageAspectDepth) {
+		str += "Depth|"
+	}
+	if a.HasBits(ImageAspectStencil) {
+		str += "Stencil|"
+	}
+	return strings.TrimSuffix(str, "|")
+}
+
 type ImageType C.VkImageType
 
 const (
@@ -227,13 +253,13 @@ func NewSampler(name string, info SamplerCreateInfo) *Sampler {
 }
 
 type Image interface {
+	Aspect() ImageAspectFlags
 	usage() ImageUsageFlags
 
 	vkFormat() C.VkFormat
 	vkImage() C.VkImage
 	vkImageViewType() C.VkImageViewType
 	vkImageView() C.VkImageView
-	vkImageAspectFlags() C.VkImageAspectFlags
 }
 
 type ColorImage interface {
@@ -373,32 +399,33 @@ func (img *DeviceColorImage) vkFormat() C.VkFormat {
 	return C.VkFormat(img.format)
 }
 
-func (img *DeviceColorImage) vkImageAspectFlags() C.VkImageAspectFlags {
+func (img *DeviceColorImage) Aspect() ImageAspectFlags {
 	return vk.IMAGE_ASPECT_COLOR_BIT
 }
 
-type DeviceDepthImage struct {
+type DeviceDepthStencilImage struct {
 	image
 	format DepthStencilFormat
+	aspect ImageAspectFlags
 }
 
 var _ interface {
 	DepthStencilImage
 	Destroyer
-} = (*DeviceDepthImage)(nil)
+} = (*DeviceDepthStencilImage)(nil)
 
-func (img *DeviceDepthImage) Format() DepthStencilFormat {
+func (img *DeviceDepthStencilImage) Format() DepthStencilFormat {
 	img.noCopy.check()
 	return img.format
 }
 
-func (img *DeviceDepthImage) vkFormat() C.VkFormat {
+func (img *DeviceDepthStencilImage) vkFormat() C.VkFormat {
 	img.noCopy.check()
 	return C.VkFormat(img.format)
 }
 
-func (img *DeviceDepthImage) vkImageAspectFlags() C.VkImageAspectFlags {
-	return vk.IMAGE_ASPECT_DEPTH_BIT
+func (img *DeviceDepthStencilImage) Aspect() ImageAspectFlags {
+	return img.aspect
 }
 
 type ImageCreateInfo struct {
@@ -548,7 +575,7 @@ func newImage(name string, format C.VkFormat, aspect C.VkImageAspectFlags, info 
 	}
 }
 
-func NewColorImageWithFormat(name string, format Format, info ImageCreateInfo) *DeviceColorImage {
+func NewColorImage(name string, format Format, info ImageCreateInfo) *DeviceColorImage {
 	if !format.HasFeatures(info.Usage.FormatFeatureFlags()) {
 		abort("Format [%s] does not have all the required feature flags [%s] for usage [%s]",
 			format.String(), info.Usage.FormatFeatureFlags().String(), info.Usage.String())
@@ -565,75 +592,131 @@ func NewColorImageWithFormat(name string, format Format, info ImageCreateInfo) *
 	instance.logger.VPrintf("Creating color image with format [%s] and info: %+v", format.String(), info)
 	name = "color_" + name
 	img := &DeviceColorImage{format: format}
-	img.image = newImage(name, C.VkFormat(format), img.vkImageAspectFlags(), info)
+	img.image = newImage(name, C.VkFormat(format), C.VkImageAspectFlags(img.Aspect()), info)
 	img.noCopy.init()
 	return img
 }
 
-func NewDepthImageWithFormat(name string, format DepthStencilFormat, info ImageCreateInfo) *DeviceDepthImage {
+func NewDepthStencilImage(name string, format DepthStencilFormat, aspect ImageAspectFlags, info ImageCreateInfo) *DeviceDepthStencilImage {
+	if aspect == 0 {
+		aspect = format.ImageAspectFlags()
+	}
+	img := &DeviceDepthStencilImage{format: format, aspect: aspect}
+	if !format.ImageAspectFlags().HasBits(img.Aspect()) {
+		abort("DepthStencilFormat [%s] does not have aspect [%s]",
+			format.String(), img.Aspect().String())
+	}
 	if !format.HasFeatures(info.Usage.FormatFeatureFlags()) {
 		abort("DepthStencilFormat [%s] does not have all the required feature flags [%s] for usage [%s]",
 			format.String(), info.Usage.FormatFeatureFlags().String(), info.Usage.String())
 	}
 	instance.logger.VPrintf("Creating depth image with format [%s] and info: %+v", format.String(), info)
 	name = "depth_" + name
-	img := &DeviceDepthImage{format: format}
-	img.image = newImage(name, C.VkFormat(format), img.vkImageAspectFlags(), info)
+	img.image = newImage(name, C.VkFormat(format), C.VkImageAspectFlags(img.Aspect()), info)
 	img.noCopy.init()
 	return img
 }
 
-func newDepthImageWithBits(name string, bits int, info ImageCreateInfo) *DeviceDepthImage {
+func newDepthImageWithBits(name string, depthBits, stencilBits int, info ImageCreateInfo) *DeviceDepthStencilImage {
+	var aspect ImageAspectFlags
 	var formats []DepthStencilFormat
 
-	switch bits {
-	case 16:
-		formats = []DepthStencilFormat{DEPTH_STENCIL_FORMAT_D16_UNORM, DEPTH_STENCIL_FORMAT_D16_UNORM_S8_UINT}
-	case 24:
-		formats = []DepthStencilFormat{DEPTH_STENCIL_FORMAT_X8_D24_UNORM_PACK32, DEPTH_STENCIL_FORMAT_D24_UNORM_S8_UINT}
-	case 32:
-		formats = []DepthStencilFormat{DEPTH_STENCIL_FORMAT_D32_SFLOAT, DEPTH_STENCIL_FORMAT_D32_SFLOAT_S8_UINT}
-	default:
-		abort("Invalid bit count for depth image: %d", bits)
+	if stencilBits == 0 {
+		aspect = vk.IMAGE_ASPECT_DEPTH_BIT
+		switch depthBits {
+		case 16:
+			formats = []DepthStencilFormat{DEPTH_STENCIL_FORMAT_D16_UNORM, DEPTH_STENCIL_FORMAT_D16_UNORM_S8_UINT}
+		case 24:
+			formats = []DepthStencilFormat{DEPTH_STENCIL_FORMAT_X8_D24_UNORM_PACK32, DEPTH_STENCIL_FORMAT_D24_UNORM_S8_UINT}
+		case 32:
+			formats = []DepthStencilFormat{DEPTH_STENCIL_FORMAT_D32_SFLOAT, DEPTH_STENCIL_FORMAT_D32_SFLOAT_S8_UINT}
+		default:
+			abort("Invalid bit count for depth image: %d", depthBits)
+		}
+	} else if stencilBits == 8 {
+		if depthBits == 0 {
+			aspect = vk.IMAGE_ASPECT_STENCIL_BIT
+			formats = []DepthStencilFormat{DEPTH_STENCIL_FORMAT_S8_UINT}
+		} else {
+			aspect = vk.IMAGE_ASPECT_DEPTH_BIT | vk.IMAGE_ASPECT_STENCIL_BIT
+			switch depthBits {
+			case 16:
+				formats = []DepthStencilFormat{DEPTH_STENCIL_FORMAT_D16_UNORM_S8_UINT}
+			case 24:
+				formats = []DepthStencilFormat{DEPTH_STENCIL_FORMAT_D24_UNORM_S8_UINT}
+			case 32:
+				formats = []DepthStencilFormat{DEPTH_STENCIL_FORMAT_D32_SFLOAT_S8_UINT}
+			default:
+				abort("Invalid bit count for depth image: %d", depthBits)
+			}
+		}
+	} else {
+		abort("Invalid bit count for stencil image: %d", stencilBits)
 	}
 
 	for _, f := range formats {
 		if f.HasFeatures(info.Usage.FormatFeatureFlags()) {
-			return NewDepthImageWithFormat(name, f, info)
+			return NewDepthStencilImage(name, f, aspect, info)
 		}
 	}
 
 	return nil
 }
 
-func NewDepthImageWithAtLestBits(name string, bits int, info ImageCreateInfo) *DeviceDepthImage {
-	if (!gmath.InRange(bits, 16, 32)) || ((bits % 8) != 0) {
-		abort("Invalid bit count for depth image: %d", bits)
-	}
-
-	for queryBits := bits; queryBits <= 32; queryBits += 8 {
-		img := newDepthImageWithBits(name, queryBits, info)
+func NewDepthStencilImageWithAtLestBits(name string, depthBits int, stencilBits int, info ImageCreateInfo) *DeviceDepthStencilImage {
+	if depthBits == 0 && stencilBits == 0 {
+		abort("Both depthBits and stencilBits cannot be 0")
+	} else if depthBits == 0 {
+		img := newDepthImageWithBits(name, depthBits, stencilBits, info)
 		if img != nil {
 			return img
 		}
+	} else {
+		if (!gmath.InRange(depthBits, 16, 32)) || ((depthBits % 8) != 0) {
+			abort("Invalid bit count for depth image: %d", depthBits)
+		}
+
+		for queryBits := depthBits; queryBits <= 32; queryBits += 8 {
+			img := newDepthImageWithBits(name, queryBits, stencilBits, info)
+			if img != nil {
+				return img
+			}
+		}
 	}
 
-	abort("No depth format with at least %d bits that matches usage: %s", bits, info.Usage.String())
+	if stencilBits == 0 {
+		abort("No depth format with at least %d depth bits that matches usage: %s", depthBits, info.Usage.String())
+	} else {
+		abort("No depth stencil format with at least %d depth bits and %d stencil bits that matches usage: %s", depthBits, stencilBits, info.Usage.String())
+	}
 	return nil
 }
 
-func NewDepthImageWithAtMostBits(name string, bits int, info ImageCreateInfo) *DeviceDepthImage {
-	if (!gmath.InRange(bits, 16, 32)) || ((bits % 8) != 0) {
-		abort("Invalid bit count for depth image: %d", bits)
-	}
-
-	for queryBits := bits; queryBits >= 16; queryBits -= 8 {
-		img := newDepthImageWithBits(name, queryBits, info)
+func NewDepthStencilImageWithAtMostBits(name string, depthBits int, stencilBits int, info ImageCreateInfo) *DeviceDepthStencilImage {
+	if depthBits == 0 && stencilBits == 0 {
+		abort("Both depthBits and stencilBits cannot be 0")
+	} else if depthBits == 0 {
+		img := newDepthImageWithBits(name, depthBits, stencilBits, info)
 		if img != nil {
 			return img
 		}
+	} else {
+		if (!gmath.InRange(depthBits, 16, 32)) || ((depthBits % 8) != 0) {
+			abort("Invalid bit count for depth image: %d", depthBits)
+		}
+
+		for queryBits := depthBits; queryBits >= 16; queryBits -= 8 {
+			img := newDepthImageWithBits(name, queryBits, stencilBits, info)
+			if img != nil {
+				return img
+			}
+		}
 	}
 
-	abort("No depth format with at most %d bits that matches usage: %s", bits, info.Usage.String())
+	if stencilBits == 0 {
+		abort("No depth format with at most %d depth bits that matches usage: %s", depthBits, info.Usage.String())
+	} else {
+		abort("No depth stencil format with at most %d depth bits and %d stencil bits that matches usage: %s", depthBits, stencilBits, info.Usage.String())
+	}
 	return nil
 }

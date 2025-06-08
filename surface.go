@@ -75,6 +75,11 @@ func (s *Surface) Format() Format {
 	return Format(s.cSurface.info.format)
 }
 
+func (s *Surface) Aspect() ImageAspectFlags {
+	s.noCopy.check()
+	return vk.IMAGE_ASPECT_COLOR_BIT
+}
+
 func (s *Surface) usage() ImageUsageFlags {
 	s.noCopy.check()
 	return ImageUsageColorAttachment
@@ -93,11 +98,6 @@ func (s *Surface) vkImageViewType() C.VkImageViewType {
 func (s *Surface) vkImage() C.VkImage {
 	s.noCopy.check()
 	return s.cSurface.vkImage
-}
-
-func (s *Surface) vkImageAspectFlags() C.VkImageAspectFlags {
-	s.noCopy.check()
-	return vk.IMAGE_ASPECT_COLOR_BIT
 }
 
 func (s *Surface) vkImageView() C.VkImageView {

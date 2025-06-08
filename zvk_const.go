@@ -2537,6 +2537,27 @@ func (v Format) BlockExtent() gmath.Extent3i32 {
 	}
 }
 
+func (v DepthStencilFormat) ImageAspectFlags() ImageAspectFlags {
+	switch v {
+	case DEPTH_STENCIL_FORMAT_D16_UNORM:
+		return ImageAspectDepth
+	case DEPTH_STENCIL_FORMAT_X8_D24_UNORM_PACK32:
+		return ImageAspectDepth
+	case DEPTH_STENCIL_FORMAT_D32_SFLOAT:
+		return ImageAspectDepth
+	case DEPTH_STENCIL_FORMAT_S8_UINT:
+		return ImageAspectStencil
+	case DEPTH_STENCIL_FORMAT_D16_UNORM_S8_UINT:
+		return ImageAspectDepth | ImageAspectStencil
+	case DEPTH_STENCIL_FORMAT_D24_UNORM_S8_UINT:
+		return ImageAspectDepth | ImageAspectStencil
+	case DEPTH_STENCIL_FORMAT_D32_SFLOAT_S8_UINT:
+		return ImageAspectDepth | ImageAspectStencil
+	}
+	abort("Unknown depth stencil format: %d", v)
+	return 0
+}
+
 func (v DepthStencilFormat) HasFeatures(want FormatFeatureFlags) bool {
 	return instance.formatProperties.depthFeatures(v).HasBits(want) 
 }

@@ -91,10 +91,11 @@ type ImageSubresourceRange struct {
 }
 
 type ImageBarrier struct {
-	Image Image
-	Src   ImageBarrierInfo
-	Dst   ImageBarrierInfo
-	Range ImageSubresourceRange
+	Image  Image
+	Aspect ImageAspectFlags
+	Src    ImageBarrierInfo
+	Dst    ImageBarrierInfo
+	Range  ImageSubresourceRange
 }
 
 func (cb *commandBuffer) CompoundBarrier(memoryBarriers []MemoryBarrier, bufferBarriers []BufferBarrier, imageBarriers []ImageBarrier) {
@@ -131,6 +132,9 @@ func (cb *commandBuffer) CompoundBarrier(memoryBarriers []MemoryBarrier, bufferB
 
 	imageBarrierInfos := make([]C.VkImageMemoryBarrier2, 0, len(imageBarriers))
 	for _, barrier := range imageBarriers {
+		if barrier.Aspect == 0 {
+			barrier.Aspect = barrier.Image.Aspect()
+		}
 		imageBarrierInfos = append(imageBarrierInfos,
 			C.VkImageMemoryBarrier2{
 				sType:         vk.STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2,
@@ -142,7 +146,7 @@ func (cb *commandBuffer) CompoundBarrier(memoryBarriers []MemoryBarrier, bufferB
 				newLayout:     C.VkImageLayout(barrier.Dst.Layout),
 				image:         barrier.Image.vkImage(),
 				subresourceRange: C.VkImageSubresourceRange{
-					aspectMask:   barrier.Image.vkImageAspectFlags(),
+					aspectMask:   C.VkImageAspectFlags(barrier.Aspect),
 					baseMipLevel: C.uint32_t(barrier.Range.BaseMipLevel), levelCount: C.uint32_t(barrier.Range.NumMipLevels),
 					baseArrayLayer: C.uint32_t(barrier.Range.BaseArrayLayer), layerCount: C.uint32_t(barrier.Range.NumArrayLayers),
 				},
@@ -190,7 +194,7 @@ func (cb *commandBuffer) UpdateBuffer(buffer Buffer, offset uint64, data []byte)
 
 func (cb *commandBuffer) ClearColorImage(img ColorImage, layout ImageLayout, value ColorImageClearValue, imgRange ImageSubresourceRange) {
 	cRange := C.VkImageSubresourceRange{
-		aspectMask:   img.vkImageAspectFlags(),
+		aspectMask:   C.VkImageAspectFlags(img.Aspect()),
 		baseMipLevel: C.uint32_t(imgRange.BaseMipLevel), levelCount: C.uint32_t(imgRange.NumMipLevels),
 		baseArrayLayer: C.uint32_t(imgRange.BaseArrayLayer), layerCount: C.uint32_t(imgRange.NumArrayLayers),
 	}
@@ -235,15 +239,19 @@ type BufferImageCopyRegion struct {
 	ImageExtent      gmath.Extent3i32
 }
 
-func (cb *commandBuffer) CopyBufferToImage(buffer Buffer, image Image, layout ImageLayout, regions []BufferImageCopyRegion) {
+func (cb *commandBuffer) CopyBufferToImageAspect(buffer Buffer, image Image, layout ImageLayout, aspect ImageAspectFlags, regions []BufferImageCopyRegion) {
 	cb.noCopy.check()
+
+	if !image.Aspect().HasBits(aspect) {
+		abort("Calling CopyBufferToImageAspect with image that has not have aspect [%s] image has [%s]", aspect, image.Aspect().String())
+	}
 
 	cRegions := make([]C.VkBufferImageCopy, len(regions))
 	for i, r := range regions {
 		cRegions[i] = C.VkBufferImageCopy{
 			bufferOffset: C.VkDeviceSize(r.BufferOffset),
 			imageSubresource: C.VkImageSubresourceLayers{
-				aspectMask:     image.vkImageAspectFlags(),
+				aspectMask:     C.VkImageAspectFlags(aspect),
 				mipLevel:       C.uint32_t(r.ImageSubresource.MipLevel),
 				baseArrayLayer: C.uint32_t(r.ImageSubresource.BaseArrayLayer),
 				layerCount:     C.uint32_t(r.ImageSubresource.NumArrayLayers),
@@ -263,4 +271,8 @@ func (cb *commandBuffer) CopyBufferToImage(buffer Buffer, image Image, layout Im
 	C.vxr_vk_commandBuffer_copyBufferToImage(instance.cInstance, cb.vkCommandBuffer, buffer.vkBuffer(), image.vkImage(), C.VkImageLayout(layout),
 		C.uint32_t(len(cRegions)), unsafe.SliceData(cRegions))
 	runtime.KeepAlive(cRegions)
+}
+
+func (cb *commandBuffer) CopyBufferToImage(buffer Buffer, image Image, layout ImageLayout, regions []BufferImageCopyRegion) {
+	cb.CopyBufferToImageAspect(buffer, image, layout, image.Aspect(), regions)
 }

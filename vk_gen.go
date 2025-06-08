@@ -376,7 +376,10 @@ func parseXML() ([]extension, map[string]format) {
 							switch name.Value {
 							case "R", "G", "B", "A":
 								f.components += "COLOR_COMPONENT_" + name.Value + " | "
-							case "D", "S":
+							case "D":
+								f.components += "ImageAspectDepth | "
+							case "S":
+								f.components += "ImageAspectStencil | "
 							default:
 								panic(fmt.Sprintf("Unexpected component: %v", name))
 							}
@@ -1008,6 +1011,18 @@ import (
 			}
 			fmt.Fprintf(fOut, "\tdefault:\n\t\treturn gmath.Extent3i32{X: 1, Y: 1, Z: 1}\n")
 			fmt.Fprintf(fOut, "\t}\n")
+			fmt.Fprintf(fOut, "}\n")
+		}
+
+		{
+			fmt.Fprintf(fOut, "\nfunc (v DepthStencilFormat) ImageAspectFlags() ImageAspectFlags {\n")
+			fmt.Fprintf(fOut, "\tswitch v {\n")
+			for _, i := range identifiers {
+				if strings.HasPrefix(i, "DEPTH_STENCIL_FORMAT_") {
+					fmt.Fprintf(fOut, "\tcase %s:\n\t\treturn %s\n", i, formats["VK_"+strings.TrimPrefix(i, "DEPTH_STENCIL_")].components)
+				}
+			}
+			fmt.Fprintf(fOut, "\t}\n\tabort(\"Unknown depth stencil format: %%d\", v)\n\treturn 0\n")
 			fmt.Fprintf(fOut, "}\n")
 		}
 
