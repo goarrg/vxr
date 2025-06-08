@@ -46,6 +46,13 @@ type GraphicsCommandBuffer struct {
 	currentRenderPass renderPass
 }
 
+type RenderParameters struct {
+	// FlipViewport flips the viewport's origin.
+	// goarrg assumes a bottom left origin, so viewports are flipped by default,
+	// enable to flip again to use vulkan's default top left origin.
+	FlipViewport bool
+}
+
 type RenderAttachmentLoadOp C.VkAttachmentLoadOp
 
 const (
@@ -160,7 +167,7 @@ type RenderAttachments struct {
 	Stencil RenderStencilAttachment
 }
 
-func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32, attachments RenderAttachments) {
+func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32, parameters RenderParameters, attachments RenderAttachments) {
 	cb.noCopy.check()
 	if cb.currentRenderPass != (renderPass{}) {
 		abort("RenderPassBegin called when there's an active renderpass")
@@ -209,15 +216,23 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 	}
 
 	{
-		cInfo := C.VkRenderingInfo{
-			sType: vk.STRUCTURE_TYPE_RENDERING_INFO,
-			renderArea: C.VkRect2D{
-				offset: C.VkOffset2D{C.int32_t(area.X), C.int32_t(area.Y)},
-				extent: C.VkExtent2D{C.uint32_t(area.W), C.uint32_t(area.H)},
+		cInfo := C.vxr_vk_graphics_renderPassInfo{
+			renderingInfo: C.VkRenderingInfo{
+				sType: vk.STRUCTURE_TYPE_RENDERING_INFO,
+				renderArea: C.VkRect2D{
+					offset: C.VkOffset2D{C.int32_t(area.X), C.int32_t(area.Y)},
+					extent: C.VkExtent2D{C.uint32_t(area.W), C.uint32_t(area.H)},
+				},
+				layerCount:           1,
+				colorAttachmentCount: C.uint32_t(len(attachments.Color)),
+				pColorAttachments:    unsafe.SliceData(cAttachments),
 			},
-			layerCount:           1,
-			colorAttachmentCount: C.uint32_t(len(attachments.Color)),
-			pColorAttachments:    unsafe.SliceData(cAttachments),
+			colorBlendEnable:    unsafe.SliceData(cColorBlendEnable),
+			colorBlendEquation:  unsafe.SliceData(cColorBlendEquation),
+			colorComponentFlags: unsafe.SliceData(cColorComponentFlags),
+		}
+		if parameters.FlipViewport {
+			cInfo.flipViewport = vk.TRUE
 		}
 		if attachments.Depth.Image != nil {
 			depthAttachment := &C.VkRenderingAttachmentInfo{
@@ -229,7 +244,7 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 				clearValue:  attachments.Depth.ClearValue.vkClearValue(),
 			}
 			defer runtime.KeepAlive(depthAttachment)
-			cInfo.pDepthAttachment = depthAttachment
+			cInfo.renderingInfo.pDepthAttachment = depthAttachment
 			cb.currentRenderPass.id += fmt.Sprintf("%s,", toHex(attachments.Depth.Image.vkFormat()))
 			cb.currentRenderPass.name += fmt.Sprintf("%s,", attachments.Depth.Image.Format().String())
 		}
@@ -243,13 +258,13 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 				clearValue:  attachments.Stencil.ClearValue.vkClearValue(),
 			}
 			defer runtime.KeepAlive(stencilAttachment)
-			cInfo.pStencilAttachment = stencilAttachment
+			cInfo.renderingInfo.pStencilAttachment = stencilAttachment
 			cb.currentRenderPass.id += fmt.Sprintf("%s,", toHex(attachments.Stencil.Image.vkFormat()))
 			cb.currentRenderPass.name += fmt.Sprintf("%s,", attachments.Stencil.Image.Format().String())
 		}
 
-		C.vxr_vk_graphics_renderPassBegin(instance.cInstance, cb.vkCommandBuffer, C.size_t(len(name)), (*C.char)(unsafe.Pointer(unsafe.StringData(name))),
-			cInfo, unsafe.SliceData(cColorBlendEnable), unsafe.SliceData(cColorBlendEquation), unsafe.SliceData(cColorComponentFlags))
+		C.vxr_vk_graphics_renderPassBegin(instance.cInstance, cb.vkCommandBuffer,
+			C.size_t(len(name)), (*C.char)(unsafe.Pointer(unsafe.StringData(name))), cInfo)
 		runtime.KeepAlive(name)
 		runtime.KeepAlive(cAttachments)
 		runtime.KeepAlive(cColorBlendEnable)

@@ -117,39 +117,54 @@ VXR_FN void vxr_vk_graphics_frame_commandBufferSubmit(
 
 	frame->pendingCommandBuffers.pushBack(cb);
 }
-VXR_FN void vxr_vk_graphics_renderPassBegin(
-	vxr_vk_instance, VkCommandBuffer cb, size_t nameSz, const char* name, VkRenderingInfo renderingInfo,
-	VkBool32* colorBlendEnable, VkColorBlendEquationEXT* colorBlendEquation, VkColorComponentFlags* colorComponentFlags) {
+VXR_FN void vxr_vk_graphics_renderPassBegin(vxr_vk_instance, VkCommandBuffer cb, size_t nameSz, const char* name,
+											vxr_vk_graphics_renderPassInfo info) {
 	vxr::std::debugRun([=]() {
 		vxr::std::stringbuilder builder;
 		builder.write(nameSz, name).write("_pass");
 		vxr::vk::debugLabelBegin(cb, builder.cStr());
 	});
-	VK_PROC_DEVICE(vkCmdBeginRendering)(cb, &renderingInfo);
+	VK_PROC_DEVICE(vkCmdBeginRendering)(cb, &info.renderingInfo);
 
 	const size_t numViewports = 1;
 	vxr::std::vector<VkViewport> viewports(numViewports);
 	vxr::std::vector<VkRect2D> scissors(numViewports);
-	for (size_t i = 0; i < numViewports; i++) {
-		viewports[i] = VkViewport{
-			.x = static_cast<float>(renderingInfo.renderArea.offset.x),
-			.y = static_cast<float>(renderingInfo.renderArea.offset.y + renderingInfo.renderArea.extent.height),
-			.width = static_cast<float>(renderingInfo.renderArea.extent.width),
-			.height = -static_cast<float>(renderingInfo.renderArea.extent.height),
-			.maxDepth = 1.0f,
-		};
-		scissors[i] = VkRect2D{
-			.offset = renderingInfo.renderArea.offset,
-			.extent = renderingInfo.renderArea.extent,
-		};
+	if (info.flipViewport == VK_TRUE) {
+		for (size_t i = 0; i < numViewports; i++) {
+			viewports[i] = VkViewport{
+				.x = static_cast<float>(info.renderingInfo.renderArea.offset.x),
+				.y = static_cast<float>(info.renderingInfo.renderArea.offset.y),
+				.width = static_cast<float>(info.renderingInfo.renderArea.extent.width),
+				.height = static_cast<float>(info.renderingInfo.renderArea.extent.height),
+				.maxDepth = 1.0f,
+			};
+			scissors[i] = VkRect2D{
+				.offset = info.renderingInfo.renderArea.offset,
+				.extent = info.renderingInfo.renderArea.extent,
+			};
+		}
+	} else {
+		for (size_t i = 0; i < numViewports; i++) {
+			viewports[i] = VkViewport{
+				.x = static_cast<float>(info.renderingInfo.renderArea.offset.x),
+				.y = static_cast<float>(info.renderingInfo.renderArea.offset.y + info.renderingInfo.renderArea.extent.height),
+				.width = static_cast<float>(info.renderingInfo.renderArea.extent.width),
+				.height = -static_cast<float>(info.renderingInfo.renderArea.extent.height),
+				.maxDepth = 1.0f,
+			};
+			scissors[i] = VkRect2D{
+				.offset = info.renderingInfo.renderArea.offset,
+				.extent = info.renderingInfo.renderArea.extent,
+			};
+		}
 	}
 	VK_PROC_DEVICE(vkCmdSetViewportWithCount)(cb, numViewports, viewports.get());
 	VK_PROC_DEVICE(vkCmdSetScissorWithCount)(cb, numViewports, scissors.get());
 
-	if (renderingInfo.colorAttachmentCount > 0) {
-		VK_PROC_DEVICE(vkCmdSetColorBlendEnableEXT)(cb, 0, renderingInfo.colorAttachmentCount, colorBlendEnable);
-		VK_PROC_DEVICE(vkCmdSetColorBlendEquationEXT)(cb, 0, renderingInfo.colorAttachmentCount, colorBlendEquation);
-		VK_PROC_DEVICE(vkCmdSetColorWriteMaskEXT)(cb, 0, renderingInfo.colorAttachmentCount, colorComponentFlags);
+	if (info.renderingInfo.colorAttachmentCount > 0) {
+		VK_PROC_DEVICE(vkCmdSetColorBlendEnableEXT)(cb, 0, info.renderingInfo.colorAttachmentCount, info.colorBlendEnable);
+		VK_PROC_DEVICE(vkCmdSetColorBlendEquationEXT)(cb, 0, info.renderingInfo.colorAttachmentCount, info.colorBlendEquation);
+		VK_PROC_DEVICE(vkCmdSetColorWriteMaskEXT)(cb, 0, info.renderingInfo.colorAttachmentCount, info.colorComponentFlags);
 	}
 }
 inline static VXR_FN void setupDraw(vxr_vk_graphics_drawParameters parameters, VkCommandBuffer cb) {

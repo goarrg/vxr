@@ -347,6 +347,14 @@ typedef struct {
 } vxr_vk_graphics_fragmentOutputPipelineCreateInfo;
 
 typedef struct {
+	VkRenderingInfo renderingInfo;
+	VkBool32 flipViewport;
+	VkBool32* colorBlendEnable;
+	VkColorBlendEquationEXT* colorBlendEquation;
+	VkColorComponentFlags* colorComponentFlags;
+} vxr_vk_graphics_renderPassInfo;
+
+typedef struct {
 	VkPipelineLayout layout;
 	VkPipeline pipeline;
 	VkPrimitiveTopology topology;
@@ -543,8 +551,7 @@ extern VXR_FN void vxr_vk_graphics_frame_commandBufferBegin(vxr_vk_instance, vxr
 extern VXR_FN void vxr_vk_graphics_frame_commandBufferSubmit(vxr_vk_instance, vxr_vk_graphics_frame, VkCommandBuffer, uint32_t,
 															 VkSemaphoreSubmitInfo*, uint32_t, VkSemaphoreSubmitInfo*);
 
-extern VXR_FN void vxr_vk_graphics_renderPassBegin(vxr_vk_instance, VkCommandBuffer, size_t, const char*, VkRenderingInfo,
-												   VkBool32*, VkColorBlendEquationEXT*, VkColorComponentFlags*);
+extern VXR_FN void vxr_vk_graphics_renderPassBegin(vxr_vk_instance, VkCommandBuffer, size_t, const char*, vxr_vk_graphics_renderPassInfo);
 extern VXR_FN void vxr_vk_graphics_draw(vxr_vk_instance, VkCommandBuffer, vxr_vk_graphics_drawInfo);
 extern VXR_FN void vxr_vk_graphics_drawIndirect(vxr_vk_instance, VkCommandBuffer, vxr_vk_graphics_drawIndirectInfo);
 extern VXR_FN void vxr_vk_graphics_drawIndexed(vxr_vk_instance, VkCommandBuffer, vxr_vk_graphics_drawIndexedInfo);
