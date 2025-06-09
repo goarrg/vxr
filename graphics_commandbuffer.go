@@ -296,6 +296,56 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 	}
 }
 
+func (cb *GraphicsCommandBuffer) RenderPassSetViewport(flip bool, viewport gmath.Recti32) {
+	cb.noCopy.check()
+	if cb.currentRenderPass == (renderPass{}) {
+		abort("RenderPassSetViewport called outside a renderpass")
+	}
+	cViewport := C.VkViewport{
+		x: C.float(viewport.X), y: C.float(viewport.Y),
+		width: C.float(viewport.W), height: C.float(viewport.H),
+		maxDepth: 1,
+	}
+	if flip {
+		C.vxr_vk_graphics_renderPassSetViewport(instance.cInstance, cb.vkCommandBuffer, vk.TRUE, cViewport)
+	} else {
+		C.vxr_vk_graphics_renderPassSetViewport(instance.cInstance, cb.vkCommandBuffer, vk.FALSE, cViewport)
+	}
+}
+
+func (cb *GraphicsCommandBuffer) RenderPassSetScissor(rect gmath.Recti32) {
+	cb.noCopy.check()
+	if cb.currentRenderPass == (renderPass{}) {
+		abort("RenderPassSetScissor called outside a renderpass")
+	}
+	cRect := C.VkRect2D{
+		offset: C.VkOffset2D{C.int32_t(rect.X), C.int32_t(rect.Y)},
+		extent: C.VkExtent2D{C.uint32_t(rect.W), C.uint32_t(rect.H)},
+	}
+	C.vxr_vk_graphics_renderPassSetScissor(instance.cInstance, cb.vkCommandBuffer, cRect)
+}
+
+func (cb *GraphicsCommandBuffer) RenderPassSetViewportAndScissor(flip bool, viewport gmath.Recti32, rect gmath.Recti32) {
+	cb.noCopy.check()
+	if cb.currentRenderPass == (renderPass{}) {
+		abort("RenderPassSetViewportAndScissor called outside a renderpass")
+	}
+	cViewport := C.VkViewport{
+		x: C.float(viewport.X), y: C.float(viewport.Y),
+		width: C.float(viewport.W), height: C.float(viewport.H),
+		maxDepth: 1,
+	}
+	cRect := C.VkRect2D{
+		offset: C.VkOffset2D{C.int32_t(rect.X), C.int32_t(rect.Y)},
+		extent: C.VkExtent2D{C.uint32_t(rect.W), C.uint32_t(rect.H)},
+	}
+	if flip {
+		C.vxr_vk_graphics_renderPassSetViewportAndScissor(instance.cInstance, cb.vkCommandBuffer, vk.TRUE, cViewport, cRect)
+	} else {
+		C.vxr_vk_graphics_renderPassSetViewportAndScissor(instance.cInstance, cb.vkCommandBuffer, vk.FALSE, cViewport, cRect)
+	}
+}
+
 type CullMode C.VkCullModeFlags
 
 const (

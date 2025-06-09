@@ -167,6 +167,35 @@ VXR_FN void vxr_vk_graphics_renderPassBegin(vxr_vk_instance, VkCommandBuffer cb,
 		VK_PROC_DEVICE(vkCmdSetColorWriteMaskEXT)(cb, 0, info.renderingInfo.colorAttachmentCount, info.colorComponentFlags);
 	}
 }
+VXR_FN void vxr_vk_graphics_renderPassSetViewport(vxr_vk_instance, VkCommandBuffer cb, VkBool32 flip, VkViewport viewport) {
+	if (flip == VK_FALSE) {
+		viewport = VkViewport{
+			.x = viewport.x,
+			.y = (viewport.y + viewport.height),
+			.width = viewport.width,
+			.height = -viewport.height,
+			.maxDepth = 1.0f,
+		};
+	}
+	VK_PROC_DEVICE(vkCmdSetViewportWithCount)(cb, 1, &viewport);
+}
+VXR_FN void vxr_vk_graphics_renderPassSetScissor(vxr_vk_instance, VkCommandBuffer cb, VkRect2D rect) {
+	VK_PROC_DEVICE(vkCmdSetScissorWithCount)(cb, 1, &rect);
+}
+VXR_FN void vxr_vk_graphics_renderPassSetViewportAndScissor(vxr_vk_instance, VkCommandBuffer cb, VkBool32 flip,
+															VkViewport viewport, VkRect2D rect) {
+	if (flip == VK_FALSE) {
+		viewport = VkViewport{
+			.x = viewport.x,
+			.y = (viewport.y + viewport.height),
+			.width = viewport.width,
+			.height = -viewport.height,
+			.maxDepth = 1.0f,
+		};
+	}
+	VK_PROC_DEVICE(vkCmdSetViewportWithCount)(cb, 1, &viewport);
+	VK_PROC_DEVICE(vkCmdSetScissorWithCount)(cb, 1, &rect);
+}
 inline static VXR_FN void setupDraw(vxr_vk_graphics_drawParameters parameters, VkCommandBuffer cb) {
 	VK_PROC_DEVICE(vkCmdBindPipeline)(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, parameters.pipeline);
 

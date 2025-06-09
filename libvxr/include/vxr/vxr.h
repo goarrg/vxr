@@ -552,6 +552,9 @@ extern VXR_FN void vxr_vk_graphics_frame_commandBufferSubmit(vxr_vk_instance, vx
 															 VkSemaphoreSubmitInfo*, uint32_t, VkSemaphoreSubmitInfo*);
 
 extern VXR_FN void vxr_vk_graphics_renderPassBegin(vxr_vk_instance, VkCommandBuffer, size_t, const char*, vxr_vk_graphics_renderPassInfo);
+extern VXR_FN void vxr_vk_graphics_renderPassSetViewport(vxr_vk_instance, VkCommandBuffer, VkBool32, VkViewport);
+extern VXR_FN void vxr_vk_graphics_renderPassSetScissor(vxr_vk_instance, VkCommandBuffer, VkRect2D);
+extern VXR_FN void vxr_vk_graphics_renderPassSetViewportAndScissor(vxr_vk_instance, VkCommandBuffer, VkBool32, VkViewport, VkRect2D);
 extern VXR_FN void vxr_vk_graphics_draw(vxr_vk_instance, VkCommandBuffer, vxr_vk_graphics_drawInfo);
 extern VXR_FN void vxr_vk_graphics_drawIndirect(vxr_vk_instance, VkCommandBuffer, vxr_vk_graphics_drawIndirectInfo);
 extern VXR_FN void vxr_vk_graphics_drawIndexed(vxr_vk_instance, VkCommandBuffer, vxr_vk_graphics_drawIndexedInfo);
