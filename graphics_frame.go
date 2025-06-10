@@ -184,6 +184,15 @@ func (f *Frame) Cancel() {
 	f.noCopy.close()
 }
 
+/*
+QueueDestory is a convenience function to avoid having to store destroyers until the end of the frame,
+it is eq to passing the destroyers to any of the End functions.
+*/
+func (f *Frame) QueueDestory(destroyers ...Destroyer) {
+	f.noCopy.check()
+	f.frame.destroyers = append(f.frame.destroyers, destroyers...)
+}
+
 func (f *Frame) EndWithWaiter(waiter *TimelineSemaphoreWaiter, destroyers ...Destroyer) {
 	f.noCopy.check()
 	if f.surface != nil {
