@@ -54,15 +54,16 @@ type ComputePipelineCreateInfo struct {
 	SpecConstants        []uint32
 }
 
-func NewComputePipeline(pipelineLayout *PipelineLayout, s *Shader, entryPoint ShaderEntryPointComputeLayout, info ComputePipelineCreateInfo) *ComputePipeline {
-	localSize := gmath.Extent3u32{X: entryPoint.LocalSize[0].Value, Y: entryPoint.LocalSize[1].Value, Z: entryPoint.LocalSize[2].Value}
-	if entryPoint.LocalSize[0].IsSpecConstant {
+func NewComputePipeline(pipelineLayout *PipelineLayout, s *Shader, entryPoint ShaderEntryPointLayout, info ComputePipelineCreateInfo) *ComputePipeline {
+	computeEntryPoint := entryPoint.(ShaderEntryPointComputeLayout)
+	localSize := gmath.Extent3u32{X: computeEntryPoint.LocalSize[0].Value, Y: computeEntryPoint.LocalSize[1].Value, Z: computeEntryPoint.LocalSize[2].Value}
+	if computeEntryPoint.LocalSize[0].IsSpecConstant {
 		localSize.X = info.SpecConstants[localSize.X]
 	}
-	if entryPoint.LocalSize[1].IsSpecConstant {
+	if computeEntryPoint.LocalSize[1].IsSpecConstant {
 		localSize.Y = info.SpecConstants[localSize.Y]
 	}
-	if entryPoint.LocalSize[2].IsSpecConstant {
+	if computeEntryPoint.LocalSize[2].IsSpecConstant {
 		localSize.Z = info.SpecConstants[localSize.Z]
 	}
 	if !localSize.InRange(gmath.Extent3[uint32]{}, instance.deviceProperties.Limits.Compute.MaxLocalSize) {
