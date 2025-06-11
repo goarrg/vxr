@@ -326,7 +326,7 @@ reflector::~reflector() noexcept {
 	uint32_t maxLocation = 0;
 	for (size_t i = 0; i < count; i++) {
 		maxLocation = vxr::std::max(
-			maxLocation, spvc_compiler_get_decoration(this->spvcCompiler, resource[i].id, SpvDecorationLocation));
+			maxLocation, spvc_compiler_get_decoration(this->spvcCompiler, resource[i].id, SpvDecorationLocation) + 1);
 	}
 	return maxLocation;
 }
