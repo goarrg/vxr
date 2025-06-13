@@ -7,8 +7,9 @@ ColumnLimit: 120
 QualifierAlignment: Custom
 QualifierOrder: ['inline', 'static', 'constexpr', 'const', 'friend', 'type']
 
-AlignOperands: true
+AlignOperands: Align
 AllowAllParametersOfDeclarationOnNextLine: true
+BreakBeforeBinaryOperators: All
 BinPackArguments: true
 BinPackParameters: true
 IndentPPDirectives: None

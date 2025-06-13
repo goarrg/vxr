@@ -212,10 +212,10 @@ inline static VXR_FN void setupDraw(vxr_vk_graphics_drawParameters parameters, V
 
 	VK_PROC_DEVICE(vkCmdSetStencilTestEnable)(cb, parameters.stencilTestEnable);
 	if (parameters.stencilTestEnable == VK_TRUE) {
-		if ((parameters.stencilTestFrontFace.failOp == parameters.stencilTestBackFace.failOp) &&
-			(parameters.stencilTestFrontFace.passOp == parameters.stencilTestBackFace.passOp) &&
-			(parameters.stencilTestFrontFace.depthFailOp == parameters.stencilTestBackFace.depthFailOp) &&
-			(parameters.stencilTestFrontFace.compareOp == parameters.stencilTestBackFace.compareOp)) {
+		if ((parameters.stencilTestFrontFace.failOp == parameters.stencilTestBackFace.failOp)
+			&& (parameters.stencilTestFrontFace.passOp == parameters.stencilTestBackFace.passOp)
+			&& (parameters.stencilTestFrontFace.depthFailOp == parameters.stencilTestBackFace.depthFailOp)
+			&& (parameters.stencilTestFrontFace.compareOp == parameters.stencilTestBackFace.compareOp)) {
 			VK_PROC_DEVICE(vkCmdSetStencilOp)(
 				cb, VK_STENCIL_FACE_FRONT_AND_BACK, parameters.stencilTestFrontFace.failOp,
 				parameters.stencilTestFrontFace.passOp, parameters.stencilTestFrontFace.depthFailOp,

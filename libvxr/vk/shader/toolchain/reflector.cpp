@@ -72,9 +72,9 @@ inline static vxr_vk_shader_reflectResult_bufferMetadata reflectBuffer(spvc_cont
 	const uint32_t numMembers = spvc_type_get_num_member_types(t);
 	const spvc_type lastMember = spvc_compiler_get_type_handle(compiler, spvc_type_get_member_type(t, numMembers - 1));
 	const uint32_t numDimensions = spvc_type_get_num_array_dimensions(lastMember);
-	const bool isRuntimeArray =
-		(numDimensions > 0) && (spvc_type_array_dimension_is_literal(lastMember, numDimensions - 1) == SPVC_TRUE) &&
-		(spvc_type_get_array_dimension(lastMember, numDimensions - 1) == 0);
+	const bool isRuntimeArray
+		= (numDimensions > 0) && (spvc_type_array_dimension_is_literal(lastMember, numDimensions - 1) == SPVC_TRUE)
+		  && (spvc_type_get_array_dimension(lastMember, numDimensions - 1) == 0);
 	if (isRuntimeArray) {
 		if (numDimensions > 1) {
 			vxr::std::abort("Variable length multi dimensional arrays are not implemented");
@@ -396,8 +396,8 @@ reflector::~reflector() noexcept {
 				this->descriptorSets.resize(vxr::std::max<size_t>(this->descriptorSets.size(), set + 1));
 				this->descriptorSets[set].resize(vxr::std::max<size_t>(this->descriptorSets[set].size(), binding + 1));
 				const auto type = spvcResrouceToVkDescriptor(resourceType, this->spvcCompiler, r.type_id);
-				if (this->descriptorSets[set][binding].type != VK_DESCRIPTOR_TYPE_MAX_ENUM &&
-					this->descriptorSets[set][binding].type != type) {
+				if (this->descriptorSets[set][binding].type != VK_DESCRIPTOR_TYPE_MAX_ENUM
+					&& this->descriptorSets[set][binding].type != type) {
 					vxr::std::ePrintf("Aliased binding [set: %d, binding: %d] must have a consistent VkDescriptorType", set, binding);
 					vxr::std::abort();
 				}
@@ -424,8 +424,8 @@ reflector::~reflector() noexcept {
 								vxr::std::ePrintf("Variable descriptor count bindings are not implemented");
 								vxr::std::abort();
 							}
-							if ((currentValue != 0) &&
-								((currentValue != count) || (this->descriptorSets[set][binding].count.isSpecConstant != VK_FALSE))) {
+							if ((currentValue != 0)
+								&& ((currentValue != count) || (this->descriptorSets[set][binding].count.isSpecConstant != VK_FALSE))) {
 								vxr::std::ePrintf(
 									"Aliased binding [set: %d, binding: %d] must have a consistent length", set, binding);
 								vxr::std::abort();
@@ -433,8 +433,8 @@ reflector::~reflector() noexcept {
 							this->descriptorSets[set][binding].count.value = count;
 						} else {
 							const auto sid = spvc_compiler_get_decoration(this->spvcCompiler, count, SpvDecorationSpecId);
-							if ((currentValue != 0) &&
-								((currentValue != sid) || (this->descriptorSets[set][binding].count.isSpecConstant != VK_TRUE))) {
+							if ((currentValue != 0)
+								&& ((currentValue != sid) || (this->descriptorSets[set][binding].count.isSpecConstant != VK_TRUE))) {
 								vxr::std::ePrintf(
 									"Aliased binding [set: %d, binding: %d] must have a consistent spec constant id", set, binding);
 								vxr::std::abort();

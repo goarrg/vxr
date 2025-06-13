@@ -1,9 +1,10 @@
 {
     "linters": {
         "enable": [
+            "copyloopvar",
             "depguard",
             "dupl",
-            "copyloopvar",
+            "exhaustive",
             "gofumpt",
             "goimports",
             "govet",
