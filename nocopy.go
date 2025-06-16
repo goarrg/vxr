@@ -16,6 +16,8 @@ limitations under the License.
 
 package vxr
 
+import "goarrg.com/debug"
+
 type noCopy struct {
 	addr *noCopy
 }
@@ -29,7 +31,7 @@ func (n *noCopy) init() {
 
 func (n *noCopy) check() {
 	if n.addr != n {
-		abort("Illegal copy by value or use of zero/dead value")
+		abort("Illegal copy by value or use of zero/dead value: \n%s", debug.StackTrace(0))
 	}
 }
 
