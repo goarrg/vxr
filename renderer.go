@@ -277,6 +277,16 @@ func Resize(w int, h int) {
 func Destroy() {
 	C.vxr_vk_waitIdle(instance.cInstance)
 
+loop:
+	for {
+		select {
+		case j := <-instance.graphics.destroyerChan:
+			j.Destroy()
+		default:
+			break loop
+		}
+	}
+
 	instance.logger.VPrintf("formatProperties: %s", prettyString(&instance.formatProperties))
 
 	instance.logger.VPrintf("pipelineCache: %s", prettyString(&instance.graphics.pipelineCache))
