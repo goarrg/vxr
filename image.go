@@ -189,6 +189,9 @@ var _ interface {
 func (s *Sampler) isDescriptorInfo() {}
 
 func (s *Sampler) Destroy() {
+	if s == nil {
+		return
+	}
 	s.noCopy.check()
 	C.vxr_vk_destroySampler(instance.cInstance, s.cSampler)
 	s.noCopy.close()
@@ -254,6 +257,7 @@ func NewSampler(name string, info SamplerCreateInfo) *Sampler {
 
 type Image interface {
 	Aspect() ImageAspectFlags
+	Extent() gmath.Extent3i32
 	usage() ImageUsageFlags
 
 	vkFormat() C.VkFormat
@@ -340,11 +344,6 @@ type image struct {
 	cImageView     C.VkImageView
 }
 
-func (img *image) Extent() gmath.Extent3i32 {
-	img.noCopy.check()
-	return img.extent
-}
-
 func (img *image) Destroy() {
 	img.noCopy.check()
 	C.vxr_vk_destroyImage(instance.cInstance, img.cImage)
@@ -382,6 +381,21 @@ var _ interface {
 	Destroyer
 } = (*DeviceColorImage)(nil)
 
+func (img *DeviceColorImage) Destroy() {
+	if img == nil {
+		return
+	}
+	img.image.Destroy()
+}
+
+func (img *DeviceColorImage) Extent() gmath.Extent3i32 {
+	if img == nil {
+		return gmath.Extent3i32{}
+	}
+	img.noCopy.check()
+	return img.extent
+}
+
 func (img *DeviceColorImage) Format() Format {
 	img.noCopy.check()
 	return img.format
@@ -414,6 +428,21 @@ var _ interface {
 	Destroyer
 } = (*DeviceDepthStencilImage)(nil)
 
+func (img *DeviceDepthStencilImage) Destroy() {
+	if img == nil {
+		return
+	}
+	img.image.Destroy()
+}
+
+func (img *DeviceDepthStencilImage) Extent() gmath.Extent3i32 {
+	if img == nil {
+		return gmath.Extent3i32{}
+	}
+	img.noCopy.check()
+	return img.extent
+}
+
 func (img *DeviceDepthStencilImage) Format() DepthStencilFormat {
 	img.noCopy.check()
 	return img.format
@@ -425,6 +454,7 @@ func (img *DeviceDepthStencilImage) vkFormat() C.VkFormat {
 }
 
 func (img *DeviceDepthStencilImage) Aspect() ImageAspectFlags {
+	img.noCopy.check()
 	return img.aspect
 }
 
@@ -602,6 +632,7 @@ func NewDepthStencilImage(name string, format DepthStencilFormat, aspect ImageAs
 		aspect = format.ImageAspectFlags()
 	}
 	img := &DeviceDepthStencilImage{format: format, aspect: aspect}
+	img.noCopy.init()
 	if !format.ImageAspectFlags().HasBits(img.Aspect()) {
 		abort("DepthStencilFormat [%s] does not have aspect [%s]",
 			format.String(), img.Aspect().String())
@@ -618,7 +649,6 @@ func NewDepthStencilImage(name string, format DepthStencilFormat, aspect ImageAs
 		name = "depth_" + name
 	}
 	img.image = newImage(name, C.VkFormat(format), C.VkImageAspectFlags(img.Aspect()), info)
-	img.noCopy.init()
 	return img
 }
 

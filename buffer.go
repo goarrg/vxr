@@ -161,11 +161,17 @@ func (b *HostBuffer) Usage() BufferUsageFlags {
 }
 
 func (b *HostBuffer) Size() uint64 {
+	if b == nil {
+		return 0
+	}
 	b.noCopy.check()
 	return b.bufferSize
 }
 
 func (b *HostBuffer) Destroy() {
+	if b == nil {
+		return
+	}
 	b.noCopy.check()
 	C.vxr_vk_destroyHostBuffer(instance.cInstance, b.cBuffer)
 	b.noCopy.close()
@@ -210,11 +216,17 @@ func (b *DeviceBuffer) Usage() BufferUsageFlags {
 }
 
 func (b *DeviceBuffer) Size() uint64 {
+	if b == nil {
+		return 0
+	}
 	b.noCopy.check()
 	return b.bufferSize
 }
 
 func (b *DeviceBuffer) Destroy() {
+	if b == nil {
+		return
+	}
 	b.noCopy.check()
 	C.vxr_vk_destroyDeviceBuffer(instance.cInstance, b.cBuffer)
 	b.noCopy.close()
