@@ -174,6 +174,10 @@ func (cb *commandBuffer) MemoryBarrier(barriers ...MemoryBarrier) {
 	cb.CompoundBarrier(barriers, nil, nil)
 }
 
+func (cb *commandBuffer) BufferBarrier(barriers ...BufferBarrier) {
+	cb.CompoundBarrier(nil, barriers, nil)
+}
+
 func (cb *commandBuffer) ImageBarrier(barriers ...ImageBarrier) {
 	cb.CompoundBarrier(nil, nil, barriers)
 }
