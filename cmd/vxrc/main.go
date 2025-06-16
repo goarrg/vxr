@@ -146,6 +146,7 @@ func main() {
 
 	separateSPV := flags.Bool("separate-spirv", false, "Output spirv as a separate .spv file.")
 	skipMetadata := flags.Bool("skip-metadata", false, "Skips outputting vxr.ShaderMetadata.")
+	idPrefix := flags.String("id-prefix", "", "Prefix to add to shader ID.")
 
 	err := flags.Parse(os.Args[1:])
 	if err != nil {
@@ -199,9 +200,9 @@ func main() {
 
 	switch g {
 	case generatorJSON:
-		genJson(*outDir, outName, *separateSPV, *skipMetadata, spv, layout, meta)
+		genJson(*outDir, outName, *separateSPV, *skipMetadata, *idPrefix, spv, layout, meta)
 	case generatorGO:
-		genGo(*outDir, outName, *separateSPV, *skipMetadata, spv, layout, meta)
+		genGo(*outDir, outName, *separateSPV, *skipMetadata, *idPrefix, spv, layout, meta)
 	}
 }
 
@@ -223,12 +224,13 @@ func help() {
 	fmt.Fprintf(os.Stderr, "Usage:\n\t%s [arguments] <file>\n\nArguments:\n%s", filepath.Base(os.Args[0]), args)
 }
 
-func genJson(dir, name string, separateSPV, skipMetadata bool, spv *vxr.Shader, layout *vxr.ShaderLayout, meta *vxr.ShaderMetadata) {
+func genJson(dir, name string, separateSPV, skipMetadata bool, prefix string, spv *vxr.Shader, layout *vxr.ShaderLayout, meta *vxr.ShaderMetadata) {
 	{
 		m := map[string]any{
 			"Layout": layout,
 		}
 		if !separateSPV {
+			spv.ID = prefix + spv.ID
 			m["Shader"] = spv
 		}
 		if !skipMetadata {
@@ -249,7 +251,7 @@ func genJson(dir, name string, separateSPV, skipMetadata bool, spv *vxr.Shader, 
 	}
 }
 
-func genGo(dir, name string, separateSPV, skipMetadata bool, spv *vxr.Shader, layout *vxr.ShaderLayout, meta *vxr.ShaderMetadata) {
+func genGo(dir, name string, separateSPV, skipMetadata bool, prefix string, spv *vxr.Shader, layout *vxr.ShaderLayout, meta *vxr.ShaderMetadata) {
 	filename := filepath.Join(dir, "zvxrc_"+name+".go")
 	debug.IPrintf("Writing metadata to: %q", filename)
 	fOut, err := os.Create(filename)
@@ -327,6 +329,7 @@ func genGo(dir, name string, separateSPV, skipMetadata bool, spv *vxr.Shader, la
 			fmt.Fprintf(fOut, "func vxrcLoad_%s() (%s) {\n", sb.String(), strings.TrimSuffix(fnReturns, ", "))
 		}
 
+		spv.ID = prefix + spv.ID
 		for _, v := range vars {
 			fmt.Fprintf(fOut, "\t%s = %#v\n", v.key, v.value)
 		}
