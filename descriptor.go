@@ -81,6 +81,7 @@ type DescriptorInfo interface {
 
 type DescriptorBufferInfo struct {
 	Buffer Buffer
+	Offset uint64
 }
 
 func (d DescriptorBufferInfo) isDescriptorInfo() {}
@@ -88,7 +89,7 @@ func (d DescriptorBufferInfo) isDescriptorInfo() {}
 func (d DescriptorBufferInfo) vkDescriptorBufferInfo() C.VkDescriptorBufferInfo {
 	return C.VkDescriptorBufferInfo{
 		buffer: d.Buffer.vkBuffer(),
-		offset: 0,
+		offset: C.VkDeviceSize(d.Offset),
 		_range: vk.WHOLE_SIZE,
 	}
 }
@@ -185,6 +186,9 @@ func (s *DescriptorSet) Bind(bindingIndex, descriptorIndex int, descriptors ...D
 }
 
 func (s *DescriptorSet) Destroy() {
+	if s == nil {
+		return
+	}
 	s.noCopy.check()
 	s.bank.releaseDescriptorSet(s)
 	s.noCopy.close()
