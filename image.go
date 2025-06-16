@@ -631,24 +631,26 @@ func NewDepthStencilImage(name string, format DepthStencilFormat, aspect ImageAs
 	if aspect == 0 {
 		aspect = format.ImageAspectFlags()
 	}
-	img := &DeviceDepthStencilImage{format: format, aspect: aspect}
-	img.noCopy.init()
-	if !format.ImageAspectFlags().HasBits(img.Aspect()) {
+	if !format.ImageAspectFlags().HasBits(aspect) {
 		abort("DepthStencilFormat [%s] does not have aspect [%s]",
-			format.String(), img.Aspect().String())
+			format.String(), aspect.String())
 	}
 	if !format.HasFeatures(info.Usage.FormatFeatureFlags()) {
 		abort("DepthStencilFormat [%s] does not have all the required feature flags [%s] for usage [%s]",
 			format.String(), info.Usage.FormatFeatureFlags().String(), info.Usage.String())
 	}
 	instance.logger.VPrintf("Creating depth image with format [%s] and info: %+v", format.String(), info)
-	if img.Aspect().HasBits(vk.IMAGE_ASPECT_STENCIL_BIT) {
+	if aspect.HasBits(vk.IMAGE_ASPECT_STENCIL_BIT) {
 		name = "stencil_" + name
 	}
-	if img.Aspect().HasBits(vk.IMAGE_ASPECT_DEPTH_BIT) {
+	if aspect.HasBits(vk.IMAGE_ASPECT_DEPTH_BIT) {
 		name = "depth_" + name
 	}
-	img.image = newImage(name, C.VkFormat(format), C.VkImageAspectFlags(img.Aspect()), info)
+	img := &DeviceDepthStencilImage{
+		image:  newImage(name, C.VkFormat(format), C.VkImageAspectFlags(aspect), info),
+		format: format, aspect: aspect,
+	}
+	img.noCopy.init()
 	return img
 }
 
