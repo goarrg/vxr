@@ -65,6 +65,7 @@ func (cb *CommandBuffer2D) Begin() {
 	if cb.noCopy.addr == nil {
 		cb.noCopy.init()
 	}
+	cb.noCopy.check()
 	if cb.cbState != cbIdle {
 		abort("Begin() called while CommandBuffer2D is not idle")
 	}
