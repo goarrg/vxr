@@ -1,7 +1,7 @@
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
-goarrg.com v0.0.0-20250221173207-d476119d45a0 h1:jdRiYy1bi2ejT0gqI4hdIgh7nPI3ZQ3OV11VOnJuDTY=
-goarrg.com v0.0.0-20250221173207-d476119d45a0/go.mod h1:XTj9pMmnqnzxqVMzuSO5rp3kTHm3/zIZfM1PM75tkyM=
+goarrg.com v0.0.0-20250619121633-bc3718057d14 h1:Sno4QnJkBIOipPIp7GeKrYLUVEr3DmQ9j8ir7HAd9QU=
+goarrg.com v0.0.0-20250619121633-bc3718057d14/go.mod h1:XTj9pMmnqnzxqVMzuSO5rp3kTHm3/zIZfM1PM75tkyM=
 golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa h1:t2QcU6V556bFjYgu4L6C+6VrCPyJZ+eyRsABUPs1mz4=
 golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa/go.mod h1:BHOTPb3L19zxehTsLoJXVaTktb06DFgmdW6Wb9s8jqk=
 golang.org/x/mod v0.23.0 h1:Zb7khfcRGKk+kqfxFaP5tZqCnDZMjC5VtUBs87Hr6QM=
