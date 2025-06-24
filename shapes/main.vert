@@ -17,18 +17,9 @@ limitations under the License.
 #version 450
 #pragma shader_stage(vertex)
 
-#extension GL_EXT_scalar_block_layout : enable
 #extension GL_ARB_shading_language_include : enable
 
 #include "common.glsl"
-
-layout(set = 0, binding = 0, scalar) buffer readonly restrict Objects {
-	uint numObjects;
-	layout(row_major) object objects[];
-};
-layout(set = 0, binding = 1, scalar) buffer readonly restrict Triangles {
-	triangle triangles[];
-};
 
 layout(location = 0) out vec4 fragColor;
 

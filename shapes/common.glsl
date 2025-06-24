@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+#extension GL_EXT_scalar_block_layout : enable
 #extension GL_EXT_shader_explicit_arithmetic_types_int8 : enable
 #extension GL_ARB_shading_language_include : enable
 
@@ -21,6 +22,7 @@ limitations under the License.
 
 struct object {
 	uint polygonMode;
+	uint triangleOffset;
 	uint triangleCount;
 	uint layer;
 	float parameter1;
@@ -31,4 +33,13 @@ struct object {
 struct triangle {
 	uint oID;
 	vec2 vertices[3];
+};
+
+layout(set = 0, binding = 0, scalar) buffer readonly restrict Objects {
+	uint numObjects;
+	layout(row_major) object objects[];
+};
+
+layout(set = 0, binding = 1, scalar) buffer restrict Triangles {
+	triangle triangles[];
 };

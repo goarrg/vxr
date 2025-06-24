@@ -21,6 +21,8 @@ limitations under the License.
 package shapes
 
 import (
+	"unsafe"
+
 	"goarrg.com"
 	"goarrg.com/debug"
 	"goarrg.com/rhi/vxr"
@@ -58,7 +60,6 @@ var instance = struct {
 	platform goarrg.PlatformInterface
 	logger   *debug.Logger
 
-	dispatcherLayout              *vxr.PipelineLayout
 	dispatcher                    *vxr.ComputePipeline
 	solid2DPipeline               vxr.GraphicsPipelineLibrary
 	solid2DObjectBufferMetadata   vxr.ShaderBindingTypeBufferMetadata
@@ -78,16 +79,10 @@ func Init(platform goarrg.PlatformInterface) {
 	instance.solid2DObjectBufferMetadata = m.DescriptorSetBindings["Objects"].(vxr.ShaderBindingTypeBufferMetadata)
 	instance.solid2DTriangleBufferMetadata = m.DescriptorSetBindings["Triangles"].(vxr.ShaderBindingTypeBufferMetadata)
 
-	instance.dispatcherLayout = vxr.NewPipelineLayout(
+	instance.solid2DPipeline.Layout = vxr.NewPipelineLayout(
 		vxr.PipelineLayoutCreateInfo{
 			ShaderLayout: cl, ShaderStage: vxr.ShaderStageCompute,
 		},
-	)
-	instance.dispatcher = vxr.NewComputePipeline(instance.dispatcherLayout, cs, cl.EntryPoints["main"], vxr.ComputePipelineCreateInfo{
-		SpecConstants: []uint32{properties.Compute.SubgroupSize, 1, 1},
-	})
-
-	instance.solid2DPipeline.Layout = vxr.NewPipelineLayout(
 		vxr.PipelineLayoutCreateInfo{
 			ShaderLayout: vl, ShaderStage: vxr.ShaderStageVertex,
 		},
@@ -95,6 +90,9 @@ func Init(platform goarrg.PlatformInterface) {
 			ShaderLayout: fl, ShaderStage: vxr.ShaderStageFragment,
 		},
 	)
+	instance.dispatcher = vxr.NewComputePipeline(instance.solid2DPipeline.Layout, cs, cl.EntryPoints["main"], vxr.ComputePipelineCreateInfo{
+		SpecConstants: []uint32{properties.Compute.SubgroupSize, 1, 1},
+	})
 	instance.solid2DPipeline.VertexInput = vxr.NewVertexInputPipeline(vxr.VertexInputPipelineCreateInfo{
 		Topology: vxr.VertexTopologyTriangleList,
 	})
@@ -102,6 +100,10 @@ func Init(platform goarrg.PlatformInterface) {
 		vs, vl.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{})
 	instance.solid2DPipeline.FragmentShader = vxr.NewGraphicsShaderPipeline(instance.solid2DPipeline.Layout,
 		fs, fl.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{})
+
+	// we are packing the indirect buffer into the triangle buffer, do this after creating the layouts
+	// as we may use the size there in the future
+	instance.solid2DTriangleBufferMetadata.Size = uint64(unsafe.Sizeof(uint32(0)) * 4)
 }
 
 func Destroy() {

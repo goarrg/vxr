@@ -22,6 +22,8 @@ package shapes
 import "C"
 
 import (
+	"encoding/binary"
+
 	"goarrg.com/gmath"
 	"goarrg.com/gmath/color"
 	"goarrg.com/rhi/vxr"
@@ -36,12 +38,13 @@ const (
 )
 
 type shape2d struct {
-	polygonMode   uint32
-	triangleCount uint32
-	layer         uint32
-	parameter1    float32
-	color         color.UNorm[uint8]
-	modelMatrix   [2][3]float32
+	polygonMode    uint32
+	triangleOffset uint32
+	triangleCount  uint32
+	layer          uint32
+	parameter1     float32
+	color          color.UNorm[uint8]
+	modelMatrix    [2][3]float32
 }
 
 type CommandBuffer2D struct {
@@ -114,8 +117,6 @@ func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuf
 	}
 	vcb.BeginNamedRegion("shapes2d")
 
-	dsDispatch := instance.dispatcherLayout.NewDescriptorSet(0)
-	frame.QueueDestory(dsDispatch)
 	dsDraw := instance.solid2DPipeline.Layout.NewDescriptorSet(0)
 	frame.QueueDestory(dsDraw)
 
@@ -145,13 +146,6 @@ func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuf
 			NumArrayLayers: 1,
 		})
 	}
-
-	dsDispatch.Bind(0, 0, vxr.DescriptorBufferInfo{
-		Buffer: cb.objectBuffer,
-	})
-	dsDispatch.Bind(1, 0, vxr.DescriptorBufferInfo{
-		Buffer: cb.triangleBuffer,
-	})
 
 	dsDraw.Bind(0, 0, vxr.DescriptorBufferInfo{
 		Buffer: cb.objectBuffer,
@@ -222,7 +216,11 @@ func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuf
 			Size: cb.objectBuffer.Size(),
 		},
 	})
-	vcb.UpdateBuffer(cb.triangleBuffer, 0, []byte{0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0})
+	{
+		indirect := []byte{0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
+		binary.Append(indirect[:0], binary.NativeEndian, cb.triangleCount*3)
+		vcb.UpdateBuffer(cb.triangleBuffer, 0, indirect)
+	}
 
 	vcb.BufferBarrier(vxr.BufferBarrier{
 		Buffer: cb.objectBuffer,
@@ -247,7 +245,7 @@ func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuf
 	})
 
 	vcb.Dispatch(instance.dispatcher, vxr.DispatchInfo{
-		DescriptorSets: []*vxr.DescriptorSet{dsDispatch},
+		DescriptorSets: []*vxr.DescriptorSet{dsDraw},
 		ThreadCount:    gmath.Extent3u32{X: cb.objectCount, Y: 1, Z: 1},
 	})
 
@@ -348,11 +346,12 @@ func (cb *CommandBuffer2D) PostExecuteSrcImageBarrierInfo() vxr.ImageBarrierInfo
 func (cb *CommandBuffer2D) DrawTriangle(t Transform2D, c color.UNorm[uint8]) {
 	cb.noCopy.check()
 	shape := shape2d{
-		polygonMode:   C.POLYGON_MODE_REGULAR_CONCAVE,
-		triangleCount: 1,
-		layer:         cb.objectCount,
-		color:         c,
-		modelMatrix:   t.modelMatrix(C.POLYGON_MODE_REGULAR_CONCAVE, 1),
+		polygonMode:    C.POLYGON_MODE_REGULAR_CONCAVE,
+		triangleOffset: cb.triangleCount,
+		triangleCount:  1,
+		layer:          cb.objectCount,
+		color:          c,
+		modelMatrix:    t.modelMatrix(C.POLYGON_MODE_REGULAR_CONCAVE, 1),
 	}
 
 	if c.A == 255 {
@@ -368,11 +367,12 @@ func (cb *CommandBuffer2D) DrawTriangle(t Transform2D, c color.UNorm[uint8]) {
 func (cb *CommandBuffer2D) DrawSquare(t Transform2D, c color.UNorm[uint8]) {
 	cb.noCopy.check()
 	shape := shape2d{
-		polygonMode:   C.POLYGON_MODE_REGULAR_CONCAVE,
-		triangleCount: 2,
-		layer:         cb.objectCount,
-		color:         c,
-		modelMatrix:   t.modelMatrix(C.POLYGON_MODE_REGULAR_CONCAVE, 2),
+		polygonMode:    C.POLYGON_MODE_REGULAR_CONCAVE,
+		triangleOffset: cb.triangleCount,
+		triangleCount:  2,
+		layer:          cb.objectCount,
+		color:          c,
+		modelMatrix:    t.modelMatrix(C.POLYGON_MODE_REGULAR_CONCAVE, 2),
 	}
 
 	if c.A == 255 {
@@ -392,11 +392,12 @@ func (cb *CommandBuffer2D) DrawRegularNGon(sides uint32, t Transform2D, c color.
 	}
 
 	shape := shape2d{
-		polygonMode:   C.POLYGON_MODE_REGULAR_CONCAVE,
-		triangleCount: sides,
-		layer:         cb.objectCount,
-		color:         c,
-		modelMatrix:   t.modelMatrix(C.POLYGON_MODE_REGULAR_CONCAVE, sides),
+		polygonMode:    C.POLYGON_MODE_REGULAR_CONCAVE,
+		triangleOffset: cb.triangleCount,
+		triangleCount:  sides,
+		layer:          cb.objectCount,
+		color:          c,
+		modelMatrix:    t.modelMatrix(C.POLYGON_MODE_REGULAR_CONCAVE, sides),
 	}
 
 	if c.A == 255 {
@@ -406,7 +407,11 @@ func (cb *CommandBuffer2D) DrawRegularNGon(sides uint32, t Transform2D, c color.
 	}
 
 	cb.objectCount++
-	cb.triangleCount += shape.triangleCount
+	if sides > 4 {
+		cb.triangleCount += shape.triangleCount
+	} else {
+		cb.triangleCount += shape.triangleCount - 2
+	}
 }
 
 func (cb *CommandBuffer2D) DrawRegularNGonStar(sides uint32, thickness float32, t Transform2D, c color.UNorm[uint8]) {
@@ -419,12 +424,13 @@ func (cb *CommandBuffer2D) DrawRegularNGonStar(sides uint32, thickness float32, 
 	}
 
 	shape := shape2d{
-		polygonMode:   C.POLYGON_MODE_REGULAR_STAR,
-		triangleCount: sides,
-		layer:         cb.objectCount,
-		parameter1:    thickness,
-		color:         c,
-		modelMatrix:   t.modelMatrix(C.POLYGON_MODE_REGULAR_STAR, sides),
+		polygonMode:    C.POLYGON_MODE_REGULAR_STAR,
+		triangleOffset: cb.triangleCount,
+		triangleCount:  sides,
+		layer:          cb.objectCount,
+		parameter1:     thickness,
+		color:          c,
+		modelMatrix:    t.modelMatrix(C.POLYGON_MODE_REGULAR_STAR, sides),
 	}
 
 	if c.A == 255 {
@@ -434,5 +440,5 @@ func (cb *CommandBuffer2D) DrawRegularNGonStar(sides uint32, thickness float32, 
 	}
 
 	cb.objectCount++
-	cb.triangleCount += shape.triangleCount
+	cb.triangleCount += shape.triangleCount * 2
 }

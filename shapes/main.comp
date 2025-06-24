@@ -20,65 +20,47 @@ limitations under the License.
 #define M_PI 3.1415926535897932384626433832795
 #define M_SQRT2 1.4142135623730950488016887242096
 
-#extension GL_EXT_scalar_block_layout : enable
-#extension GL_KHR_memory_scope_semantics : enable
 #extension GL_ARB_shading_language_include : enable
 
 layout(local_size_x_id = 0, local_size_y_id = 1, local_size_z_id = 2) in;
 
 #include "common.glsl"
 
-layout(set = 0, binding = 0, scalar) buffer readonly restrict Objects {
-	uint numObjects;
-	layout(row_major) object objects[];
-};
-
-layout(set = 0, binding = 1, scalar) buffer restrict Triangles {
-	uint vertexCount;
-	uint instanceCount;
-	uint firstVertex;
-	uint firstInstance;
-	triangle triangles[];
-};
-
 void main() {
 	const uint oID = gl_GlobalInvocationID.x;
 	if (oID >= numObjects) {
 		return;
 	}
-	switch (objects[oID].polygonMode) {
+	const object obj = objects[oID];
+	switch (obj.polygonMode) {
 		case POLYGON_MODE_REGULAR_CONCAVE: {
-			if (objects[oID].triangleCount == 3) {
-				const uint tID = atomicAdd(vertexCount, 3, gl_ScopeQueueFamily, gl_StorageSemanticsBuffer, gl_SemanticsAcquireRelease) / 3;
-				triangles[tID] = triangle(oID, vec2[](vec2(0.0, -0.5), vec2(0.43301, 0.25), vec2(-0.43301, 0.25)));
-			} else if (objects[oID].triangleCount == 4) {
-				const uint tID = atomicAdd(vertexCount, 6, gl_ScopeQueueFamily, gl_StorageSemanticsBuffer, gl_SemanticsAcquireRelease) / 3;
+			if (obj.triangleCount == 3) {
+				triangles[obj.triangleOffset] = triangle(oID, vec2[](vec2(0.0, -0.5), vec2(0.43301, 0.25), vec2(-0.43301, 0.25)));
+			} else if (obj.triangleCount == 4) {
 				const float d = 0.25 * M_SQRT2;
-				triangles[tID] = triangle(oID, vec2[](vec2(-d, -d), vec2(d, -d), vec2(d, d)));
-				triangles[tID + 1] = triangle(oID, vec2[](vec2(d, d), vec2(-d, d), vec2(-d, -d)));
+				triangles[obj.triangleOffset] = triangle(oID, vec2[](vec2(-d, -d), vec2(d, -d), vec2(d, d)));
+				triangles[obj.triangleOffset + 1] = triangle(oID, vec2[](vec2(d, d), vec2(-d, d), vec2(-d, -d)));
 			} else {
-				const uint tID = atomicAdd(vertexCount, objects[oID].triangleCount * 3, gl_ScopeQueueFamily,
-										   gl_StorageSemanticsBuffer, gl_SemanticsAcquireRelease)
-								 / 3;
-				switch (objects[oID].triangleCount) {
+				switch (obj.triangleCount) {
 					case 1: {
-						triangles[tID] = triangle(oID, vec2[](vec2(0.0, -0.5), vec2(0.5, 0.5), vec2(-0.5, 0.5)));
+						triangles[obj.triangleOffset] = triangle(oID, vec2[](vec2(0.0, -0.5), vec2(0.5, 0.5), vec2(-0.5, 0.5)));
 						break;
 					}
 
 					case 2: {
-						triangles[tID] = triangle(oID, vec2[](vec2(-0.5, -0.5), vec2(0.5, -0.5), vec2(0.5, 0.5)));
-						triangles[tID + 1] = triangle(oID, vec2[](vec2(0.5, 0.5), vec2(-0.5, 0.5), vec2(-0.5, -0.5)));
+						triangles[obj.triangleOffset] = triangle(oID, vec2[](vec2(-0.5, -0.5), vec2(0.5, -0.5), vec2(0.5, 0.5)));
+						triangles[obj.triangleOffset + 1] = triangle(
+							oID, vec2[](vec2(0.5, 0.5), vec2(-0.5, 0.5), vec2(-0.5, -0.5)));
 						break;
 					}
 
 					default: {
-						const float angle = 2.0 * M_PI * (float(0) / float(objects[oID].triangleCount));
+						const float angle = 2.0 * M_PI * (float(0) / float(obj.triangleCount));
 						vec2 lastVertex = vec2(sin(angle), -cos(angle)) * 0.5;
-						for (uint i = 0; i < objects[oID].triangleCount; i++) {
-							const float angle = 2.0 * M_PI * (float(i + 1) / float(objects[oID].triangleCount));
+						for (uint i = 0; i < obj.triangleCount; i++) {
+							const float angle = 2.0 * M_PI * (float(i + 1) / float(obj.triangleCount));
 							const vec2 nextVertex = vec2(sin(angle), -cos(angle)) * 0.5;
-							triangles[tID + i] = triangle(oID, vec2[](vec2(0), lastVertex, nextVertex));
+							triangles[obj.triangleOffset + i] = triangle(oID, vec2[](vec2(0), lastVertex, nextVertex));
 							lastVertex = nextVertex;
 						}
 						break;
@@ -89,19 +71,16 @@ void main() {
 		}
 
 		case POLYGON_MODE_REGULAR_STAR: {
-			const uint tID = atomicAdd(vertexCount, objects[oID].triangleCount * 2 * 3, gl_ScopeQueueFamily,
-									   gl_StorageSemanticsBuffer, gl_SemanticsAcquireRelease)
-							 / 3;
-			const float angle = 2.0 * M_PI * (float(-0.5) / float(objects[oID].triangleCount));
-			vec2 lastVertex = vec2(sin(angle), -cos(angle)) * (0.5 * objects[oID].parameter1);
-			for (uint i = 0; i < objects[oID].triangleCount; i++) {
-				const float angle = 2.0 * M_PI * (float(i) + 0.5) / float(objects[oID].triangleCount);
-				const vec2 nextVertex = vec2(sin(angle), -cos(angle)) * (0.5 * objects[oID].parameter1);
-				triangles[tID + (i * 2)] = triangle(oID, vec2[](vec2(0), lastVertex, nextVertex));
+			const float angle = 2.0 * M_PI * (float(-0.5) / float(obj.triangleCount));
+			vec2 lastVertex = vec2(sin(angle), -cos(angle)) * (0.5 * obj.parameter1);
+			for (uint i = 0; i < obj.triangleCount; i++) {
+				const float angle = 2.0 * M_PI * (float(i) + 0.5) / float(obj.triangleCount);
+				const vec2 nextVertex = vec2(sin(angle), -cos(angle)) * (0.5 * obj.parameter1);
+				triangles[obj.triangleOffset + (i * 2)] = triangle(oID, vec2[](vec2(0), lastVertex, nextVertex));
 
-				const float starAngle = 2.0 * M_PI * (float(i) / float(objects[oID].triangleCount));
+				const float starAngle = 2.0 * M_PI * (float(i) / float(obj.triangleCount));
 				const vec2 starVertex = vec2(sin(starAngle), -cos(starAngle)) * 0.5;
-				triangles[tID + (i * 2) + 1] = triangle(oID, vec2[](nextVertex, lastVertex, starVertex));
+				triangles[obj.triangleOffset + (i * 2) + 1] = triangle(oID, vec2[](nextVertex, lastVertex, starVertex));
 
 				lastVertex = nextVertex;
 			}
