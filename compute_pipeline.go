@@ -117,6 +117,9 @@ func NewComputePipeline(pipelineLayout *PipelineLayout, s *Shader, entryPoint Sh
 }
 
 func (p *ComputePipeline) Destroy() {
+	if p == nil {
+		return
+	}
 	p.noCopy.check()
 	C.vxr_vk_shader_destroyPipeline(instance.cInstance, p.vkPipeline)
 	p.noCopy.close()
