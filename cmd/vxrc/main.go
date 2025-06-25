@@ -318,7 +318,7 @@ func genGo(dir, name string, separateSPV, skipMetadata bool, prefix string, spv 
 				if unicode.IsDigit(r) || unicode.IsLetter(r) {
 					sb.WriteRune(r)
 				}
-				if r == '/' || r == '.' {
+				if r == '/' || r == '.' || r == '_' {
 					sb.WriteRune('_')
 				}
 			}
