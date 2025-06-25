@@ -108,6 +108,12 @@ func New2DRegularNGonStarPipeline(fragmentLayout *vxr.ShaderLayout, points uint3
 	return &p
 }
 
+func (p *Pipeline2D) Destroy() {
+	p.noCopy.check()
+	p.gpl.VertexShader.Destroy()
+	p.noCopy.close()
+}
+
 type InstanceData2D struct {
 	Transform Transform2D
 	// Parameter1 is a polygon parameter that changes what it represents depending on which New* function you used.
