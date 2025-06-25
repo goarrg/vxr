@@ -162,9 +162,10 @@ VXR_FN void vxr_vk_graphics_renderPassBegin(vxr_vk_instance, VkCommandBuffer cb,
 	VK_PROC_DEVICE(vkCmdSetScissorWithCount)(cb, numViewports, scissors.get());
 
 	if (info.renderingInfo.colorAttachmentCount > 0) {
-		VK_PROC_DEVICE(vkCmdSetColorBlendEnableEXT)(cb, 0, info.renderingInfo.colorAttachmentCount, info.colorBlendEnable);
-		VK_PROC_DEVICE(vkCmdSetColorBlendEquationEXT)(cb, 0, info.renderingInfo.colorAttachmentCount, info.colorBlendEquation);
-		VK_PROC_DEVICE(vkCmdSetColorWriteMaskEXT)(cb, 0, info.renderingInfo.colorAttachmentCount, info.colorComponentFlags);
+		VK_PROC_DEVICE(vkCmdSetColorBlendEnableEXT)(cb, 0, info.renderingInfo.colorAttachmentCount, info.colorBlendInfo.enable);
+		VK_PROC_DEVICE(vkCmdSetColorBlendEquationEXT)(
+			cb, 0, info.renderingInfo.colorAttachmentCount, info.colorBlendInfo.equation);
+		VK_PROC_DEVICE(vkCmdSetColorWriteMaskEXT)(cb, 0, info.renderingInfo.colorAttachmentCount, info.colorBlendInfo.componentFlags);
 	}
 }
 VXR_FN void vxr_vk_graphics_renderPassSetViewport(vxr_vk_instance, VkCommandBuffer cb, VkBool32 flip, VkViewport viewport) {
@@ -195,6 +196,12 @@ VXR_FN void vxr_vk_graphics_renderPassSetViewportAndScissor(vxr_vk_instance, VkC
 	}
 	VK_PROC_DEVICE(vkCmdSetViewportWithCount)(cb, 1, &viewport);
 	VK_PROC_DEVICE(vkCmdSetScissorWithCount)(cb, 1, &rect);
+}
+VXR_FN void vxr_vk_graphics_renderPassSetColorBlend(vxr_vk_instance, VkCommandBuffer cb, uint32_t start, uint32_t count,
+													vxr_vk_graphics_colorBlendInfo info) {
+	VK_PROC_DEVICE(vkCmdSetColorBlendEnableEXT)(cb, start, count, info.enable);
+	VK_PROC_DEVICE(vkCmdSetColorBlendEquationEXT)(cb, start, count, info.equation);
+	VK_PROC_DEVICE(vkCmdSetColorWriteMaskEXT)(cb, start, count, info.componentFlags);
 }
 inline static VXR_FN void setupDraw(vxr_vk_graphics_drawParameters parameters, VkCommandBuffer cb) {
 	VK_PROC_DEVICE(vkCmdBindPipeline)(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, parameters.pipeline);

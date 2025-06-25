@@ -347,11 +347,15 @@ typedef struct {
 } vxr_vk_graphics_fragmentOutputPipelineCreateInfo;
 
 typedef struct {
+	VkBool32* enable;
+	VkColorBlendEquationEXT* equation;
+	VkColorComponentFlags* componentFlags;
+} vxr_vk_graphics_colorBlendInfo;
+
+typedef struct {
 	VkRenderingInfo renderingInfo;
 	VkBool32 flipViewport;
-	VkBool32* colorBlendEnable;
-	VkColorBlendEquationEXT* colorBlendEquation;
-	VkColorComponentFlags* colorComponentFlags;
+	vxr_vk_graphics_colorBlendInfo colorBlendInfo;
 } vxr_vk_graphics_renderPassInfo;
 
 typedef struct {
@@ -555,6 +559,7 @@ extern VXR_FN void vxr_vk_graphics_renderPassBegin(vxr_vk_instance, VkCommandBuf
 extern VXR_FN void vxr_vk_graphics_renderPassSetViewport(vxr_vk_instance, VkCommandBuffer, VkBool32, VkViewport);
 extern VXR_FN void vxr_vk_graphics_renderPassSetScissor(vxr_vk_instance, VkCommandBuffer, VkRect2D);
 extern VXR_FN void vxr_vk_graphics_renderPassSetViewportAndScissor(vxr_vk_instance, VkCommandBuffer, VkBool32, VkViewport, VkRect2D);
+extern VXR_FN void vxr_vk_graphics_renderPassSetColorBlend(vxr_vk_instance, VkCommandBuffer, uint32_t, uint32_t, vxr_vk_graphics_colorBlendInfo);
 extern VXR_FN void vxr_vk_graphics_draw(vxr_vk_instance, VkCommandBuffer, vxr_vk_graphics_drawInfo);
 extern VXR_FN void vxr_vk_graphics_drawIndirect(vxr_vk_instance, VkCommandBuffer, vxr_vk_graphics_drawIndirectInfo);
 extern VXR_FN void vxr_vk_graphics_drawIndexed(vxr_vk_instance, VkCommandBuffer, vxr_vk_graphics_drawIndexedInfo);

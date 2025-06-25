@@ -36,6 +36,7 @@ import (
 type renderPass struct {
 	id                     string
 	name                   string
+	numColorAttachments    int
 	fragmentOutputPipeline C.VkPipeline
 }
 
@@ -113,6 +114,12 @@ func RenderColorAttachmentBlendPremultipliedAlpha() RenderColorAttachmentBlendEq
 	}
 }
 
+type RenderColorBlendParameters struct {
+	Enable         bool
+	Equation       RenderColorAttachmentBlendEquation
+	ComponentFlags ColorComponentFlags
+}
+
 type RenderColorAttachment struct {
 	Image      ColorImage
 	Layout     ImageLayout
@@ -120,9 +127,7 @@ type RenderColorAttachment struct {
 	StoreOp    RenderAttachmentStoreOp
 	ClearValue ColorImageClearValue
 
-	ColorBlendEnable    bool
-	ColorBlendEquation  RenderColorAttachmentBlendEquation
-	ColorComponentFlags ColorComponentFlags
+	ColorBlend RenderColorBlendParameters
 }
 
 type RenderClearDepthValue struct {
@@ -194,19 +199,19 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 			loadOp:      C.VkAttachmentLoadOp(attachment.LoadOp),
 			storeOp:     C.VkAttachmentStoreOp(attachment.StoreOp),
 		}
-		if attachment.ColorBlendEnable {
+		if attachment.ColorBlend.Enable {
 			cColorBlendEnable[i] = vk.TRUE
 		}
 		cColorBlendEquation[i] = C.VkColorBlendEquationEXT{
-			srcColorBlendFactor: C.VkBlendFactor(attachment.ColorBlendEquation.Color.Src),
-			dstColorBlendFactor: C.VkBlendFactor(attachment.ColorBlendEquation.Color.Dst),
-			colorBlendOp:        C.VkBlendOp(attachment.ColorBlendEquation.Color.Op),
+			srcColorBlendFactor: C.VkBlendFactor(attachment.ColorBlend.Equation.Color.Src),
+			dstColorBlendFactor: C.VkBlendFactor(attachment.ColorBlend.Equation.Color.Dst),
+			colorBlendOp:        C.VkBlendOp(attachment.ColorBlend.Equation.Color.Op),
 
-			srcAlphaBlendFactor: C.VkBlendFactor(attachment.ColorBlendEquation.Alpha.Src),
-			dstAlphaBlendFactor: C.VkBlendFactor(attachment.ColorBlendEquation.Alpha.Dst),
-			alphaBlendOp:        C.VkBlendOp(attachment.ColorBlendEquation.Alpha.Op),
+			srcAlphaBlendFactor: C.VkBlendFactor(attachment.ColorBlend.Equation.Alpha.Src),
+			dstAlphaBlendFactor: C.VkBlendFactor(attachment.ColorBlend.Equation.Alpha.Dst),
+			alphaBlendOp:        C.VkBlendOp(attachment.ColorBlend.Equation.Alpha.Op),
 		}
-		cColorComponentFlags[i] = C.VkColorComponentFlags(attachment.ColorComponentFlags)
+		cColorComponentFlags[i] = C.VkColorComponentFlags(attachment.ColorBlend.ComponentFlags)
 		vkColorFormats[i] = attachments.Color[i].Image.vkFormat()
 		cb.currentRenderPass.id += fmt.Sprintf("%s,", toHex(vkColorFormats[i]))
 		cb.currentRenderPass.name += fmt.Sprintf("%s,", attachments.Color[i].Image.Format().String())
@@ -227,9 +232,11 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 				colorAttachmentCount: C.uint32_t(len(attachments.Color)),
 				pColorAttachments:    unsafe.SliceData(cAttachments),
 			},
-			colorBlendEnable:    unsafe.SliceData(cColorBlendEnable),
-			colorBlendEquation:  unsafe.SliceData(cColorBlendEquation),
-			colorComponentFlags: unsafe.SliceData(cColorComponentFlags),
+			colorBlendInfo: C.vxr_vk_graphics_colorBlendInfo{
+				enable:         unsafe.SliceData(cColorBlendEnable),
+				equation:       unsafe.SliceData(cColorBlendEquation),
+				componentFlags: unsafe.SliceData(cColorComponentFlags),
+			},
 		}
 		if parameters.FlipViewport {
 			cInfo.flipViewport = vk.TRUE
@@ -275,6 +282,7 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 	{
 		cb.currentRenderPass.id = fmt.Sprintf("[fragment_output:[%s]]", strings.TrimSuffix(cb.currentRenderPass.id, ","))
 		cb.currentRenderPass.name = fmt.Sprintf("[%s]", strings.TrimSuffix(cb.currentRenderPass.name, ","))
+		cb.currentRenderPass.numColorAttachments = len(attachments.Color)
 		cb.currentRenderPass.fragmentOutputPipeline = instance.graphics.pipelineCache.createOrRetrievePipeline(cb.currentRenderPass.id, func() C.VkPipeline {
 			cInfo := C.vxr_vk_graphics_fragmentOutputPipelineCreateInfo{
 				numColorAttachments:    C.uint32_t(len(attachments.Color)),
@@ -344,6 +352,42 @@ func (cb *GraphicsCommandBuffer) RenderPassSetViewportAndScissor(flip bool, view
 	} else {
 		C.vxr_vk_graphics_renderPassSetViewportAndScissor(instance.cInstance, cb.vkCommandBuffer, vk.FALSE, cViewport, cRect)
 	}
+}
+
+func (cb *GraphicsCommandBuffer) RenderPassSetColorBlendParameters(firstAttachment int, infos []RenderColorBlendParameters) {
+	cb.noCopy.check()
+	if cb.currentRenderPass == (renderPass{}) {
+		abort("RenderPassSetColorBlendParameters called outside a renderpass")
+	}
+	if (firstAttachment + len(infos)) > cb.currentRenderPass.numColorAttachments {
+		abort("RenderPassSetColorBlendParameters called with more RenderColorBlendParameters than there are color attachments after taking into account firstAttachment")
+	}
+	cColorBlendEnable := make([]C.VkBool32, len(infos))
+	cColorBlendEquation := make([]C.VkColorBlendEquationEXT, len(infos))
+	cColorComponentFlags := make([]C.VkColorComponentFlags, len(infos))
+
+	for i, info := range infos {
+		if info.Enable {
+			cColorBlendEnable[i] = vk.TRUE
+		}
+		cColorBlendEquation[i] = C.VkColorBlendEquationEXT{
+			srcColorBlendFactor: C.VkBlendFactor(info.Equation.Color.Src),
+			dstColorBlendFactor: C.VkBlendFactor(info.Equation.Color.Dst),
+			colorBlendOp:        C.VkBlendOp(info.Equation.Color.Op),
+
+			srcAlphaBlendFactor: C.VkBlendFactor(info.Equation.Alpha.Src),
+			dstAlphaBlendFactor: C.VkBlendFactor(info.Equation.Alpha.Dst),
+			alphaBlendOp:        C.VkBlendOp(info.Equation.Alpha.Op),
+		}
+		cColorComponentFlags[i] = C.VkColorComponentFlags(info.ComponentFlags)
+	}
+
+	cInfo := C.vxr_vk_graphics_colorBlendInfo{
+		enable:         unsafe.SliceData(cColorBlendEnable),
+		equation:       unsafe.SliceData(cColorBlendEquation),
+		componentFlags: unsafe.SliceData(cColorComponentFlags),
+	}
+	C.vxr_vk_graphics_renderPassSetColorBlend(instance.cInstance, cb.vkCommandBuffer, C.uint32_t(firstAttachment), C.uint32_t(len(infos)), cInfo)
 }
 
 type CullMode C.VkCullModeFlags
