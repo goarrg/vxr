@@ -175,12 +175,22 @@ func NewGraphicsShaderPipeline(pipelineLayout *PipelineLayout, s *Shader, entryP
 	runtime.KeepAlive(entryPointName)
 	runtime.KeepAlive(s.SPIRV)
 	runtime.KeepAlive(info.SpecConstants)
-	return instance.graphics.pipelineCache.getShader(shaderName, entryPoint.ShaderStage(), vkPipeline)
+	p := &GraphicsShaderPipeline{
+		id:         genID(vkPipeline),
+		name:       shaderName,
+		stage:      ShaderStage(pipelineInfo.stage),
+		vkPipeline: vkPipeline,
+	}
+	p.noCopy.init()
+	return p
 }
 
 func (s *GraphicsShaderPipeline) Destroy() {
+	if s == nil {
+		return
+	}
 	s.noCopy.check()
-	instance.graphics.pipelineCache.destroyShader(s.name)
+	instance.graphics.pipelineCache.destroyPipeline(s.id, s.vkPipeline)
 	s.noCopy.close()
 }
 

@@ -102,43 +102,14 @@ func (c *graphicsPipelineCache) destroyPipeline(id string, pipeline C.VkPipeline
 	})
 	c.mtx.Unlock()
 
-	instance.graphics.destroyerChan <- destroyFunc{
-		func() {
-			instance.logger.VPrintf("Destroying pipeline: %s", id)
-			C.vxr_vk_shader_destroyPipeline(instance.cInstance, pipeline)
-		},
-	}
-}
-
-func (c *graphicsPipelineCache) getShader(name string, stage ShaderStage, pipeline C.VkPipeline) *GraphicsShaderPipeline {
-	c.mtxShader.Lock()
-	defer c.mtxShader.Unlock()
-
-	s, ok := c.cacheShader[name]
-	if !ok {
-		s = &GraphicsShaderPipeline{
-			name:  name,
-			stage: stage,
+	go func() {
+		instance.graphics.destroyerChan <- destroyFunc{
+			func() {
+				instance.logger.VPrintf("Destroying pipeline: %s", id)
+				C.vxr_vk_shader_destroyPipeline(instance.cInstance, pipeline)
+			},
 		}
-		s.noCopy.init()
-		c.cacheShader[name] = s
-	} else {
-		go c.destroyPipeline(s.id, s.vkPipeline)
-	}
-
-	s.id = genID(pipeline)
-	s.vkPipeline = pipeline
-	return s
-}
-
-func (c *graphicsPipelineCache) destroyShader(name string) {
-	c.mtxShader.Lock()
-	defer c.mtxShader.Unlock()
-
-	s := c.cacheShader[name]
-	s.noCopy.close()
-	delete(c.cacheShader, name)
-	go c.destroyPipeline(s.id, s.vkPipeline)
+	}()
 }
 
 func (c *graphicsPipelineCache) createOrRetrievePipeline(id string, f func() C.VkPipeline) C.VkPipeline {
