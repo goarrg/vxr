@@ -85,10 +85,8 @@ VXR_FN void vxr_vk_graphics_createShaderPipeline(vxr_vk_instance instanceHandle,
 	auto* instance = vxr::vk::instance::fromHandle(instanceHandle);
 
 	static constexpr vxr::std::array vertexDynamicStates = {
-		VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT,
-		VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT,
-		VK_DYNAMIC_STATE_CULL_MODE,
-		VK_DYNAMIC_STATE_FRONT_FACE,
+		VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT, VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT, VK_DYNAMIC_STATE_CULL_MODE,
+		VK_DYNAMIC_STATE_FRONT_FACE,		  VK_DYNAMIC_STATE_LINE_WIDTH,
 	};
 	static constexpr VkPipelineDynamicStateCreateInfo vertexDynamicInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
@@ -118,7 +116,7 @@ VXR_FN void vxr_vk_graphics_createShaderPipeline(vxr_vk_instance instanceHandle,
 		.rasterizerDiscardEnable = VK_FALSE,
 		.polygonMode = VK_POLYGON_MODE_FILL,
 		.depthBiasEnable = VK_FALSE,
-		.lineWidth = 1.0f,
+		//.lineWidth = 1.0f,
 		// .cullMode = VK_CULL_MODE_NONE,
 		// .frontFace = VK_FRONT_FACE_CLOCKWISE,
 	};

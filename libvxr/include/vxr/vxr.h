@@ -560,6 +560,7 @@ extern VXR_FN void vxr_vk_graphics_renderPassSetViewport(vxr_vk_instance, VkComm
 extern VXR_FN void vxr_vk_graphics_renderPassSetScissor(vxr_vk_instance, VkCommandBuffer, VkRect2D);
 extern VXR_FN void vxr_vk_graphics_renderPassSetViewportAndScissor(vxr_vk_instance, VkCommandBuffer, VkBool32, VkViewport, VkRect2D);
 extern VXR_FN void vxr_vk_graphics_renderPassSetColorBlend(vxr_vk_instance, VkCommandBuffer, uint32_t, uint32_t, vxr_vk_graphics_colorBlendInfo);
+extern VXR_FN void vxr_vk_graphics_renderPassSetLineWidth(vxr_vk_instance, VkCommandBuffer, float);
 extern VXR_FN void vxr_vk_graphics_draw(vxr_vk_instance, VkCommandBuffer, vxr_vk_graphics_drawInfo);
 extern VXR_FN void vxr_vk_graphics_drawIndirect(vxr_vk_instance, VkCommandBuffer, vxr_vk_graphics_drawIndirectInfo);
 extern VXR_FN void vxr_vk_graphics_drawIndexed(vxr_vk_instance, VkCommandBuffer, vxr_vk_graphics_drawIndexedInfo);

@@ -174,7 +174,11 @@ func (c *Config) createDeviceSelector(surface uint64) C.vxr_vk_device_selector {
 	// process optional
 	{
 		c.OptionalExtensions = append([]string{}, c.OptionalExtensions...)
-		c.OptionalFeatures = append([]VkFeatureStruct{}, c.OptionalFeatures...)
+		c.OptionalFeatures = append([]VkFeatureStruct{
+			VkPhysicalDeviceFeatures{
+				WideLines: true,
+			},
+		}, c.OptionalFeatures...)
 		for _, s := range c.OptionalFeatures {
 			if s.extension() != "" {
 				c.OptionalExtensions = append(c.OptionalExtensions, s.extension())

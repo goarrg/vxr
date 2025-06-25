@@ -390,6 +390,18 @@ func (cb *GraphicsCommandBuffer) RenderPassSetColorBlendParameters(firstAttachme
 	C.vxr_vk_graphics_renderPassSetColorBlend(instance.cInstance, cb.vkCommandBuffer, C.uint32_t(firstAttachment), C.uint32_t(len(infos)), cInfo)
 }
 
+func (cb *GraphicsCommandBuffer) RenderPassSetLineWidth(width float32) {
+	cb.noCopy.check()
+	if cb.currentRenderPass == (renderPass{}) {
+		abort("RenderPassSetLineWidth called outside a renderpass")
+	}
+	if !instance.deviceProperties.Limits.LineWidth.CheckValue(width) {
+		abort("RenderPassSetLineWidth called with width [%f] which is out of bounds of [%+v]", width,
+			instance.deviceProperties.Limits.LineWidth)
+	}
+	C.vxr_vk_graphics_renderPassSetLineWidth(instance.cInstance, cb.vkCommandBuffer, C.float(width))
+}
+
 type CullMode C.VkCullModeFlags
 
 const (
