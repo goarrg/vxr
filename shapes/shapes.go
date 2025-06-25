@@ -1,8 +1,9 @@
-//go:generate go run goarrg.com/rhi/vxr/cmd/vxrc -id-prefix=vxr/shapes/ -dir=./ -generator=go  -O -Os main.comp
+//go:generate go run goarrg.com/rhi/vxr/cmd/vxrc -id-prefix=vxr/shapes/ -dir=./ -generator=go  -O -Os -strip main.comp
 //go:generate go run goarrg.com/rhi/vxr/cmd/vxrc -id-prefix=vxr/shapes/ -dir=./ -generator=go -skip-metadata -O -Os -strip main.vert
 //go:generate go run goarrg.com/rhi/vxr/cmd/vxrc -id-prefix=vxr/shapes/ -dir=./ -generator=go -skip-metadata -O -Os -strip main.frag
 
-//go:generate go run goarrg.com/rhi/vxr/cmd/vxrc -id-prefix=vxr/shapes/ -dir=./ -generator=go -O -Os pipeline.vert
+//go:generate go run goarrg.com/rhi/vxr/cmd/vxrc -id-prefix=vxr/shapes/ -dir=./ -generator=go -O -Os -strip pipeline_poly.vert
+//go:generate go run goarrg.com/rhi/vxr/cmd/vxrc -id-prefix=vxr/shapes/ -dir=./ -generator=go -O -Os -strip pipeline_line.vert
 
 /*
 Copyright 2025 The goARRG Authors.
@@ -67,10 +68,15 @@ var instance = struct {
 	solid2DObjectBufferMetadata   vxr.ShaderBindingTypeBufferMetadata
 	solid2DTriangleBufferMetadata vxr.ShaderBindingTypeBufferMetadata
 
-	custom2DVertexInputPipeline        *vxr.VertexInputPipeline
-	custom2DVertexShader               *vxr.Shader
-	custom2DVertexShaderLayout         *vxr.ShaderLayout
-	custom2DVertexShaderObjectMetadata vxr.ShaderBindingTypeBufferMetadata
+	poly2DVertexInputPipeline        *vxr.VertexInputPipeline
+	poly2DVertexShader               *vxr.Shader
+	poly2DVertexShaderLayout         *vxr.ShaderLayout
+	poly2DVertexShaderObjectMetadata vxr.ShaderBindingTypeBufferMetadata
+
+	line2DVertexInputPipeline        *vxr.VertexInputPipeline
+	line2DVertexShader               *vxr.Shader
+	line2DVertexShaderLayout         *vxr.ShaderLayout
+	line2DVertexShaderObjectMetadata vxr.ShaderBindingTypeBufferMetadata
 }{
 	platform: platform{},
 	logger:   debug.NewLogger("vxr", "shapes"),
@@ -115,14 +121,24 @@ func Init(platform goarrg.PlatformInterface) {
 		instance.solid2DTriangleBufferMetadata.Size = uint64(unsafe.Sizeof(uint32(0)) * 4)
 	}
 
-	// custom2DPipeline
+	// poly2DPipeline
 	{
-		instance.custom2DVertexInputPipeline = vxr.NewVertexInputPipeline(vxr.VertexInputPipelineCreateInfo{
+		instance.poly2DVertexInputPipeline = vxr.NewVertexInputPipeline(vxr.VertexInputPipelineCreateInfo{
 			Topology: vxr.VertexTopologyTriangleList,
 		})
 		var m *vxr.ShaderMetadata
-		instance.custom2DVertexShader, instance.custom2DVertexShaderLayout, m = vxrcLoad_pipeline_vert()
-		instance.custom2DVertexShaderObjectMetadata = m.DescriptorSetBindings["Objects"].(vxr.ShaderBindingTypeBufferMetadata)
+		instance.poly2DVertexShader, instance.poly2DVertexShaderLayout, m = vxrcLoad_pipeline_poly_vert()
+		instance.poly2DVertexShaderObjectMetadata = m.DescriptorSetBindings["Objects"].(vxr.ShaderBindingTypeBufferMetadata)
+	}
+
+	// line2DPipeline
+	{
+		instance.line2DVertexInputPipeline = vxr.NewVertexInputPipeline(vxr.VertexInputPipelineCreateInfo{
+			Topology: vxr.VertexTopologyLineList,
+		})
+		var m *vxr.ShaderMetadata
+		instance.line2DVertexShader, instance.line2DVertexShaderLayout, m = vxrcLoad_pipeline_line_vert()
+		instance.line2DVertexShaderObjectMetadata = m.DescriptorSetBindings["Objects"].(vxr.ShaderBindingTypeBufferMetadata)
 	}
 }
 
@@ -134,7 +150,8 @@ func Destroy() {
 	instance.solid2DPipeline.FragmentShader.Destroy()
 	instance.solid2DPipeline = vxr.GraphicsPipelineLibrary{}
 
-	instance.custom2DVertexInputPipeline = nil
+	instance.poly2DVertexInputPipeline = nil
+	instance.line2DVertexInputPipeline = nil
 }
 
 func abort(fmt string, args ...any) {

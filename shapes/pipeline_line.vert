@@ -14,23 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-#extension GL_EXT_scalar_block_layout : enable
-#extension GL_EXT_shader_explicit_arithmetic_types_int8 : enable
-#extension GL_ARB_shading_language_include : enable
+#version 450
+#pragma shader_stage(vertex)
 
-#include "polygonmode.h"
+#extension GL_EXT_scalar_block_layout : enable
 
 struct object {
-	uint polygonMode;
-	uint triangleOffset;
-	uint triangleCount;
-	uint layer;
-	float parameter1;
-	u8vec4 color;
-	mat3x2 matrix;
+	vec2 points[2];
 };
 
-struct triangle {
-	uint oID;
-	vec2 vertices[3];
+layout(set = 0, binding = 0, scalar) buffer readonly restrict Objects {
+	layout(row_major) object objects[];
 };
+
+void main() {
+	gl_Position = vec4(objects[gl_VertexIndex / 2].points[gl_VertexIndex % 2], 0, 1);
+}

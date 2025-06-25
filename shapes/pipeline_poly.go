@@ -47,13 +47,13 @@ func New2DRegularNGonPipeline(fragmentLayout *vxr.ShaderLayout, sides uint32) *P
 		gpl: vxr.GraphicsPipelineLibrary{
 			Layout: vxr.NewPipelineLayout(
 				vxr.PipelineLayoutCreateInfo{
-					ShaderLayout: instance.custom2DVertexShaderLayout, ShaderStage: vxr.ShaderStageVertex,
+					ShaderLayout: instance.poly2DVertexShaderLayout, ShaderStage: vxr.ShaderStageVertex,
 				},
 				vxr.PipelineLayoutCreateInfo{
 					ShaderLayout: fragmentLayout, ShaderStage: vxr.ShaderStageFragment,
 				},
 			),
-			VertexInput: instance.custom2DVertexInputPipeline,
+			VertexInput: instance.poly2DVertexInputPipeline,
 		},
 		mode:  C.POLYGON_MODE_REGULAR_CONCAVE,
 		sides: sides,
@@ -63,7 +63,7 @@ func New2DRegularNGonPipeline(fragmentLayout *vxr.ShaderLayout, sides uint32) *P
 	}
 	p.vertexCount = sides * 3
 	p.gpl.VertexShader = vxr.NewGraphicsShaderPipeline(p.gpl.Layout,
-		instance.custom2DVertexShader, instance.custom2DVertexShaderLayout.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{
+		instance.poly2DVertexShader, instance.poly2DVertexShaderLayout.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{
 			SpecConstants: []uint32{
 				C.POLYGON_MODE_REGULAR_CONCAVE,
 				sides,
@@ -85,20 +85,20 @@ func New2DRegularNGonStarPipeline(fragmentLayout *vxr.ShaderLayout, points uint3
 		gpl: vxr.GraphicsPipelineLibrary{
 			Layout: vxr.NewPipelineLayout(
 				vxr.PipelineLayoutCreateInfo{
-					ShaderLayout: instance.custom2DVertexShaderLayout, ShaderStage: vxr.ShaderStageVertex,
+					ShaderLayout: instance.poly2DVertexShaderLayout, ShaderStage: vxr.ShaderStageVertex,
 				},
 				vxr.PipelineLayoutCreateInfo{
 					ShaderLayout: fragmentLayout, ShaderStage: vxr.ShaderStageFragment,
 				},
 			),
-			VertexInput: instance.custom2DVertexInputPipeline,
+			VertexInput: instance.poly2DVertexInputPipeline,
 		},
 		mode:        C.POLYGON_MODE_REGULAR_STAR,
 		sides:       points,
 		vertexCount: points * 6,
 	}
 	p.gpl.VertexShader = vxr.NewGraphicsShaderPipeline(p.gpl.Layout,
-		instance.custom2DVertexShader, instance.custom2DVertexShaderLayout.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{
+		instance.poly2DVertexShader, instance.poly2DVertexShaderLayout.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{
 			SpecConstants: []uint32{
 				C.POLYGON_MODE_REGULAR_STAR,
 				points,
@@ -136,8 +136,8 @@ func (p *Pipeline2D) Draw(f *vxr.Frame, cb *vxr.GraphicsCommandBuffer, frag *vxr
 	f.QueueDestory(ds)
 	{
 		b := f.NewHostScratchBuffer("vxr/shapes/customVertexShaderObjectData",
-			instance.custom2DVertexShaderObjectMetadata.Size+
-				(instance.custom2DVertexShaderObjectMetadata.RuntimeArrayStride*uint64(len(instances))),
+			instance.poly2DVertexShaderObjectMetadata.Size+
+				(instance.poly2DVertexShaderObjectMetadata.RuntimeArrayStride*uint64(len(instances))),
 			vxr.BufferUsageStorageBuffer,
 		)
 		ds.Bind(0, 0, vxr.DescriptorBufferInfo{
