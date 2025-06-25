@@ -2,6 +2,8 @@
 //go:generate go run goarrg.com/rhi/vxr/cmd/vxrc -id-prefix=vxr/shapes/ -dir=./ -generator=go -skip-metadata -O -Os -strip main.vert
 //go:generate go run goarrg.com/rhi/vxr/cmd/vxrc -id-prefix=vxr/shapes/ -dir=./ -generator=go -skip-metadata -O -Os -strip main.frag
 
+//go:generate go run goarrg.com/rhi/vxr/cmd/vxrc -id-prefix=vxr/shapes/ -dir=./ -generator=go -O -Os pipeline.vert
+
 /*
 Copyright 2025 The goARRG Authors.
 
@@ -64,6 +66,11 @@ var instance = struct {
 	solid2DPipeline               vxr.GraphicsPipelineLibrary
 	solid2DObjectBufferMetadata   vxr.ShaderBindingTypeBufferMetadata
 	solid2DTriangleBufferMetadata vxr.ShaderBindingTypeBufferMetadata
+
+	custom2DVertexInputPipeline        *vxr.VertexInputPipeline
+	custom2DVertexShader               *vxr.Shader
+	custom2DVertexShaderLayout         *vxr.ShaderLayout
+	custom2DVertexShaderObjectMetadata vxr.ShaderBindingTypeBufferMetadata
 }{
 	platform: platform{},
 	logger:   debug.NewLogger("vxr", "shapes"),
@@ -73,37 +80,50 @@ func Init(platform goarrg.PlatformInterface) {
 	instance.platform = platform
 	properties := vxr.DeviceProperties()
 
-	cs, cl, m := vxrcLoad_main_comp()
-	vs, vl := vxrcLoad_main_vert()
-	fs, fl := vxrcLoad_main_frag()
-	instance.solid2DObjectBufferMetadata = m.DescriptorSetBindings["Objects"].(vxr.ShaderBindingTypeBufferMetadata)
-	instance.solid2DTriangleBufferMetadata = m.DescriptorSetBindings["Triangles"].(vxr.ShaderBindingTypeBufferMetadata)
+	// solid2DPipeline
+	{
+		cs, cl, m := vxrcLoad_main_comp()
+		vs, vl := vxrcLoad_main_vert()
+		fs, fl := vxrcLoad_main_frag()
+		instance.solid2DObjectBufferMetadata = m.DescriptorSetBindings["Objects"].(vxr.ShaderBindingTypeBufferMetadata)
+		instance.solid2DTriangleBufferMetadata = m.DescriptorSetBindings["Triangles"].(vxr.ShaderBindingTypeBufferMetadata)
 
-	instance.solid2DPipeline.Layout = vxr.NewPipelineLayout(
-		vxr.PipelineLayoutCreateInfo{
-			ShaderLayout: cl, ShaderStage: vxr.ShaderStageCompute,
-		},
-		vxr.PipelineLayoutCreateInfo{
-			ShaderLayout: vl, ShaderStage: vxr.ShaderStageVertex,
-		},
-		vxr.PipelineLayoutCreateInfo{
-			ShaderLayout: fl, ShaderStage: vxr.ShaderStageFragment,
-		},
-	)
-	instance.dispatcher = vxr.NewComputePipeline(instance.solid2DPipeline.Layout, cs, cl.EntryPoints["main"], vxr.ComputePipelineCreateInfo{
-		SpecConstants: []uint32{properties.Compute.SubgroupSize, 1, 1},
-	})
-	instance.solid2DPipeline.VertexInput = vxr.NewVertexInputPipeline(vxr.VertexInputPipelineCreateInfo{
-		Topology: vxr.VertexTopologyTriangleList,
-	})
-	instance.solid2DPipeline.VertexShader = vxr.NewGraphicsShaderPipeline(instance.solid2DPipeline.Layout,
-		vs, vl.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{})
-	instance.solid2DPipeline.FragmentShader = vxr.NewGraphicsShaderPipeline(instance.solid2DPipeline.Layout,
-		fs, fl.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{})
+		instance.solid2DPipeline.Layout = vxr.NewPipelineLayout(
+			vxr.PipelineLayoutCreateInfo{
+				ShaderLayout: cl, ShaderStage: vxr.ShaderStageCompute,
+			},
+			vxr.PipelineLayoutCreateInfo{
+				ShaderLayout: vl, ShaderStage: vxr.ShaderStageVertex,
+			},
+			vxr.PipelineLayoutCreateInfo{
+				ShaderLayout: fl, ShaderStage: vxr.ShaderStageFragment,
+			},
+		)
+		instance.dispatcher = vxr.NewComputePipeline(instance.solid2DPipeline.Layout, cs, cl.EntryPoints["main"], vxr.ComputePipelineCreateInfo{
+			SpecConstants: []uint32{properties.Compute.SubgroupSize, 1, 1},
+		})
+		instance.solid2DPipeline.VertexInput = vxr.NewVertexInputPipeline(vxr.VertexInputPipelineCreateInfo{
+			Topology: vxr.VertexTopologyTriangleList,
+		})
+		instance.solid2DPipeline.VertexShader = vxr.NewGraphicsShaderPipeline(instance.solid2DPipeline.Layout,
+			vs, vl.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{})
+		instance.solid2DPipeline.FragmentShader = vxr.NewGraphicsShaderPipeline(instance.solid2DPipeline.Layout,
+			fs, fl.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{})
 
-	// we are packing the indirect buffer into the triangle buffer, do this after creating the layouts
-	// as we may use the size there in the future
-	instance.solid2DTriangleBufferMetadata.Size = uint64(unsafe.Sizeof(uint32(0)) * 4)
+		// we are packing the indirect buffer into the triangle buffer, do this after creating the layouts
+		// as we may use the size there in the future
+		instance.solid2DTriangleBufferMetadata.Size = uint64(unsafe.Sizeof(uint32(0)) * 4)
+	}
+
+	// custom2DPipeline
+	{
+		instance.custom2DVertexInputPipeline = vxr.NewVertexInputPipeline(vxr.VertexInputPipelineCreateInfo{
+			Topology: vxr.VertexTopologyTriangleList,
+		})
+		var m *vxr.ShaderMetadata
+		instance.custom2DVertexShader, instance.custom2DVertexShaderLayout, m = vxrcLoad_pipeline_vert()
+		instance.custom2DVertexShaderObjectMetadata = m.DescriptorSetBindings["Objects"].(vxr.ShaderBindingTypeBufferMetadata)
+	}
 }
 
 func Destroy() {
@@ -113,6 +133,8 @@ func Destroy() {
 	instance.solid2DPipeline.VertexShader.Destroy()
 	instance.solid2DPipeline.FragmentShader.Destroy()
 	instance.solid2DPipeline = vxr.GraphicsPipelineLibrary{}
+
+	instance.custom2DVertexInputPipeline = nil
 }
 
 func abort(fmt string, args ...any) {
