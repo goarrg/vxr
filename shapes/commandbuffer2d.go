@@ -301,13 +301,15 @@ func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuf
 		vxr.RenderAttachments{
 			Color: []vxr.RenderColorAttachment{
 				{
-					Image:               output,
-					Layout:              vxr.ImageLayoutAttachmentOptimal,
-					LoadOp:              vxr.RenderAttachmentLoadOpClear,
-					StoreOp:             vxr.RenderAttachmentStoreOpStore,
-					ColorBlendEnable:    true,
-					ColorBlendEquation:  vxr.RenderColorAttachmentBlendPremultipliedAlpha(),
-					ColorComponentFlags: output.Format().ColorComponentFlags(),
+					Image:   output,
+					Layout:  vxr.ImageLayoutAttachmentOptimal,
+					LoadOp:  vxr.RenderAttachmentLoadOpClear,
+					StoreOp: vxr.RenderAttachmentStoreOpStore,
+					ColorBlend: vxr.RenderColorBlendParameters{
+						Enable:         true,
+						Equation:       vxr.RenderColorAttachmentBlendPremultipliedAlpha(),
+						ComponentFlags: output.Format().ColorComponentFlags(),
+					},
 				},
 			},
 			Depth: vxr.RenderDepthAttachment{
