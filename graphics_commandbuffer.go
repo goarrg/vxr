@@ -402,6 +402,14 @@ func (cb *GraphicsCommandBuffer) RenderPassSetLineWidth(width float32) {
 	C.vxr_vk_graphics_renderPassSetLineWidth(instance.cInstance, cb.vkCommandBuffer, C.float(width))
 }
 
+type PolygonMode C.VkPolygonMode
+
+const (
+	PolygonModeFill  PolygonMode = vk.POLYGON_MODE_FILL
+	PolygonModeLine  PolygonMode = vk.POLYGON_MODE_LINE
+	PolygonModePoint PolygonMode = vk.POLYGON_MODE_POINT
+)
+
 type CullMode C.VkCullModeFlags
 
 const (
@@ -458,6 +466,8 @@ type DrawParameters struct {
 	PushConstants  []byte
 	DescriptorSets []*DescriptorSet
 
+	PolygonMode PolygonMode
+
 	CullMode  CullMode
 	FrontFace FrontFace
 
@@ -496,7 +506,9 @@ func (cb *GraphicsCommandBuffer) draw(p GraphicsPipelineLibrary, info DrawParame
 		layout: p.Layout.vkPipelinelayout,
 		pipeline: instance.graphics.pipelineCache.linkOrRetrieveExecutablePipeline(id, name, p.Layout.vkPipelinelayout,
 			[]C.VkPipeline{p.VertexInput.vkPipeline, p.VertexShader.vkPipeline, p.FragmentShader.vkPipeline, cb.currentRenderPass.fragmentOutputPipeline}),
-		topology: p.VertexInput.topology,
+
+		topology:    p.VertexInput.topology,
+		polygonMode: C.VkPolygonMode(info.PolygonMode),
 
 		cullMode:  C.VkCullModeFlags(info.CullMode),
 		frontFace: C.VkFrontFace(info.FrontFace),

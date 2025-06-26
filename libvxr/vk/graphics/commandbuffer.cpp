@@ -167,6 +167,8 @@ VXR_FN void vxr_vk_graphics_renderPassBegin(vxr_vk_instance, VkCommandBuffer cb,
 			cb, 0, info.renderingInfo.colorAttachmentCount, info.colorBlendInfo.equation);
 		VK_PROC_DEVICE(vkCmdSetColorWriteMaskEXT)(cb, 0, info.renderingInfo.colorAttachmentCount, info.colorBlendInfo.componentFlags);
 	}
+
+	VK_PROC_DEVICE(vkCmdSetLineWidth)(cb, 1);
 }
 VXR_FN void vxr_vk_graphics_renderPassSetViewport(vxr_vk_instance, VkCommandBuffer cb, VkBool32 flip, VkViewport viewport) {
 	if (flip == VK_FALSE) {
@@ -203,10 +205,14 @@ VXR_FN void vxr_vk_graphics_renderPassSetColorBlend(vxr_vk_instance, VkCommandBu
 	VK_PROC_DEVICE(vkCmdSetColorBlendEquationEXT)(cb, start, count, info.equation);
 	VK_PROC_DEVICE(vkCmdSetColorWriteMaskEXT)(cb, start, count, info.componentFlags);
 }
+VXR_FN void vxr_vk_graphics_renderPassSetLineWidth(vxr_vk_instance, VkCommandBuffer cb, float width) {
+	VK_PROC_DEVICE(vkCmdSetLineWidth)(cb, width);
+}
 inline static VXR_FN void setupDraw(vxr_vk_graphics_drawParameters parameters, VkCommandBuffer cb) {
 	VK_PROC_DEVICE(vkCmdBindPipeline)(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, parameters.pipeline);
 
 	VK_PROC_DEVICE(vkCmdSetPrimitiveTopology)(cb, parameters.topology);
+	VK_PROC_DEVICE(vkCmdSetPolygonModeEXT)(cb, parameters.polygonMode);
 	// VK_PROC_DEVICE(vkCmdSetVertexInputEXT)(cb, 0, nullptr, 0, nullptr);
 	// VK_PROC_DEVICE(vkCmdBindVertexBuffers)(cb, 0, 0, nullptr, nullptr);
 

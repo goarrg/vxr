@@ -29,6 +29,106 @@ limitations under the License.
 #include "vk/vklog.hpp"
 #include "vk/device/device.hpp"
 
+struct shaderPipelineCreateInfo {
+	const vxr_vk_graphics_shaderPipelineCreateInfo shader;
+	const VkPipelineDynamicStateCreateInfo* dynamicStates;
+
+	struct vertexInfo {
+		const VkPipelineViewportStateCreateInfo* viewportState;
+		const VkPipelineRasterizationStateCreateInfo* rasterizationState;
+	};
+	struct fragmentInfo {
+		const VkPipelineMultisampleStateCreateInfo* multisampleState;
+		const VkPipelineDepthStencilStateCreateInfo* depthStencilState;
+	};
+	union stageInfo {
+		vertexInfo vertex;
+		fragmentInfo fragment;
+	};
+
+	const stageInfo stage;
+};
+
+inline static void createShaderPipeline(vxr::vk::instance* instance, size_t nameSz, const char* name,
+										const shaderPipelineCreateInfo info, VkPipeline* pipeline) noexcept {
+	const VkShaderModuleCreateInfo shaderModuleCreateInfo = {
+		.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+		.codeSize = info.shader.spirv.len * sizeof(uint32_t),
+		.pCode = info.shader.spirv.data,
+	};
+	vxr::std::vector<VkSpecializationMapEntry> specializationEntries(info.shader.numSpecConstants);
+	for (uint32_t i = 0; i < info.shader.numSpecConstants; i++) {
+		specializationEntries[i] = VkSpecializationMapEntry{
+			.constantID = i,
+			.offset = (uint32_t)sizeof(uint32_t) * i,
+			.size = sizeof(uint32_t),
+		};
+	}
+
+	const VkSpecializationInfo specializationInfo = {
+		.mapEntryCount = static_cast<uint32_t>(specializationEntries.size()),
+		.pMapEntries = specializationEntries.get(),
+
+		.dataSize = sizeof(uint32_t) * specializationEntries.size(),
+		.pData = info.shader.specConstants,
+	};
+
+	const vxr::std::string entryPoint(info.shader.entryPointSize, info.shader.entryPoint);
+
+	VkPipelineShaderStageCreateInfo stageCreateInfo = {
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+		.pNext = &shaderModuleCreateInfo,
+		.stage = info.shader.stage,
+		.pName = entryPoint.cStr(),
+	};
+
+	// without this, it returns VK_ERROR_OUT_OF_HOST_MEMORY when we use
+	// VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT
+	if (specializationEntries.size() > 0) {
+		stageCreateInfo.pSpecializationInfo = &specializationInfo;
+	}
+
+	VkGraphicsPipelineLibraryCreateInfoEXT libraryInfo = {.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_LIBRARY_CREATE_INFO_EXT};
+	VkGraphicsPipelineCreateInfo pipelineCreateInfo = {
+		.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+		.pNext = &libraryInfo,
+		.flags = VK_PIPELINE_CREATE_LIBRARY_BIT_KHR | VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT,
+		.stageCount = 1,
+		.pStages = &stageCreateInfo,
+		.layout = info.shader.layout,
+	};
+
+	if (info.shader.stage == VK_SHADER_STAGE_FRAGMENT_BIT) {
+		libraryInfo.flags = VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT;
+		pipelineCreateInfo.pMultisampleState = info.stage.fragment.multisampleState;
+		pipelineCreateInfo.pDepthStencilState = info.stage.fragment.depthStencilState;
+		pipelineCreateInfo.pDynamicState = info.dynamicStates;
+	} else {
+		libraryInfo.flags = VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT;
+		pipelineCreateInfo.pViewportState = info.stage.vertex.viewportState;
+		pipelineCreateInfo.pRasterizationState = info.stage.vertex.rasterizationState;
+		pipelineCreateInfo.pDynamicState = info.dynamicStates;
+	}
+
+	const VkResult ret = VK_PROC_DEVICE(vkCreateGraphicsPipelines)(
+		instance->device.vkDevice, nullptr, 1, &pipelineCreateInfo, nullptr, pipeline);
+	if (ret != VK_SUCCESS) {
+		vxr::std::ePrintf("Failed to create graphics shader pipeline: %s", vxr::vk::vkResultStr(ret).cStr());
+		vxr::std::abort();
+	}
+
+	vxr::std::debugRun([=]() {
+		vxr::std::stringbuilder sb;
+		if (info.shader.stage == VK_SHADER_STAGE_FRAGMENT_BIT) {
+			sb.write("pipeline_fragment_");
+		} else {
+			sb.write("pipeline_vertex_");
+		}
+		sb.write(nameSz, name);
+		vxr::vk::debugLabel(instance->device.vkDevice, *pipeline, sb.cStr());
+	});
+}
+
 extern "C" {
 VXR_FN void vxr_vk_graphics_createVertexInputPipeline(vxr_vk_instance instanceHandle, size_t nameSz, const char* name,
 													  VkPrimitiveTopology topology, VkBool32 restart, VkPipeline* pipeline) {
@@ -80,19 +180,56 @@ VXR_FN void vxr_vk_graphics_createVertexInputPipeline(vxr_vk_instance instanceHa
 		vxr::vk::debugLabel(instance->device.vkDevice, *pipeline, sb.cStr());
 	});
 }
-VXR_FN void vxr_vk_graphics_createShaderPipeline(vxr_vk_instance instanceHandle, size_t nameSz, const char* name,
-												 vxr_vk_graphics_shaderPipelineCreateInfo shader, VkPipeline* pipeline) {
+VXR_FN void vxr_vk_graphics_createVertexShaderPipeline(vxr_vk_instance instanceHandle, size_t nameSz, const char* name,
+													   vxr_vk_graphics_shaderPipelineCreateInfo shader, VkPipeline* pipeline) {
 	auto* instance = vxr::vk::instance::fromHandle(instanceHandle);
 
 	static constexpr vxr::std::array vertexDynamicStates = {
 		VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT, VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT, VK_DYNAMIC_STATE_CULL_MODE,
-		VK_DYNAMIC_STATE_FRONT_FACE,		  VK_DYNAMIC_STATE_LINE_WIDTH,
+		VK_DYNAMIC_STATE_FRONT_FACE,		  VK_DYNAMIC_STATE_LINE_WIDTH,		   VK_DYNAMIC_STATE_POLYGON_MODE_EXT,
 	};
 	static constexpr VkPipelineDynamicStateCreateInfo vertexDynamicInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
 		.dynamicStateCount = vertexDynamicStates.size(),
 		.pDynamicStates = vertexDynamicStates.get(),
 	};
+	static constexpr VkPipelineViewportStateCreateInfo viewportState = {
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+	};
+	static constexpr VkPipelineRasterizationLineStateCreateInfo lineRasterizationState = {
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_LINE_STATE_CREATE_INFO,
+		.lineRasterizationMode = VK_LINE_RASTERIZATION_MODE_BRESENHAM,
+	};
+	static constexpr VkPipelineRasterizationStateCreateInfo rasterizationState = {
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+		.pNext = &lineRasterizationState,
+		.depthClampEnable = VK_FALSE,
+		.rasterizerDiscardEnable = VK_FALSE,
+		//.polygonMode = VK_POLYGON_MODE_FILL,
+		.depthBiasEnable = VK_FALSE,
+		//.lineWidth = 1.0f,
+		// .cullMode = VK_CULL_MODE_NONE,
+		// .frontFace = VK_FRONT_FACE_CLOCKWISE,
+	};
+	static constexpr shaderPipelineCreateInfo::vertexInfo vertexInfo = {
+		.viewportState = &viewportState,
+		.rasterizationState = &rasterizationState,
+	};
+	static constexpr shaderPipelineCreateInfo::stageInfo stageInfo = {
+		.vertex = vertexInfo,
+	};
+	createShaderPipeline(
+		instance, nameSz, name,
+		shaderPipelineCreateInfo{
+			.shader = shader,
+			.dynamicStates = &vertexDynamicInfo,
+			.stage = stageInfo,
+		},
+		pipeline);
+}
+VXR_FN void vxr_vk_graphics_createFragmentShaderPipeline(vxr_vk_instance instanceHandle, size_t nameSz, const char* name,
+														 vxr_vk_graphics_shaderPipelineCreateInfo shader, VkPipeline* pipeline) {
+	auto* instance = vxr::vk::instance::fromHandle(instanceHandle);
 
 	static constexpr vxr::std::array fragmentDynamicStates = {
 		VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE,	 VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE,
@@ -105,23 +242,6 @@ VXR_FN void vxr_vk_graphics_createShaderPipeline(vxr_vk_instance instanceHandle,
 		.dynamicStateCount = fragmentDynamicStates.size(),
 		.pDynamicStates = fragmentDynamicStates.get(),
 	};
-
-	// vertex states
-	static constexpr VkPipelineViewportStateCreateInfo viewportState = {
-		.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-	};
-	const VkPipelineRasterizationStateCreateInfo rasterizationState = {
-		.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-		.depthClampEnable = VK_FALSE,
-		.rasterizerDiscardEnable = VK_FALSE,
-		.polygonMode = VK_POLYGON_MODE_FILL,
-		.depthBiasEnable = VK_FALSE,
-		//.lineWidth = 1.0f,
-		// .cullMode = VK_CULL_MODE_NONE,
-		// .frontFace = VK_FRONT_FACE_CLOCKWISE,
-	};
-
-	// fragment states
 	static constexpr VkPipelineMultisampleStateCreateInfo multisampleInfo = {
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
 		.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
@@ -137,84 +257,21 @@ VXR_FN void vxr_vk_graphics_createShaderPipeline(vxr_vk_instance instanceHandle,
 		.minDepthBounds = 0.0f,
 		.maxDepthBounds = 1.0f,
 	};
-
-	const VkShaderModuleCreateInfo shaderModuleCreateInfo = {
-		.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-		.codeSize = shader.spirv.len * sizeof(uint32_t),
-		.pCode = shader.spirv.data,
+	static constexpr shaderPipelineCreateInfo::fragmentInfo fragmentInfo = {
+		.multisampleState = &multisampleInfo,
+		.depthStencilState = &depthStencilInfo,
 	};
-
-	vxr::std::vector<VkSpecializationMapEntry> specializationEntries(shader.numSpecConstants);
-	for (uint32_t i = 0; i < shader.numSpecConstants; i++) {
-		specializationEntries[i] = VkSpecializationMapEntry{
-			.constantID = i,
-			.offset = (uint32_t)sizeof(uint32_t) * i,
-			.size = sizeof(uint32_t),
-		};
-	}
-
-	const VkSpecializationInfo specializationInfo = {
-		.mapEntryCount = static_cast<uint32_t>(specializationEntries.size()),
-		.pMapEntries = specializationEntries.get(),
-
-		.dataSize = sizeof(uint32_t) * specializationEntries.size(),
-		.pData = shader.specConstants,
+	static constexpr shaderPipelineCreateInfo::stageInfo stageInfo = {
+		.fragment = fragmentInfo,
 	};
-
-	const vxr::std::string entryPoint(shader.entryPointSize, shader.entryPoint);
-
-	VkPipelineShaderStageCreateInfo stageCreateInfo = {
-		.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-		.pNext = &shaderModuleCreateInfo,
-		.stage = shader.stage,
-		.pName = entryPoint.cStr(),
-	};
-
-	// without this, it returns VK_ERROR_OUT_OF_HOST_MEMORY when we use
-	// VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT
-	if (specializationEntries.size() > 0) {
-		stageCreateInfo.pSpecializationInfo = &specializationInfo;
-	}
-
-	VkGraphicsPipelineLibraryCreateInfoEXT libraryInfo = {.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_LIBRARY_CREATE_INFO_EXT};
-	VkGraphicsPipelineCreateInfo pipelineCreateInfo = {
-		.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-		.pNext = &libraryInfo,
-		.flags = VK_PIPELINE_CREATE_LIBRARY_BIT_KHR | VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT,
-		.stageCount = 1,
-		.pStages = &stageCreateInfo,
-		.layout = shader.layout,
-	};
-
-	if (shader.stage == VK_SHADER_STAGE_FRAGMENT_BIT) {
-		libraryInfo.flags = VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT;
-		pipelineCreateInfo.pMultisampleState = &multisampleInfo;
-		pipelineCreateInfo.pDepthStencilState = &depthStencilInfo;
-		pipelineCreateInfo.pDynamicState = &fragmentDynamicInfo;
-	} else {
-		libraryInfo.flags = VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT;
-		pipelineCreateInfo.pViewportState = &viewportState;
-		pipelineCreateInfo.pRasterizationState = &rasterizationState;
-		pipelineCreateInfo.pDynamicState = &vertexDynamicInfo;
-	}
-
-	const VkResult ret = VK_PROC_DEVICE(vkCreateGraphicsPipelines)(
-		instance->device.vkDevice, nullptr, 1, &pipelineCreateInfo, nullptr, pipeline);
-	if (ret != VK_SUCCESS) {
-		vxr::std::ePrintf("Failed to create graphics shader pipeline: %s", vxr::vk::vkResultStr(ret).cStr());
-		vxr::std::abort();
-	}
-
-	vxr::std::debugRun([=]() {
-		vxr::std::stringbuilder sb;
-		if (shader.stage == VK_SHADER_STAGE_FRAGMENT_BIT) {
-			sb.write("pipeline_fragment_");
-		} else {
-			sb.write("pipeline_vertex_");
-		}
-		sb.write(nameSz, name);
-		vxr::vk::debugLabel(instance->device.vkDevice, *pipeline, sb.cStr());
-	});
+	createShaderPipeline(
+		instance, nameSz, name,
+		shaderPipelineCreateInfo{
+			.shader = shader,
+			.dynamicStates = &fragmentDynamicInfo,
+			.stage = stageInfo,
+		},
+		pipeline);
 }
 VXR_FN void vxr_vk_graphics_createFragmentOutputPipeline(vxr_vk_instance instanceHandle, size_t nameSz, const char* name,
 														 vxr_vk_graphics_fragmentOutputPipelineCreateInfo info, VkPipeline* pipeline) {

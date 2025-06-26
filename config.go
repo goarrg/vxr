@@ -119,7 +119,9 @@ func (c *Config) createDeviceSelector(surface uint64) C.vxr_vk_device_selector {
 			C.VK_EXT_MEMORY_BUDGET_EXTENSION_NAME,
 		}, c.RequiredExtensions...)
 		c.RequiredFeatures = append([]VkFeatureStruct{
-			VkPhysicalDeviceFeatures{},
+			VkPhysicalDeviceFeatures{
+				FillModeNonSolid: true,
+			},
 			VkPhysicalDeviceVulkan11Features{},
 			VkPhysicalDeviceVulkan12Features{
 				DescriptorIndexing:                        true,
@@ -139,6 +141,7 @@ func (c *Config) createDeviceSelector(surface uint64) C.vxr_vk_device_selector {
 				GraphicsPipelineLibrary: true,
 			},
 			VkPhysicalDeviceExtendedDynamicState3FeaturesEXT{
+				ExtendedDynamicState3PolygonMode:        true,
 				ExtendedDynamicState3ColorBlendEnable:   true,
 				ExtendedDynamicState3ColorBlendEquation: true,
 				ExtendedDynamicState3ColorWriteMask:     true,
@@ -152,6 +155,15 @@ func (c *Config) createDeviceSelector(surface uint64) C.vxr_vk_device_selector {
 				},
 			*/
 		}, c.RequiredFeatures...)
+		if c.API < C.VK_API_VERSION_1_4 {
+			c.RequiredFeatures = append(c.RequiredFeatures, VkPhysicalDeviceLineRasterizationFeaturesEXT{
+				BresenhamLines: true,
+			})
+		} else {
+			c.RequiredFeatures = append(c.RequiredFeatures, VkPhysicalDeviceVulkan14Features{
+				BresenhamLines: true,
+			})
+		}
 		for _, s := range c.RequiredFeatures {
 			if s.extension() != "" {
 				c.RequiredExtensions = append(c.RequiredExtensions, s.extension())

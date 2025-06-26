@@ -28,8 +28,11 @@ limitations under the License.
 #define VK_MAKE_API_VERSION(variant, major, minor, patch) \
 	((((uint32_t)(variant)) << 29U) | (((uint32_t)(major)) << 22U) | (((uint32_t)(minor)) << 12U) | ((uint32_t)(patch)))
 
-#define VXR_VK_MIN_API VK_MAKE_API_VERSION(0, 1, 3, 0)
-#define VXR_VK_MAX_API VK_MAKE_API_VERSION(0, 1, 4, 0)
+#define VK_API_VERSION_1_3 VK_MAKE_API_VERSION(0, 1, 3, 0)
+#define VK_API_VERSION_1_4 VK_MAKE_API_VERSION(0, 1, 4, 0)
+
+#define VXR_VK_MIN_API VK_API_VERSION_1_3
+#define VXR_VK_MAX_API VK_API_VERSION_1_4
 
 #define VXR_FN __attribute__((nothrow))
 #define VXR_HANDLE(object) typedef struct object##_t* object
@@ -361,7 +364,9 @@ typedef struct {
 typedef struct {
 	VkPipelineLayout layout;
 	VkPipeline pipeline;
+
 	VkPrimitiveTopology topology;
+	VkPolygonMode polygonMode;
 
 	VkCullModeFlags cullMode;
 	VkFrontFace frontFace;
@@ -529,8 +534,10 @@ extern VXR_FN void vxr_vk_graphics_destroy(vxr_vk_instance);
 extern VXR_FN void vxr_vk_graphics_getSurfaceInfo(vxr_vk_instance, vxr_vk_surfaceInfo*);
 
 extern VXR_FN void vxr_vk_graphics_createVertexInputPipeline(vxr_vk_instance, size_t, const char*, VkPrimitiveTopology, VkBool32, VkPipeline*);
-extern VXR_FN void vxr_vk_graphics_createShaderPipeline(vxr_vk_instance, size_t, const char*,
-														vxr_vk_graphics_shaderPipelineCreateInfo, VkPipeline*);
+extern VXR_FN void vxr_vk_graphics_createVertexShaderPipeline(vxr_vk_instance, size_t, const char*,
+															  vxr_vk_graphics_shaderPipelineCreateInfo, VkPipeline*);
+extern VXR_FN void vxr_vk_graphics_createFragmentShaderPipeline(vxr_vk_instance, size_t, const char*,
+																vxr_vk_graphics_shaderPipelineCreateInfo, VkPipeline*);
 extern VXR_FN void vxr_vk_graphics_createFragmentOutputPipeline(vxr_vk_instance, size_t, const char*,
 																vxr_vk_graphics_fragmentOutputPipelineCreateInfo, VkPipeline*);
 extern VXR_FN VkBool32 vxr_vk_graphics_linkPipelines(vxr_vk_instance, size_t, const char*, VkPipelineLayout, uint32_t,

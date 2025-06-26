@@ -170,8 +170,16 @@ func NewGraphicsShaderPipeline(pipelineLayout *PipelineLayout, s *Shader, entryP
 		specConstants:    (*C.uint32_t)(unsafe.SliceData(info.SpecConstants)),
 	}
 	var vkPipeline C.VkPipeline
-	C.vxr_vk_graphics_createShaderPipeline(instance.cInstance, C.size_t(len(shaderName)), (*C.char)(unsafe.Pointer(unsafe.StringData(shaderName))),
-		pipelineInfo, &vkPipeline)
+	switch entryPoint.ShaderStage() {
+	case ShaderStageVertex:
+		C.vxr_vk_graphics_createVertexShaderPipeline(instance.cInstance, C.size_t(len(shaderName)), (*C.char)(unsafe.Pointer(unsafe.StringData(shaderName))),
+			pipelineInfo, &vkPipeline)
+	case ShaderStageFragment:
+		C.vxr_vk_graphics_createFragmentShaderPipeline(instance.cInstance, C.size_t(len(shaderName)), (*C.char)(unsafe.Pointer(unsafe.StringData(shaderName))),
+			pipelineInfo, &vkPipeline)
+	default:
+		abort("Invalid shader stage: %s", entryPoint.ShaderStage().String())
+	}
 	runtime.KeepAlive(entryPointName)
 	runtime.KeepAlive(s.SPIRV)
 	runtime.KeepAlive(info.SpecConstants)
