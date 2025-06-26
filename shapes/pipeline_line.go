@@ -27,7 +27,7 @@ type Pipeline2DLine struct {
 	gpl    vxr.GraphicsPipelineLibrary
 }
 
-func New2DLinePipeline(fragmentLayout *vxr.ShaderLayout) *Pipeline2DLine {
+func NewPipeline2DLine(fragmentLayout *vxr.ShaderLayout) *Pipeline2DLine {
 	p := Pipeline2DLine{
 		gpl: vxr.GraphicsPipelineLibrary{
 			Layout: vxr.NewPipelineLayout(
@@ -97,6 +97,6 @@ func (p *Pipeline2DLine) Draw(f *vxr.Frame, cb *vxr.GraphicsCommandBuffer, frag 
 	}, vxr.DrawInfo{
 		DrawParameters: parameters,
 		VertexCount:    uint32(len(instances) * 2),
-		InstanceCount:  uint32(len(instances)),
+		InstanceCount:  1,
 	})
 }

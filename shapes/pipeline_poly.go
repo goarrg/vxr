@@ -36,10 +36,10 @@ type Pipeline2D struct {
 }
 
 /*
-New2DRegularNGonPipeline create a new Pipeline2D that can only draw a single shape with the given side count.
+NewPipeline2DRegularNGon create a new Pipeline2D that can only draw a single shape with the given side count.
 It creates an n-gon that fits within a circle with radius 0.5 before transformation.
 */
-func New2DRegularNGonPipeline(fragmentLayout *vxr.ShaderLayout, sides uint32) *Pipeline2D {
+func NewPipeline2DRegularNGon(fragmentLayout *vxr.ShaderLayout, sides uint32) *Pipeline2D {
 	if sides < 3 {
 		abort("The smallest possible shape is 3 sides")
 	}
@@ -74,10 +74,10 @@ func New2DRegularNGonPipeline(fragmentLayout *vxr.ShaderLayout, sides uint32) *P
 }
 
 /*
-New2DRegularNGonStarPipeline create a new Pipeline2D that can only draw a single shape with the given point count.
+NewPipeline2DRegularNGonStar create a new Pipeline2D that can only draw a single shape with the given point count.
 It creates an n-gon star that fits within a circle with radius 0.5 before transformation.
 */
-func New2DRegularNGonStarPipeline(fragmentLayout *vxr.ShaderLayout, points uint32) *Pipeline2D {
+func NewPipeline2DRegularNGonStar(fragmentLayout *vxr.ShaderLayout, points uint32) *Pipeline2D {
 	if points < 4 {
 		abort("The smallest possible shape is 4 sides")
 	}
