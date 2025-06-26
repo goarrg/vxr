@@ -100,3 +100,77 @@ func (p *Pipeline2DLine) Draw(f *vxr.Frame, cb *vxr.GraphicsCommandBuffer, frag 
 		InstanceCount:  1,
 	})
 }
+
+type Pipeline2DLineStrip struct {
+	noCopy noCopy
+	gpl    vxr.GraphicsPipelineLibrary
+}
+
+func NewPipeline2DLineStrip(fragmentLayout *vxr.ShaderLayout) *Pipeline2DLineStrip {
+	p := Pipeline2DLineStrip{
+		gpl: vxr.GraphicsPipelineLibrary{
+			Layout: vxr.NewPipelineLayout(
+				vxr.PipelineLayoutCreateInfo{
+					ShaderLayout: instance.lineStrip2DVertexShaderLayout, ShaderStage: vxr.ShaderStageVertex,
+				},
+				vxr.PipelineLayoutCreateInfo{
+					ShaderLayout: fragmentLayout, ShaderStage: vxr.ShaderStageFragment,
+				},
+			),
+			VertexInput: instance.lineStrip2DVertexInputPipeline,
+		},
+	}
+	p.gpl.VertexShader = vxr.NewGraphicsShaderPipeline(p.gpl.Layout,
+		instance.lineStrip2DVertexShader, instance.lineStrip2DVertexShaderLayout.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{
+			SpecConstants: []uint32{},
+		})
+	p.noCopy.init()
+	return &p
+}
+
+func (p *Pipeline2DLineStrip) Destroy() {
+	p.noCopy.check()
+	p.gpl.VertexShader.Destroy()
+	p.noCopy.close()
+}
+
+func (p *Pipeline2DLineStrip) Draw(f *vxr.Frame, cb *vxr.GraphicsCommandBuffer, frag *vxr.GraphicsShaderPipeline,
+	viewport gmath.Extent2i32, parameters vxr.DrawParameters, width float32,
+	points ...gmath.Vector2f32,
+) {
+	p.noCopy.check()
+	ds := p.gpl.Layout.NewDescriptorSet(0)
+	f.QueueDestory(ds)
+	{
+		b := f.NewHostScratchBuffer("vxr/shapes/customVertexShaderLineObjectData",
+			instance.lineStrip2DVertexShaderObjectMetadata.Size+
+				(instance.lineStrip2DVertexShaderObjectMetadata.RuntimeArrayStride*uint64(len(points))),
+			vxr.BufferUsageStorageBuffer,
+		)
+		ds.Bind(0, 0, vxr.DescriptorBufferInfo{
+			Buffer: b,
+		})
+
+		var off uintptr
+		s := gmath.Vector2f32{X: 2 / float32(viewport.X), Y: 2 / float32(viewport.Y)}
+		for _, p := range points {
+			off += util.HostWrite(b, off, struct {
+				p0 [2]float32
+			}{
+				p0: gmath.Vector2f32{X: -1, Y: -1}.Add(p.Scale(s)).ToArrayf32(),
+			})
+		}
+	}
+	parameters.DescriptorSets = append([]*vxr.DescriptorSet{ds}, parameters.DescriptorSets...)
+	cb.RenderPassSetLineWidth(width)
+	cb.Draw(vxr.GraphicsPipelineLibrary{
+		Layout:         p.gpl.Layout,
+		VertexInput:    p.gpl.VertexInput,
+		VertexShader:   p.gpl.VertexShader,
+		FragmentShader: frag,
+	}, vxr.DrawInfo{
+		DrawParameters: parameters,
+		VertexCount:    uint32(len(points)),
+		InstanceCount:  1,
+	})
+}

@@ -4,6 +4,7 @@
 
 //go:generate go run goarrg.com/rhi/vxr/cmd/vxrc -id-prefix=vxr/shapes/ -dir=./ -generator=go -O -Os -strip pipeline_poly.vert
 //go:generate go run goarrg.com/rhi/vxr/cmd/vxrc -id-prefix=vxr/shapes/ -dir=./ -generator=go -O -Os -strip pipeline_line.vert
+//go:generate go run goarrg.com/rhi/vxr/cmd/vxrc -id-prefix=vxr/shapes/ -dir=./ -generator=go -O -Os -strip pipeline_linestrip.vert
 
 /*
 Copyright 2025 The goARRG Authors.
@@ -77,6 +78,11 @@ var instance = struct {
 	line2DVertexShader               *vxr.Shader
 	line2DVertexShaderLayout         *vxr.ShaderLayout
 	line2DVertexShaderObjectMetadata vxr.ShaderBindingTypeBufferMetadata
+
+	lineStrip2DVertexInputPipeline        *vxr.VertexInputPipeline
+	lineStrip2DVertexShader               *vxr.Shader
+	lineStrip2DVertexShaderLayout         *vxr.ShaderLayout
+	lineStrip2DVertexShaderObjectMetadata vxr.ShaderBindingTypeBufferMetadata
 }{
 	platform: platform{},
 	logger:   debug.NewLogger("vxr", "shapes"),
@@ -140,6 +146,16 @@ func Init(platform goarrg.PlatformInterface) {
 		instance.line2DVertexShader, instance.line2DVertexShaderLayout, m = vxrcLoad_pipeline_line_vert()
 		instance.line2DVertexShaderObjectMetadata = m.DescriptorSetBindings["Objects"].(vxr.ShaderBindingTypeBufferMetadata)
 	}
+
+	// lineStrip2DPipeline
+	{
+		instance.lineStrip2DVertexInputPipeline = vxr.NewVertexInputPipeline(vxr.VertexInputPipelineCreateInfo{
+			Topology: vxr.VertexTopologyLineStrip,
+		})
+		var m *vxr.ShaderMetadata
+		instance.lineStrip2DVertexShader, instance.lineStrip2DVertexShaderLayout, m = vxrcLoad_pipeline_linestrip_vert()
+		instance.lineStrip2DVertexShaderObjectMetadata = m.DescriptorSetBindings["Objects"].(vxr.ShaderBindingTypeBufferMetadata)
+	}
 }
 
 func Destroy() {
@@ -152,6 +168,7 @@ func Destroy() {
 
 	instance.poly2DVertexInputPipeline = nil
 	instance.line2DVertexInputPipeline = nil
+	instance.lineStrip2DVertexInputPipeline = nil
 }
 
 func abort(fmt string, args ...any) {
