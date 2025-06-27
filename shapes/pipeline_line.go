@@ -27,7 +27,7 @@ type Pipeline2DLine struct {
 	gpl    vxr.GraphicsPipelineLibrary
 }
 
-func NewPipeline2DLine(fragmentLayout *vxr.ShaderLayout) *Pipeline2DLine {
+func NewPipeline2DLine(fragmentLayout *vxr.ShaderLayout, specConstants []uint32) *Pipeline2DLine {
 	p := Pipeline2DLine{
 		gpl: vxr.GraphicsPipelineLibrary{
 			Layout: vxr.NewPipelineLayout(
@@ -36,6 +36,7 @@ func NewPipeline2DLine(fragmentLayout *vxr.ShaderLayout) *Pipeline2DLine {
 				},
 				vxr.PipelineLayoutCreateInfo{
 					ShaderLayout: fragmentLayout, ShaderStage: vxr.ShaderStageFragment,
+					SpecConstants: specConstants,
 				},
 			),
 			VertexInput: instance.line2DVertexInputPipeline,
@@ -106,7 +107,7 @@ type Pipeline2DLineStrip struct {
 	gpl    vxr.GraphicsPipelineLibrary
 }
 
-func NewPipeline2DLineStrip(fragmentLayout *vxr.ShaderLayout) *Pipeline2DLineStrip {
+func NewPipeline2DLineStrip(fragmentLayout *vxr.ShaderLayout, specConstants []uint32) *Pipeline2DLineStrip {
 	p := Pipeline2DLineStrip{
 		gpl: vxr.GraphicsPipelineLibrary{
 			Layout: vxr.NewPipelineLayout(
@@ -115,6 +116,7 @@ func NewPipeline2DLineStrip(fragmentLayout *vxr.ShaderLayout) *Pipeline2DLineStr
 				},
 				vxr.PipelineLayoutCreateInfo{
 					ShaderLayout: fragmentLayout, ShaderStage: vxr.ShaderStageFragment,
+					SpecConstants: specConstants,
 				},
 			),
 			VertexInput: instance.lineStrip2DVertexInputPipeline,

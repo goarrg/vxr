@@ -28,18 +28,82 @@ import (
 )
 
 type Pipeline2D struct {
-	noCopy      noCopy
-	gpl         vxr.GraphicsPipelineLibrary
-	mode        uint32
-	sides       uint32
-	vertexCount uint32
+	noCopy        noCopy
+	gpl           vxr.GraphicsPipelineLibrary
+	mode          uint32
+	triangleCount uint32
+	vertexCount   uint32
+}
+
+/*
+NewPipeline2DSquare create a new Pipeline2D that can only generate squares.
+*/
+func NewPipeline2DTriangle(fragmentLayout *vxr.ShaderLayout, specConstants []uint32) *Pipeline2D {
+	p := Pipeline2D{
+		gpl: vxr.GraphicsPipelineLibrary{
+			Layout: vxr.NewPipelineLayout(
+				vxr.PipelineLayoutCreateInfo{
+					ShaderLayout: instance.poly2DVertexShaderLayout, ShaderStage: vxr.ShaderStageVertex,
+				},
+				vxr.PipelineLayoutCreateInfo{
+					ShaderLayout: fragmentLayout, ShaderStage: vxr.ShaderStageFragment,
+					SpecConstants: specConstants,
+				},
+			),
+			VertexInput: instance.poly2DVertexInputPipeline,
+		},
+		mode:          C.POLYGON_MODE_REGULAR_CONCAVE,
+		triangleCount: 1,
+		vertexCount:   3,
+	}
+	p.gpl.VertexShader = vxr.NewGraphicsShaderPipeline(p.gpl.Layout,
+		instance.poly2DVertexShader, instance.poly2DVertexShaderLayout.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{
+			SpecConstants: []uint32{
+				C.POLYGON_MODE_REGULAR_CONCAVE,
+				1,
+			},
+		})
+	p.noCopy.init()
+	return &p
+}
+
+/*
+NewPipeline2DSquare create a new Pipeline2D that can only generate squares.
+*/
+func NewPipeline2DSquare(fragmentLayout *vxr.ShaderLayout, specConstants []uint32) *Pipeline2D {
+	p := Pipeline2D{
+		gpl: vxr.GraphicsPipelineLibrary{
+			Layout: vxr.NewPipelineLayout(
+				vxr.PipelineLayoutCreateInfo{
+					ShaderLayout: instance.poly2DVertexShaderLayout, ShaderStage: vxr.ShaderStageVertex,
+				},
+				vxr.PipelineLayoutCreateInfo{
+					ShaderLayout: fragmentLayout, ShaderStage: vxr.ShaderStageFragment,
+					SpecConstants: specConstants,
+				},
+			),
+			VertexInput: instance.poly2DVertexInputPipeline,
+		},
+		mode:          C.POLYGON_MODE_REGULAR_CONCAVE,
+		triangleCount: 2,
+		vertexCount:   6,
+	}
+	p.gpl.VertexShader = vxr.NewGraphicsShaderPipeline(p.gpl.Layout,
+		instance.poly2DVertexShader, instance.poly2DVertexShaderLayout.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{
+			SpecConstants: []uint32{
+				C.POLYGON_MODE_REGULAR_CONCAVE,
+				2,
+			},
+		})
+	p.noCopy.init()
+	return &p
 }
 
 /*
 NewPipeline2DRegularNGon create a new Pipeline2D that can only draw a single shape with the given side count.
 It creates an n-gon that fits within a circle with radius 0.5 before transformation.
 */
-func NewPipeline2DRegularNGon(fragmentLayout *vxr.ShaderLayout, sides uint32) *Pipeline2D {
+func NewPipeline2DRegularNGon(fragmentLayout *vxr.ShaderLayout, specConstants []uint32, sides uint32) *Pipeline2D {
 	if sides < 3 {
 		abort("The smallest possible shape is 3 sides")
 	}
@@ -51,12 +115,13 @@ func NewPipeline2DRegularNGon(fragmentLayout *vxr.ShaderLayout, sides uint32) *P
 				},
 				vxr.PipelineLayoutCreateInfo{
 					ShaderLayout: fragmentLayout, ShaderStage: vxr.ShaderStageFragment,
+					SpecConstants: specConstants,
 				},
 			),
 			VertexInput: instance.poly2DVertexInputPipeline,
 		},
-		mode:  C.POLYGON_MODE_REGULAR_CONCAVE,
-		sides: sides,
+		mode:          C.POLYGON_MODE_REGULAR_CONCAVE,
+		triangleCount: sides,
 	}
 	if sides <= 4 {
 		sides = sides - 2
@@ -77,7 +142,7 @@ func NewPipeline2DRegularNGon(fragmentLayout *vxr.ShaderLayout, sides uint32) *P
 NewPipeline2DRegularNGonStar create a new Pipeline2D that can only draw a single shape with the given point count.
 It creates an n-gon star that fits within a circle with radius 0.5 before transformation.
 */
-func NewPipeline2DRegularNGonStar(fragmentLayout *vxr.ShaderLayout, points uint32) *Pipeline2D {
+func NewPipeline2DRegularNGonStar(fragmentLayout *vxr.ShaderLayout, specConstants []uint32, points uint32) *Pipeline2D {
 	if points < 4 {
 		abort("The smallest possible shape is 4 sides")
 	}
@@ -89,13 +154,14 @@ func NewPipeline2DRegularNGonStar(fragmentLayout *vxr.ShaderLayout, points uint3
 				},
 				vxr.PipelineLayoutCreateInfo{
 					ShaderLayout: fragmentLayout, ShaderStage: vxr.ShaderStageFragment,
+					SpecConstants: specConstants,
 				},
 			),
 			VertexInput: instance.poly2DVertexInputPipeline,
 		},
-		mode:        C.POLYGON_MODE_REGULAR_STAR,
-		sides:       points,
-		vertexCount: points * 6,
+		mode:          C.POLYGON_MODE_REGULAR_STAR,
+		triangleCount: points,
+		vertexCount:   points * 6,
 	}
 	p.gpl.VertexShader = vxr.NewGraphicsShaderPipeline(p.gpl.Layout,
 		instance.poly2DVertexShader, instance.poly2DVertexShaderLayout.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{
@@ -145,7 +211,7 @@ func (p *Pipeline2D) Draw(f *vxr.Frame, cb *vxr.GraphicsCommandBuffer, frag *vxr
 		})
 		var off uintptr
 		for _, i := range instances {
-			m := i.Transform.modelMatrix(p.mode, p.sides)
+			m := i.Transform.modelMatrix(p.mode, p.triangleCount)
 			m[0] = [3]float32{
 				m[0][0] * (2 / float32(viewport.X)),
 				m[0][1] * (2 / float32(viewport.X)),
