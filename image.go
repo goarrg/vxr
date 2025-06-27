@@ -378,8 +378,13 @@ type DeviceColorImage struct {
 
 var _ interface {
 	ColorImage
+	ImageBufferCopyable
 	Destroyer
 } = (*DeviceColorImage)(nil)
+
+func (img *DeviceColorImage) imageIsBufferCopyable() {
+	img.noCopy.check()
+}
 
 func (img *DeviceColorImage) Destroy() {
 	if img == nil {
@@ -425,8 +430,13 @@ type DeviceDepthStencilImage struct {
 
 var _ interface {
 	DepthStencilImage
+	ImageBufferCopyable
 	Destroyer
 } = (*DeviceDepthStencilImage)(nil)
+
+func (img *DeviceDepthStencilImage) imageIsBufferCopyable() {
+	img.noCopy.check()
+}
 
 func (img *DeviceDepthStencilImage) Destroy() {
 	if img == nil {

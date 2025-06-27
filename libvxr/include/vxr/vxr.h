@@ -163,6 +163,15 @@ typedef struct {
 } vxr_vk_imageCreateInfo;
 
 typedef struct {
+	VkImageCreateFlags flags;
+	VkFormat format;
+	VkExtent2D extent;
+	// uint32_t arrayLayers;
+	VkSampleCountFlagBits samples;
+	VkImageUsageFlags usage;
+} vxr_vk_imageMultiSampledCreateInfo;
+
+typedef struct {
 	VkImageViewCreateFlags flags;
 	VkImage vkImage;
 	VkImageViewType type;
@@ -359,6 +368,7 @@ typedef struct {
 	VkRenderingInfo renderingInfo;
 	VkBool32 flipViewport;
 	vxr_vk_graphics_colorBlendInfo colorBlendInfo;
+	VkSampleCountFlagBits samples;
 } vxr_vk_graphics_renderPassInfo;
 
 typedef struct {
@@ -471,6 +481,7 @@ extern VXR_FN void vxr_vk_destroyDeviceBuffer(vxr_vk_instance, vxr_vk_deviceBuff
 
 extern VXR_FN void vxr_vk_getFormatProperties(vxr_vk_instance, VkFormat, VkFormatProperties3*);
 extern VXR_FN void vxr_vk_createImage(vxr_vk_instance, size_t, const char*, vxr_vk_imageCreateInfo, vxr_vk_image*);
+extern VXR_FN void vxr_vk_createImageMultiSampled(vxr_vk_instance, size_t, const char*, vxr_vk_imageMultiSampledCreateInfo, vxr_vk_image*);
 extern VXR_FN void vxr_vk_destroyImage(vxr_vk_instance, vxr_vk_image);
 
 extern VXR_FN void vxr_vk_createImageView(vxr_vk_instance, size_t, const char*, vxr_vk_imageViewCreateInfo, VkImageView*);

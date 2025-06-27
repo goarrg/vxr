@@ -120,12 +120,24 @@ type RenderColorBlendParameters struct {
 	ComponentFlags ColorComponentFlags
 }
 
+type RenderResolveMode C.VkResolveModeFlags
+
+const (
+	RenderResolveModeNone    RenderResolveMode = vk.RESOLVE_MODE_NONE
+	RenderResolveModeZero    RenderResolveMode = vk.RESOLVE_MODE_SAMPLE_ZERO_BIT
+	RenderResolveModeAverage RenderResolveMode = vk.RESOLVE_MODE_AVERAGE_BIT
+	RenderResolveModeMin     RenderResolveMode = vk.RESOLVE_MODE_MIN_BIT
+	RenderResolveModeMax     RenderResolveMode = vk.RESOLVE_MODE_MAX_BIT
+)
+
 type RenderColorAttachment struct {
-	Image      ColorImage
-	Layout     ImageLayout
-	LoadOp     RenderAttachmentLoadOp
-	StoreOp    RenderAttachmentStoreOp
-	ClearValue ColorImageClearValue
+	Image             ColorImage
+	ImageMultiSampled *DeviceColorImageMultiSampled
+	RenderResolveMode RenderResolveMode
+	Layout            ImageLayout
+	LoadOp            RenderAttachmentLoadOp
+	StoreOp           RenderAttachmentStoreOp
+	ClearValue        ColorImageClearValue
 
 	ColorBlend RenderColorBlendParameters
 }
@@ -151,19 +163,23 @@ func (c RenderClearStencilValue) vkClearValue() [16]byte {
 }
 
 type RenderDepthAttachment struct {
-	Image      DepthStencilImage
-	Layout     ImageLayout
-	LoadOp     RenderAttachmentLoadOp
-	StoreOp    RenderAttachmentStoreOp
-	ClearValue RenderClearDepthValue
+	Image             DepthStencilImage
+	ImageMultiSampled *DeviceDepthStencilImageMultiSampled
+	RenderResolveMode RenderResolveMode
+	Layout            ImageLayout
+	LoadOp            RenderAttachmentLoadOp
+	StoreOp           RenderAttachmentStoreOp
+	ClearValue        RenderClearDepthValue
 }
 
 type RenderStencilAttachment struct {
-	Image      DepthStencilImage
-	Layout     ImageLayout
-	LoadOp     RenderAttachmentLoadOp
-	StoreOp    RenderAttachmentStoreOp
-	ClearValue RenderClearStencilValue
+	Image             DepthStencilImage
+	ImageMultiSampled *DeviceDepthStencilImageMultiSampled
+	RenderResolveMode RenderResolveMode
+	Layout            ImageLayout
+	LoadOp            RenderAttachmentLoadOp
+	StoreOp           RenderAttachmentStoreOp
+	ClearValue        RenderClearStencilValue
 }
 
 type RenderAttachments struct {
@@ -180,6 +196,10 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 	if (attachments.Depth.Image != nil) && (attachments.Stencil.Image != nil) && (attachments.Depth.Image != attachments.Stencil.Image) {
 		abort("Depth and Stencil ImageViews must be the same if both are not nil")
 	}
+	if (attachments.Depth.ImageMultiSampled != nil) && (attachments.Stencil.ImageMultiSampled != nil) &&
+		(attachments.Depth.ImageMultiSampled != attachments.Stencil.ImageMultiSampled) {
+		abort("Depth and Stencil ImageViews must be the same if both are not nil")
+	}
 
 	cAttachments := make([]C.VkRenderingAttachmentInfo, len(attachments.Color))
 	cColorBlendEnable := make([]C.VkBool32, len(attachments.Color))
@@ -191,32 +211,52 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 		cb.currentRenderPass.id = "null,"
 		cb.currentRenderPass.name = "null,"
 	}
-	for i, attachment := range attachments.Color {
-		cAttachments[i] = C.VkRenderingAttachmentInfo{
-			sType:       vk.STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-			imageView:   attachment.Image.vkImageView(),
-			imageLayout: C.VkImageLayout(attachment.Layout),
-			loadOp:      C.VkAttachmentLoadOp(attachment.LoadOp),
-			storeOp:     C.VkAttachmentStoreOp(attachment.StoreOp),
-		}
-		if attachment.ColorBlend.Enable {
-			cColorBlendEnable[i] = vk.TRUE
-		}
-		cColorBlendEquation[i] = C.VkColorBlendEquationEXT{
-			srcColorBlendFactor: C.VkBlendFactor(attachment.ColorBlend.Equation.Color.Src),
-			dstColorBlendFactor: C.VkBlendFactor(attachment.ColorBlend.Equation.Color.Dst),
-			colorBlendOp:        C.VkBlendOp(attachment.ColorBlend.Equation.Color.Op),
+	var sampleCount SampleCountFlags
+	if len(attachments.Color) > 0 {
+		sampleCount = attachments.Color[0].ImageMultiSampled.sampleCount()
+		for i, attachment := range attachments.Color {
+			if sampleCount != attachment.ImageMultiSampled.sampleCount() {
+				abort("All RenderPass Attachments must be either multisampled with the same sample count or not multisampled")
+			}
+			if sampleCount > 0 {
+				cAttachments[i] = C.VkRenderingAttachmentInfo{
+					sType:              vk.STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+					imageView:          attachment.ImageMultiSampled.vkImageView(),
+					imageLayout:        C.VkImageLayout(attachment.Layout),
+					resolveImageView:   attachment.Image.vkImageView(),
+					resolveImageLayout: C.VkImageLayout(attachment.Layout),
+					resolveMode:        C.VkResolveModeFlagBits(attachment.RenderResolveMode),
+					loadOp:             C.VkAttachmentLoadOp(attachment.LoadOp),
+					storeOp:            C.VkAttachmentStoreOp(attachment.StoreOp),
+				}
+			} else {
+				cAttachments[i] = C.VkRenderingAttachmentInfo{
+					sType:       vk.STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+					imageView:   attachment.Image.vkImageView(),
+					imageLayout: C.VkImageLayout(attachment.Layout),
+					loadOp:      C.VkAttachmentLoadOp(attachment.LoadOp),
+					storeOp:     C.VkAttachmentStoreOp(attachment.StoreOp),
+				}
+			}
+			if attachment.ColorBlend.Enable {
+				cColorBlendEnable[i] = vk.TRUE
+			}
+			cColorBlendEquation[i] = C.VkColorBlendEquationEXT{
+				srcColorBlendFactor: C.VkBlendFactor(attachment.ColorBlend.Equation.Color.Src),
+				dstColorBlendFactor: C.VkBlendFactor(attachment.ColorBlend.Equation.Color.Dst),
+				colorBlendOp:        C.VkBlendOp(attachment.ColorBlend.Equation.Color.Op),
 
-			srcAlphaBlendFactor: C.VkBlendFactor(attachment.ColorBlend.Equation.Alpha.Src),
-			dstAlphaBlendFactor: C.VkBlendFactor(attachment.ColorBlend.Equation.Alpha.Dst),
-			alphaBlendOp:        C.VkBlendOp(attachment.ColorBlend.Equation.Alpha.Op),
-		}
-		cColorComponentFlags[i] = C.VkColorComponentFlags(attachment.ColorBlend.ComponentFlags)
-		vkColorFormats[i] = attachments.Color[i].Image.vkFormat()
-		cb.currentRenderPass.id += fmt.Sprintf("%s,", toHex(vkColorFormats[i]))
-		cb.currentRenderPass.name += fmt.Sprintf("%s,", attachments.Color[i].Image.Format().String())
-		if attachment.LoadOp == RenderAttachmentLoadOpClear && attachments.Color[i].ClearValue != nil {
-			cAttachments[i].clearValue = attachments.Color[i].ClearValue.vkClearValue()
+				srcAlphaBlendFactor: C.VkBlendFactor(attachment.ColorBlend.Equation.Alpha.Src),
+				dstAlphaBlendFactor: C.VkBlendFactor(attachment.ColorBlend.Equation.Alpha.Dst),
+				alphaBlendOp:        C.VkBlendOp(attachment.ColorBlend.Equation.Alpha.Op),
+			}
+			cColorComponentFlags[i] = C.VkColorComponentFlags(attachment.ColorBlend.ComponentFlags)
+			vkColorFormats[i] = attachments.Color[i].Image.vkFormat()
+			cb.currentRenderPass.id += fmt.Sprintf("%s,", toHex(vkColorFormats[i]))
+			cb.currentRenderPass.name += fmt.Sprintf("%s,", attachments.Color[i].Image.Format().String())
+			if attachment.LoadOp == RenderAttachmentLoadOpClear && attachments.Color[i].ClearValue != nil {
+				cAttachments[i].clearValue = attachments.Color[i].ClearValue.vkClearValue()
+			}
 		}
 	}
 
@@ -237,18 +277,37 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 				equation:       unsafe.SliceData(cColorBlendEquation),
 				componentFlags: unsafe.SliceData(cColorComponentFlags),
 			},
+			samples: C.VkSampleCountFlagBits(sampleCount),
 		}
 		if parameters.FlipViewport {
 			cInfo.flipViewport = vk.TRUE
 		}
 		if attachments.Depth.Image != nil {
-			depthAttachment := &C.VkRenderingAttachmentInfo{
-				sType:       vk.STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-				imageView:   attachments.Depth.Image.vkImageView(),
-				imageLayout: C.VkImageLayout(attachments.Depth.Layout),
-				loadOp:      C.VkAttachmentLoadOp(attachments.Depth.LoadOp),
-				storeOp:     C.VkAttachmentStoreOp(attachments.Depth.StoreOp),
-				clearValue:  attachments.Depth.ClearValue.vkClearValue(),
+			if sampleCount != attachments.Depth.ImageMultiSampled.sampleCount() {
+				abort("All RenderPass Attachments must be either multisampled with the same sample count or not multisampled")
+			}
+			var depthAttachment *C.VkRenderingAttachmentInfo
+			if sampleCount > 0 {
+				depthAttachment = &C.VkRenderingAttachmentInfo{
+					sType:              vk.STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+					imageView:          attachments.Depth.ImageMultiSampled.vkImageView(),
+					imageLayout:        C.VkImageLayout(attachments.Depth.Layout),
+					resolveImageView:   attachments.Depth.Image.vkImageView(),
+					resolveImageLayout: C.VkImageLayout(attachments.Depth.Layout),
+					resolveMode:        C.VkResolveModeFlagBits(attachments.Depth.RenderResolveMode),
+					loadOp:             C.VkAttachmentLoadOp(attachments.Depth.LoadOp),
+					storeOp:            C.VkAttachmentStoreOp(attachments.Depth.StoreOp),
+					clearValue:         attachments.Depth.ClearValue.vkClearValue(),
+				}
+			} else {
+				depthAttachment = &C.VkRenderingAttachmentInfo{
+					sType:       vk.STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+					imageView:   attachments.Depth.Image.vkImageView(),
+					imageLayout: C.VkImageLayout(attachments.Depth.Layout),
+					loadOp:      C.VkAttachmentLoadOp(attachments.Depth.LoadOp),
+					storeOp:     C.VkAttachmentStoreOp(attachments.Depth.StoreOp),
+					clearValue:  attachments.Depth.ClearValue.vkClearValue(),
+				}
 			}
 			defer runtime.KeepAlive(depthAttachment)
 			cInfo.renderingInfo.pDepthAttachment = depthAttachment
@@ -256,13 +315,31 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 			cb.currentRenderPass.name += fmt.Sprintf("%s,", attachments.Depth.Image.Format().String())
 		}
 		if attachments.Stencil.Image != nil {
-			stencilAttachment := &C.VkRenderingAttachmentInfo{
-				sType:       vk.STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-				imageView:   attachments.Stencil.Image.vkImageView(),
-				imageLayout: C.VkImageLayout(attachments.Stencil.Layout),
-				loadOp:      C.VkAttachmentLoadOp(attachments.Stencil.LoadOp),
-				storeOp:     C.VkAttachmentStoreOp(attachments.Stencil.StoreOp),
-				clearValue:  attachments.Stencil.ClearValue.vkClearValue(),
+			if sampleCount != attachments.Stencil.ImageMultiSampled.sampleCount() {
+				abort("All RenderPass Attachments must be either multisampled with the same sample count or not multisampled")
+			}
+			var stencilAttachment *C.VkRenderingAttachmentInfo
+			if sampleCount > 0 {
+				stencilAttachment = &C.VkRenderingAttachmentInfo{
+					sType:              vk.STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+					imageView:          attachments.Stencil.ImageMultiSampled.vkImageView(),
+					imageLayout:        C.VkImageLayout(attachments.Stencil.Layout),
+					resolveImageView:   attachments.Stencil.Image.vkImageView(),
+					resolveImageLayout: C.VkImageLayout(attachments.Stencil.Layout),
+					resolveMode:        C.VkResolveModeFlagBits(attachments.Stencil.RenderResolveMode),
+					loadOp:             C.VkAttachmentLoadOp(attachments.Stencil.LoadOp),
+					storeOp:            C.VkAttachmentStoreOp(attachments.Stencil.StoreOp),
+					clearValue:         attachments.Stencil.ClearValue.vkClearValue(),
+				}
+			} else {
+				stencilAttachment = &C.VkRenderingAttachmentInfo{
+					sType:       vk.STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+					imageView:   attachments.Stencil.Image.vkImageView(),
+					imageLayout: C.VkImageLayout(attachments.Stencil.Layout),
+					loadOp:      C.VkAttachmentLoadOp(attachments.Stencil.LoadOp),
+					storeOp:     C.VkAttachmentStoreOp(attachments.Stencil.StoreOp),
+					clearValue:  attachments.Stencil.ClearValue.vkClearValue(),
+				}
 			}
 			defer runtime.KeepAlive(stencilAttachment)
 			cInfo.renderingInfo.pStencilAttachment = stencilAttachment

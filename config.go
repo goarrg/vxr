@@ -141,10 +141,11 @@ func (c *Config) createDeviceSelector(surface uint64) C.vxr_vk_device_selector {
 				GraphicsPipelineLibrary: true,
 			},
 			VkPhysicalDeviceExtendedDynamicState3FeaturesEXT{
-				ExtendedDynamicState3PolygonMode:        true,
-				ExtendedDynamicState3ColorBlendEnable:   true,
-				ExtendedDynamicState3ColorBlendEquation: true,
-				ExtendedDynamicState3ColorWriteMask:     true,
+				ExtendedDynamicState3PolygonMode:          true,
+				ExtendedDynamicState3RasterizationSamples: true,
+				ExtendedDynamicState3ColorBlendEnable:     true,
+				ExtendedDynamicState3ColorBlendEquation:   true,
+				ExtendedDynamicState3ColorWriteMask:       true,
 			},
 			VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT{
 				SwapchainMaintenance1: true,

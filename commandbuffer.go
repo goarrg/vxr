@@ -229,6 +229,11 @@ func (cb *commandBuffer) CopyBuffer(bIn, bOut Buffer, regions []BufferCopyRegion
 	runtime.KeepAlive(cRegions)
 }
 
+type ImageBufferCopyable interface {
+	Image
+	imageIsBufferCopyable()
+}
+
 type ImageSubresourceLayers struct {
 	MipLevel uint32
 
@@ -243,7 +248,7 @@ type BufferImageCopyRegion struct {
 	ImageExtent      gmath.Extent3i32
 }
 
-func (cb *commandBuffer) CopyBufferToImageAspect(buffer Buffer, image Image, layout ImageLayout, aspect ImageAspectFlags, regions []BufferImageCopyRegion) {
+func (cb *commandBuffer) CopyBufferToImageAspect(buffer Buffer, image ImageBufferCopyable, layout ImageLayout, aspect ImageAspectFlags, regions []BufferImageCopyRegion) {
 	cb.noCopy.check()
 
 	if !image.Aspect().HasBits(aspect) {
@@ -277,6 +282,6 @@ func (cb *commandBuffer) CopyBufferToImageAspect(buffer Buffer, image Image, lay
 	runtime.KeepAlive(cRegions)
 }
 
-func (cb *commandBuffer) CopyBufferToImage(buffer Buffer, image Image, layout ImageLayout, regions []BufferImageCopyRegion) {
+func (cb *commandBuffer) CopyBufferToImage(buffer Buffer, image ImageBufferCopyable, layout ImageLayout, regions []BufferImageCopyRegion) {
 	cb.CopyBufferToImageAspect(buffer, image, layout, image.Aspect(), regions)
 }

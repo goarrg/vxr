@@ -78,6 +78,50 @@ VXR_FN void vxr_vk_createImage(vxr_vk_instance instanceHandle, size_t nameSz, co
 		});
 	}
 }
+VXR_FN void vxr_vk_createImageMultiSampled(vxr_vk_instance instanceHandle, size_t nameSz, const char* name,
+										   vxr_vk_imageMultiSampledCreateInfo info, vxr_vk_image* t) {
+	auto* instance = vxr::vk::instance::fromHandle(instanceHandle);
+
+	{
+		VkImageCreateInfo createInfo = {};
+		createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+		createInfo.imageType = VK_IMAGE_TYPE_2D;
+		createInfo.format = info.format;
+		createInfo.extent = VkExtent3D{
+			.width = info.extent.width,
+			.height = info.extent.height,
+			.depth = 1,
+		};
+		createInfo.mipLevels = 1;
+		createInfo.arrayLayers = 1;
+		createInfo.samples = info.samples;
+		createInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+		createInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		createInfo.usage = info.usage;
+		createInfo.flags = info.flags;
+
+		VmaAllocationCreateInfo allocCreateInfo = {};
+		allocCreateInfo.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+		allocCreateInfo.requiredFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+		allocCreateInfo.memoryTypeBits = instance->device.vma.noBARMemoryTypeBits;
+
+		const VkResult ret = vmaCreateImage(instance->device.vma.allocator, &createInfo, &allocCreateInfo, &t->vkImage,
+											reinterpret_cast<VmaAllocation*>(&t->allocation), nullptr);
+		if (ret != VK_SUCCESS) {
+			vxr::std::ePrintf("Failed to create image: %s", vxr::vk::vkResultStr(ret).cStr());
+			vxr::std::abort();
+		}
+
+		vxr::std::debugRun([=]() {
+			vxr::std::stringbuilder builder;
+			builder.write("image_multisampled_").write(nameSz, name);
+			vxr::vk::debugLabel(instance->device.vkDevice, t->vkImage, builder.cStr());
+
+			builder.write("_allocation");
+			vmaSetAllocationName(instance->device.vma.allocator, reinterpret_cast<VmaAllocation>(t->allocation), builder.cStr());
+		});
+	}
+}
 VXR_FN void vxr_vk_destroyImage(vxr_vk_instance instanceHandle, vxr_vk_image t) {
 	auto* instance = vxr::vk::instance::fromHandle(instanceHandle);
 	vmaDestroyImage(instance->device.vma.allocator, t.vkImage, reinterpret_cast<VmaAllocation>(t.allocation));

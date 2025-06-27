@@ -232,10 +232,15 @@ VXR_FN void vxr_vk_graphics_createFragmentShaderPipeline(vxr_vk_instance instanc
 	auto* instance = vxr::vk::instance::fromHandle(instanceHandle);
 
 	static constexpr vxr::std::array fragmentDynamicStates = {
-		VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE,	 VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE,
-		VK_DYNAMIC_STATE_DEPTH_COMPARE_OP,	 VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE,
-		VK_DYNAMIC_STATE_STENCIL_OP,		 VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK,
-		VK_DYNAMIC_STATE_STENCIL_WRITE_MASK, VK_DYNAMIC_STATE_STENCIL_REFERENCE,
+		VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE,
+		VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE,
+		VK_DYNAMIC_STATE_DEPTH_COMPARE_OP,
+		VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE,
+		VK_DYNAMIC_STATE_STENCIL_OP,
+		VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK,
+		VK_DYNAMIC_STATE_STENCIL_WRITE_MASK,
+		VK_DYNAMIC_STATE_STENCIL_REFERENCE,
+		VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT,
 	};
 	static constexpr VkPipelineDynamicStateCreateInfo fragmentDynamicInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
@@ -244,7 +249,7 @@ VXR_FN void vxr_vk_graphics_createFragmentShaderPipeline(vxr_vk_instance instanc
 	};
 	static constexpr VkPipelineMultisampleStateCreateInfo multisampleInfo = {
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-		.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+		//.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
 		.sampleShadingEnable = VK_FALSE,
 	};
 	static constexpr VkPipelineDepthStencilStateCreateInfo depthStencilInfo = {
@@ -281,6 +286,7 @@ VXR_FN void vxr_vk_graphics_createFragmentOutputPipeline(vxr_vk_instance instanc
 		VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT,
 		VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT,
 		VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT,
+		VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT,
 	};
 	static constexpr VkPipelineDynamicStateCreateInfo dynamicInfo{
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
@@ -289,7 +295,7 @@ VXR_FN void vxr_vk_graphics_createFragmentOutputPipeline(vxr_vk_instance instanc
 	};
 	static constexpr VkPipelineMultisampleStateCreateInfo multisampleInfo = {
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-		.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+		//.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
 		.sampleShadingEnable = VK_FALSE,
 	};
 	static constexpr VkPipelineColorBlendStateCreateInfo colorBlendInfo = {
