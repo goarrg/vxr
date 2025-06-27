@@ -36,7 +36,8 @@ type Pipeline2D struct {
 }
 
 /*
-NewPipeline2DSquare create a new Pipeline2D that can only generate squares.
+NewPipeline2DTriangle create a new Pipeline2D that can only generate triangles.
+It creates a triangle that fits within a square with length 1.0 before transformation.
 */
 func NewPipeline2DTriangle(fragmentLayout *vxr.ShaderLayout, specConstants []uint32) *Pipeline2D {
 	p := Pipeline2D{
@@ -69,6 +70,7 @@ func NewPipeline2DTriangle(fragmentLayout *vxr.ShaderLayout, specConstants []uin
 
 /*
 NewPipeline2DSquare create a new Pipeline2D that can only generate squares.
+It creates a square with length 1.0 before transformation.
 */
 func NewPipeline2DSquare(fragmentLayout *vxr.ShaderLayout, specConstants []uint32) *Pipeline2D {
 	p := Pipeline2D{
