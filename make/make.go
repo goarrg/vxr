@@ -43,11 +43,15 @@ func InstallGeneratorDeps() {
 	}
 }
 
+type EnableFeatures struct {
+	PIC bool // If true, will add -fPIC on linux
+}
 type DisableFeatures struct {
 	ShaderCompiler bool // If true, shader compiler and all related functions are removed.
 }
 type BuildOptions struct {
 	Build   toolchain.Build
+	Enable  EnableFeatures
 	Disable DisableFeatures
 }
 
@@ -208,6 +212,9 @@ func installVXR(c Config) error {
 			path = strings.TrimPrefix(path, srcDir+string(filepath.Separator))
 			if c.BuildOptions.Disable.ShaderCompiler && strings.HasPrefix(path, filepath.Join("vk", "shader", "toolchain")) {
 				return nil
+			}
+			if c.BuildOptions.Enable.PIC && c.Target.OS == "linux" {
+				args = append(args, "-fPIC")
 			}
 			switch filepath.Ext(path) {
 			case ".c":
