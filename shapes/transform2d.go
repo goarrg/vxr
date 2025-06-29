@@ -27,7 +27,7 @@ import (
 	"goarrg.com/gmath"
 )
 
-type Pivot uint
+type Pivot uint32
 
 const (
 	PivotTopLeft Pivot = iota
