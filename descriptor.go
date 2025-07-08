@@ -134,6 +134,11 @@ type DescriptorSet struct {
 	bank                *descriptorPoolBank
 }
 
+func (s *DescriptorSet) MaxDescriptorCount(bindingIndex int) int {
+	s.noCopy.Check()
+	return int(s.descriptorSetLayout.bindings[bindingIndex].descriptorCount)
+}
+
 func (s *DescriptorSet) Bind(bindingIndex, descriptorIndex int, descriptors ...DescriptorInfo) {
 	s.noCopy.Check()
 	if bindingIndex >= len(s.descriptorSetLayout.bindings) {
