@@ -30,14 +30,15 @@ layout(set = 0, binding = 1, scalar) buffer readonly restrict Triangles {
 	triangle triangles[];
 };
 
-layout(location = 0) out vec4 fragColor;
+layout(location = 0) out flat uint objectID;
+layout(location = 1) out vec2 uv;
 
 void main() {
 	const uint tID = gl_VertexIndex / 3;
 	const uint vID = gl_VertexIndex % 3;
 	const triangle t = triangles[tID];
 	const object o = objects[t.oID];
+	objectID = t.oID;
+	uv = t.vertices[vID] + vec2(0.5);
 	gl_Position = vec4(-1, -1, 0, 0) + vec4(o.matrix * vec3(t.vertices[vID], 1), float(o.layer + 1) / float(numObjects), 1.0);
-	const vec4 color = vec4(o.color) / vec4(255);
-	fragColor = vec4(color.rgb * color.a, color.a);
 }

@@ -58,6 +58,8 @@ func RequiredVkFeatureStructs() []vxr.VkFeatureStruct {
 var instance = struct {
 	logger *debug.Logger
 
+	linearSampler *vxr.Sampler
+
 	dispatcher                    *vxr.ComputePipeline
 	solid2DPipeline               vxr.GraphicsPipelineLibrary
 	solid2DObjectBufferMetadata   vxr.ShaderBindingTypeBufferMetadata
@@ -81,8 +83,27 @@ var instance = struct {
 	logger: debug.NewLogger("vxr", "shapes"),
 }
 
-func Init() {
+type LimitsPerCommandBuffer2D struct {
+	MaxTextures int
+}
+
+type Limits struct {
+	PerCommandBuffer2D LimitsPerCommandBuffer2D
+}
+type Config struct {
+	Limits Limits
+}
+
+func Init(c Config) {
 	properties := vxr.DeviceProperties()
+
+	{
+		instance.linearSampler = vxr.NewSampler("linear", vxr.SamplerCreateInfo{
+			MagFilter:  vxr.SamplerFilterLinear,
+			MinFilter:  vxr.SamplerFilterLinear,
+			BorderMode: vxr.SamplerAddressModeClampToBorder,
+		})
+	}
 
 	// solid2DPipeline
 	{
@@ -101,6 +122,7 @@ func Init() {
 			},
 			vxr.PipelineLayoutCreateInfo{
 				ShaderLayout: fl, ShaderStage: vxr.ShaderStageFragment,
+				SpecConstants: []uint32{uint32(c.Limits.PerCommandBuffer2D.MaxTextures)},
 			},
 		)
 		instance.dispatcher = vxr.NewComputePipeline(instance.solid2DPipeline.Layout, cs, cl.EntryPoints["main"], vxr.ComputePipelineCreateInfo{
@@ -112,7 +134,9 @@ func Init() {
 		instance.solid2DPipeline.VertexShader = vxr.NewGraphicsShaderPipeline(instance.solid2DPipeline.Layout,
 			vs, vl.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{})
 		instance.solid2DPipeline.FragmentShader = vxr.NewGraphicsShaderPipeline(instance.solid2DPipeline.Layout,
-			fs, fl.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{})
+			fs, fl.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{
+				SpecConstants: []uint32{uint32(c.Limits.PerCommandBuffer2D.MaxTextures)},
+			})
 
 		// we are packing the indirect buffer into the triangle buffer, do this after creating the layouts
 		// as we may use the size there in the future

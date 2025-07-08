@@ -41,7 +41,7 @@ void main() {
 		return;
 	}
 	const object obj = objects[oID];
-	switch (obj.polygonMode) {
+	switch (obj.polygonMode & POLYGON_MODE_MASK) {
 		case POLYGON_MODE_REGULAR_CONCAVE: {
 			if (obj.triangleCount == 3) {
 				triangles[obj.triangleOffset] = triangle(oID, vec2[](vec2(0.0, -0.5), vec2(0.43301, 0.25), vec2(-0.43301, 0.25)));

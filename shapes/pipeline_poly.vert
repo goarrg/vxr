@@ -43,7 +43,7 @@ layout(set = 0, binding = 0, scalar) buffer readonly restrict Objects {
 void main() {
 	instanceID = gl_InstanceIndex;
 	const object obj = objects[gl_InstanceIndex];
-	switch (polygonMode) {
+	switch (polygonMode & POLYGON_MODE_MASK) {
 		case POLYGON_MODE_REGULAR_CONCAVE: {
 			if (triangleCount == 3) {
 				const vec2 verts[] = vec2[](vec2(0.0, -0.5), vec2(0.43301, 0.25), vec2(-0.43301, 0.25));

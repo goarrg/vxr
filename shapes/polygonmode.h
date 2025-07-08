@@ -20,4 +20,8 @@ limitations under the License.
 #define POLYGON_MODE_REGULAR_CONCAVE 0
 #define POLYGON_MODE_REGULAR_STAR 1
 
+#define POLYGON_MODE_MASK 0x7FFFFFFF
+
+#define POLYGON_MODE_TEXTURED_BIT 0x80000000
+
 #endif

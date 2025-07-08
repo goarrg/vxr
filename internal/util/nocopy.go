@@ -29,12 +29,14 @@ func (n *NoCopy) Init() {
 	n.addr = n
 }
 
-func (n *NoCopy) InitLazy() {
+func (n *NoCopy) InitLazy() bool {
 	if n.addr == nil {
 		n.addr = n
+		return true
 	} else if n.addr != n {
 		abort("Illegal copy by value or use of zero/dead value: \n%s", debug.StackTrace(0))
 	}
+	return false
 }
 
 func (n *NoCopy) Check() {

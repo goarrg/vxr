@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 #extension GL_EXT_scalar_block_layout : enable
-#extension GL_EXT_shader_explicit_arithmetic_types_int8 : enable
 #extension GL_ARB_shading_language_include : enable
 
 #include "polygonmode.h"
@@ -26,7 +25,7 @@ struct object {
 	uint triangleCount;
 	uint layer;
 	float parameter1;
-	u8vec4 color;
+	uint color;
 	mat3x2 matrix;
 };
 

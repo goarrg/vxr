@@ -23,11 +23,13 @@ import "C"
 
 import (
 	"encoding/binary"
+	"unsafe"
 
 	"goarrg.com/gmath"
 	"goarrg.com/gmath/color"
 	"goarrg.com/rhi/vxr"
 	"goarrg.com/rhi/vxr/internal/util"
+	"goarrg.com/rhi/vxr/managed"
 )
 
 type cbState uint
@@ -35,6 +37,7 @@ type cbState uint
 const (
 	cbIdle cbState = iota
 	cbRecording
+	cbExecuted
 )
 
 type shape2d struct {
@@ -43,15 +46,17 @@ type shape2d struct {
 	triangleCount  uint32
 	layer          uint32
 	parameter1     float32
-	color          color.UNorm[uint8]
+	color          uint32
 	modelMatrix    [2][3]float32
 }
 
 type CommandBuffer2D struct {
-	noCopy             util.NoCopy
-	cbState            cbState
-	shapesColored      []shape2d
-	shapesColoredAlpha []shape2d
+	noCopy  util.NoCopy
+	cbState cbState
+	shapes  []shape2d
+
+	descriptorSetTextures  *vxr.DescriptorSet
+	managedTextureBindings *managed.DescriptorArrayImage
 
 	objectCount    uint32
 	objectCapacity uint32
@@ -60,18 +65,19 @@ type CommandBuffer2D struct {
 	triangleCount    uint32
 	triangleCapacity uint32
 	triangleBuffer   *vxr.DeviceBuffer
-
-	depthImage *vxr.DeviceDepthStencilImage
 }
 
 func (cb *CommandBuffer2D) Begin() {
-	cb.noCopy.InitLazy()
-	if cb.cbState != cbIdle {
+	if cb.noCopy.InitLazy() {
+		cb.descriptorSetTextures = instance.solid2DPipeline.Layout.NewDescriptorSet(1)
+		cb.descriptorSetTextures.Bind(0, 0, instance.linearSampler)
+		cb.managedTextureBindings = managed.NewDescriptorArrayImage(cb.descriptorSetTextures, 1)
+	}
+	if cb.cbState == cbRecording {
 		abort("Begin() called while CommandBuffer2D is not idle")
 	}
-	cb.shapesColored = cb.shapesColored[:0]
-	cb.shapesColoredAlpha = cb.shapesColoredAlpha[:0]
 
+	cb.shapes = cb.shapes[:0]
 	cb.objectCount = 0
 	cb.triangleCount = 0
 
@@ -91,11 +97,19 @@ Destroy will destroy all persistent objects, caller is responsible for synchroni
 */
 func (cb *CommandBuffer2D) Destroy() {
 	cb.noCopy.Check()
+	cb.descriptorSetTextures.Destroy()
 	cb.objectBuffer.Destroy()
 	cb.triangleBuffer.Destroy()
-	cb.depthImage.Destroy()
 	cb.noCopy.Close()
 	*cb = CommandBuffer2D{}
+}
+
+func (cb *CommandBuffer2D) BindTexture(img vxr.DescriptorImageInfo) int {
+	return cb.managedTextureBindings.Push(img)
+}
+
+func (cb *CommandBuffer2D) UnBindTexture(f *vxr.Frame, img vxr.Image) {
+	cb.managedTextureBindings.Pop(f, img)
 }
 
 func (cb *CommandBuffer2D) PreExecuteDstImageBarrierInfo() vxr.ImageBarrierInfo {
@@ -109,7 +123,8 @@ func (cb *CommandBuffer2D) PreExecuteDstImageBarrierInfo() vxr.ImageBarrierInfo 
 
 func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuffer, output vxr.ColorImage) {
 	cb.noCopy.Check()
-	if cb.cbState != cbIdle {
+	// don't check if we've Executed, Executeing multiple times is fine
+	if cb.cbState == cbRecording {
 		abort("Execute(...) called while CommandBuffer2D is not idle")
 	}
 	vcb.BeginNamedRegion("shapes2d")
@@ -132,16 +147,6 @@ func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuf
 		cb.triangleBuffer = vxr.NewDeviceBuffer("vxr/shapes/triangle",
 			(instance.solid2DTriangleBufferMetadata.Size + (instance.solid2DTriangleBufferMetadata.RuntimeArrayStride * uint64(cb.triangleCapacity))),
 			vxr.BufferUsageStorageBuffer|vxr.BufferUsageIndirectBuffer|vxr.BufferUsageTransferDst)
-	}
-	if !output.Extent().InRange(gmath.Extent3i32{}, cb.depthImage.Extent()) {
-		frame.QueueDestory(cb.depthImage)
-		cb.depthImage = vxr.NewDepthStencilImageWithAtMostBits("vxr/shapes/depth", 32, 0, vxr.ImageCreateInfo{
-			Usage:          vxr.ImageUsageDepthStencilAttachment,
-			Flags:          0,
-			Extent:         output.Extent(),
-			NumMipLevels:   1,
-			NumArrayLayers: 1,
-		})
 	}
 
 	dsDraw.Bind(0, 0, vxr.DescriptorBufferInfo{
@@ -178,21 +183,7 @@ func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuf
 	off := util.HostWrite(obj, 0, cb.objectCount)
 	{
 		extent := output.Extent()
-		for _, s := range cb.shapesColored {
-			s.modelMatrix[0] = [3]float32{
-				s.modelMatrix[0][0] * (2 / float32(extent.X)),
-				s.modelMatrix[0][1] * (2 / float32(extent.X)),
-				s.modelMatrix[0][2] * (2 / float32(extent.X)),
-			}
-			s.modelMatrix[1] = [3]float32{
-				s.modelMatrix[1][0] * (2 / float32(extent.Y)),
-				s.modelMatrix[1][1] * (2 / float32(extent.Y)),
-				s.modelMatrix[1][2] * (2 / float32(extent.Y)),
-			}
-
-			off += util.HostWrite(obj, off, s)
-		}
-		for _, s := range cb.shapesColoredAlpha {
+		for _, s := range cb.shapes {
 			s.modelMatrix[0] = [3]float32{
 				s.modelMatrix[0][0] * (2 / float32(extent.X)),
 				s.modelMatrix[0][1] * (2 / float32(extent.X)),
@@ -215,7 +206,7 @@ func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuf
 	})
 	{
 		indirect := []byte{0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
-		binary.Append(indirect[:0], binary.NativeEndian, cb.triangleCount*3)
+		_, _ = binary.Append(indirect[:0], binary.NativeEndian, cb.triangleCount*3)
 		vcb.UpdateBuffer(cb.triangleBuffer, 0, indirect)
 	}
 
@@ -242,50 +233,31 @@ func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuf
 	})
 
 	vcb.Dispatch(instance.dispatcher, vxr.DispatchInfo{
-		DescriptorSets: []*vxr.DescriptorSet{dsDraw},
+		DescriptorSets: []*vxr.DescriptorSet{dsDraw, cb.descriptorSetTextures},
 		ThreadCount:    gmath.Extent3u32{X: cb.objectCount, Y: 1, Z: 1},
 	})
 
-	vcb.CompoundBarrier(
-		nil,
-		[]vxr.BufferBarrier{
-			{
-				Buffer: cb.objectBuffer,
-				Src: vxr.BufferBarrierInfo{
-					Stage:  vxr.PipelineStageCompute,
-					Access: vxr.AccessFlagMemoryWrite,
-				},
-				Dst: vxr.BufferBarrierInfo{
-					Stage:  vxr.PipelineStageVertexShader,
-					Access: vxr.AccessFlagMemoryRead,
-				},
+	vcb.BufferBarrier(
+		vxr.BufferBarrier{
+			Buffer: cb.objectBuffer,
+			Src: vxr.BufferBarrierInfo{
+				Stage:  vxr.PipelineStageCompute,
+				Access: vxr.AccessFlagMemoryWrite,
 			},
-			{
-				Buffer: cb.triangleBuffer,
-				Src: vxr.BufferBarrierInfo{
-					Stage:  vxr.PipelineStageCompute,
-					Access: vxr.AccessFlagMemoryWrite,
-				},
-				Dst: vxr.BufferBarrierInfo{
-					Stage:  vxr.PipelineStageIndirect | vxr.PipelineStageVertexShader,
-					Access: vxr.AccessFlagMemoryRead,
-				},
+			Dst: vxr.BufferBarrierInfo{
+				Stage:  vxr.PipelineStageVertexShader,
+				Access: vxr.AccessFlagMemoryRead,
 			},
 		},
-		[]vxr.ImageBarrier{
-			{
-				Image: cb.depthImage,
-				Src: vxr.ImageBarrierInfo{
-					Stage:  vxr.PipelineStageFragmentTests,
-					Access: vxr.AccessFlagMemoryWrite,
-					Layout: vxr.ImageLayoutUndefined,
-				},
-				Dst: vxr.ImageBarrierInfo{
-					Stage:  vxr.PipelineStageFragmentTests,
-					Access: vxr.AccessFlagMemoryWrite,
-					Layout: vxr.ImageLayoutAttachmentOptimal,
-				},
-				Range: vxr.ImageSubresourceRange{BaseMipLevel: 0, NumMipLevels: 1, BaseArrayLayer: 0, NumArrayLayers: 1},
+		vxr.BufferBarrier{
+			Buffer: cb.triangleBuffer,
+			Src: vxr.BufferBarrierInfo{
+				Stage:  vxr.PipelineStageCompute,
+				Access: vxr.AccessFlagMemoryWrite,
+			},
+			Dst: vxr.BufferBarrierInfo{
+				Stage:  vxr.PipelineStageIndirect | vxr.PipelineStageVertexShader,
+				Access: vxr.AccessFlagMemoryRead,
 			},
 		},
 	)
@@ -309,16 +281,10 @@ func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuf
 					},
 				},
 			},
-			Depth: vxr.RenderDepthAttachment{
-				Image:   cb.depthImage,
-				Layout:  vxr.ImageLayoutAttachmentOptimal,
-				LoadOp:  vxr.RenderAttachmentLoadOpClear,
-				StoreOp: vxr.RenderAttachmentStoreOpStore,
-			},
 		})
 	vcb.DrawIndirect(instance.solid2DPipeline, vxr.DrawIndirectInfo{
 		DrawParameters: vxr.DrawParameters{
-			DescriptorSets:   []*vxr.DescriptorSet{dsDraw},
+			DescriptorSets:   []*vxr.DescriptorSet{dsDraw, cb.descriptorSetTextures},
 			DepthTestEnable:  true,
 			DepthWriteEnable: true,
 			DepthCompareOp:   vxr.CompareOpGreaterOrEqual,
@@ -331,6 +297,8 @@ func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuf
 	vcb.RenderPassEnd()
 
 	vcb.EndNamedRegion()
+
+	cb.cbState = cbExecuted
 }
 
 func (cb *CommandBuffer2D) PostExecuteSrcImageBarrierInfo() vxr.ImageBarrierInfo {
@@ -342,10 +310,13 @@ func (cb *CommandBuffer2D) PostExecuteSrcImageBarrierInfo() vxr.ImageBarrierInfo
 	}
 }
 
-func (cb *CommandBuffer2D) DrawTriangle(t Transform2D, c color.UNorm[uint8]) {
+func (cb *CommandBuffer2D) drawTriangle(t Transform2D, c uint32, flags uint32) {
 	cb.noCopy.Check()
+	if cb.cbState != cbRecording {
+		abort("Draw*() called while CommandBuffer2D is not in a recording state")
+	}
 	shape := shape2d{
-		polygonMode:    C.POLYGON_MODE_REGULAR_CONCAVE,
+		polygonMode:    C.POLYGON_MODE_REGULAR_CONCAVE | flags,
 		triangleOffset: cb.triangleCount,
 		triangleCount:  1,
 		layer:          cb.objectCount,
@@ -353,20 +324,26 @@ func (cb *CommandBuffer2D) DrawTriangle(t Transform2D, c color.UNorm[uint8]) {
 		modelMatrix:    t.modelMatrix(C.POLYGON_MODE_REGULAR_CONCAVE, 1),
 	}
 
-	if c.A == 255 {
-		cb.shapesColored = append(cb.shapesColored, shape)
-	} else {
-		cb.shapesColoredAlpha = append(cb.shapesColoredAlpha, shape)
-	}
-
+	cb.shapes = append(cb.shapes, shape)
 	cb.objectCount++
 	cb.triangleCount += shape.triangleCount
 }
 
-func (cb *CommandBuffer2D) DrawSquare(t Transform2D, c color.UNorm[uint8]) {
+func (cb *CommandBuffer2D) DrawTriangle(t Transform2D, c color.UNorm[uint8]) {
+	cb.drawTriangle(t, *(*uint32)(unsafe.Pointer(&c)), 0)
+}
+
+func (cb *CommandBuffer2D) DrawTriangleTextured(t Transform2D, texture uint32) {
+	cb.drawTriangle(t, texture, C.POLYGON_MODE_TEXTURED_BIT)
+}
+
+func (cb *CommandBuffer2D) drawSquare(t Transform2D, c uint32, flags uint32) {
 	cb.noCopy.Check()
+	if cb.cbState != cbRecording {
+		abort("Draw*() called while CommandBuffer2D is not in a recording state")
+	}
 	shape := shape2d{
-		polygonMode:    C.POLYGON_MODE_REGULAR_CONCAVE,
+		polygonMode:    C.POLYGON_MODE_REGULAR_CONCAVE | flags,
 		triangleOffset: cb.triangleCount,
 		triangleCount:  2,
 		layer:          cb.objectCount,
@@ -374,24 +351,30 @@ func (cb *CommandBuffer2D) DrawSquare(t Transform2D, c color.UNorm[uint8]) {
 		modelMatrix:    t.modelMatrix(C.POLYGON_MODE_REGULAR_CONCAVE, 2),
 	}
 
-	if c.A == 255 {
-		cb.shapesColored = append(cb.shapesColored, shape)
-	} else {
-		cb.shapesColoredAlpha = append(cb.shapesColoredAlpha, shape)
-	}
-
+	cb.shapes = append(cb.shapes, shape)
 	cb.objectCount++
 	cb.triangleCount += shape.triangleCount
 }
 
-func (cb *CommandBuffer2D) DrawRegularNGon(sides uint32, t Transform2D, c color.UNorm[uint8]) {
+func (cb *CommandBuffer2D) DrawSquare(t Transform2D, c color.UNorm[uint8]) {
+	cb.drawSquare(t, *(*uint32)(unsafe.Pointer(&c)), 0)
+}
+
+func (cb *CommandBuffer2D) DrawSquareTextured(t Transform2D, texture uint32) {
+	cb.drawSquare(t, texture, C.POLYGON_MODE_TEXTURED_BIT)
+}
+
+func (cb *CommandBuffer2D) drawRegularNGon(sides uint32, t Transform2D, c uint32, flags uint32) {
 	cb.noCopy.Check()
+	if cb.cbState != cbRecording {
+		abort("Draw*() called while CommandBuffer2D is not in a recording state")
+	}
 	if sides < 3 {
 		abort("The smallest possible shape is 3 sides")
 	}
 
 	shape := shape2d{
-		polygonMode:    C.POLYGON_MODE_REGULAR_CONCAVE,
+		polygonMode:    C.POLYGON_MODE_REGULAR_CONCAVE | flags,
 		triangleOffset: cb.triangleCount,
 		triangleCount:  sides,
 		layer:          cb.objectCount,
@@ -399,12 +382,7 @@ func (cb *CommandBuffer2D) DrawRegularNGon(sides uint32, t Transform2D, c color.
 		modelMatrix:    t.modelMatrix(C.POLYGON_MODE_REGULAR_CONCAVE, sides),
 	}
 
-	if c.A == 255 {
-		cb.shapesColored = append(cb.shapesColored, shape)
-	} else {
-		cb.shapesColoredAlpha = append(cb.shapesColoredAlpha, shape)
-	}
-
+	cb.shapes = append(cb.shapes, shape)
 	cb.objectCount++
 	if sides > 4 {
 		cb.triangleCount += shape.triangleCount
@@ -413,8 +391,19 @@ func (cb *CommandBuffer2D) DrawRegularNGon(sides uint32, t Transform2D, c color.
 	}
 }
 
-func (cb *CommandBuffer2D) DrawRegularNGonStar(sides uint32, thickness float32, t Transform2D, c color.UNorm[uint8]) {
+func (cb *CommandBuffer2D) DrawRegularNGon(sides uint32, t Transform2D, c color.UNorm[uint8]) {
+	cb.drawRegularNGon(sides, t, *(*uint32)(unsafe.Pointer(&c)), 0)
+}
+
+func (cb *CommandBuffer2D) DrawRegularNGonTextured(sides uint32, t Transform2D, texture uint32) {
+	cb.drawRegularNGon(sides, t, texture, C.POLYGON_MODE_TEXTURED_BIT)
+}
+
+func (cb *CommandBuffer2D) drawRegularNGonStar(sides uint32, thickness float32, t Transform2D, c uint32, flags uint32) {
 	cb.noCopy.Check()
+	if cb.cbState != cbRecording {
+		abort("Draw*() called while CommandBuffer2D is not in a recording state")
+	}
 	if sides < 4 {
 		abort("The smallest possible shape is 4 sides")
 	}
@@ -423,7 +412,7 @@ func (cb *CommandBuffer2D) DrawRegularNGonStar(sides uint32, thickness float32, 
 	}
 
 	shape := shape2d{
-		polygonMode:    C.POLYGON_MODE_REGULAR_STAR,
+		polygonMode:    C.POLYGON_MODE_REGULAR_STAR | flags,
 		triangleOffset: cb.triangleCount,
 		triangleCount:  sides,
 		layer:          cb.objectCount,
@@ -432,12 +421,15 @@ func (cb *CommandBuffer2D) DrawRegularNGonStar(sides uint32, thickness float32, 
 		modelMatrix:    t.modelMatrix(C.POLYGON_MODE_REGULAR_STAR, sides),
 	}
 
-	if c.A == 255 {
-		cb.shapesColored = append(cb.shapesColored, shape)
-	} else {
-		cb.shapesColoredAlpha = append(cb.shapesColoredAlpha, shape)
-	}
-
+	cb.shapes = append(cb.shapes, shape)
 	cb.objectCount++
 	cb.triangleCount += shape.triangleCount * 2
+}
+
+func (cb *CommandBuffer2D) DrawRegularNGonStar(sides uint32, thickness float32, t Transform2D, c color.UNorm[uint8]) {
+	cb.drawRegularNGonStar(sides, thickness, t, *(*uint32)(unsafe.Pointer(&c)), 0)
+}
+
+func (cb *CommandBuffer2D) DrawRegularNGonStarTextured(sides uint32, thickness float32, t Transform2D, texture uint32) {
+	cb.drawRegularNGonStar(sides, thickness, t, texture, C.POLYGON_MODE_TEXTURED_BIT)
 }
