@@ -233,9 +233,13 @@ type SamplerCreateInfo struct {
 }
 
 func NewSampler(name string, info SamplerCreateInfo) *Sampler {
+	if info.Anisotropy != 0 && !gmath.InRange(info.Anisotropy, 1, instance.deviceProperties.Limits.PerDesctiptor.MaxSamplerAnisotropy) {
+		abort("NewSampler called with SamplerCreateInfo.Anisotropy [%f], value if not [0.0] must be within [1.0] and Properties.Limits.PerDesctiptor.MaxSamplerAnisotropy [%f]",
+			info.Anisotropy, instance.deviceProperties.Limits.PerDesctiptor.MaxSamplerAnisotropy)
+	}
+
 	sampler := &Sampler{}
 	sampler.noCopy.Init()
-
 	cInfo := C.vxr_vk_samplerCreateInfo{
 		magFilter:  C.VkFilter(info.MagFilter),
 		minFilter:  C.VkFilter(info.MinFilter),
