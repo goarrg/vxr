@@ -36,6 +36,14 @@ var instance = struct {
 	logger:   debug.NewLogger("vxr", "internal", "util"),
 }
 
+func Abort() {
+	instance.platform.Abort()
+}
+
+func AbortPopup(fmt string, args ...any) {
+	instance.platform.AbortPopup(fmt, args...)
+}
+
 func abort(fmt string, args ...any) {
 	instance.logger.EPrintf(fmt, args...)
 	instance.platform.Abort()

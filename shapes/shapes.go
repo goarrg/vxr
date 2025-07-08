@@ -27,9 +27,9 @@ package shapes
 import (
 	"unsafe"
 
-	"goarrg.com"
 	"goarrg.com/debug"
 	"goarrg.com/rhi/vxr"
+	"goarrg.com/rhi/vxr/internal/util"
 )
 
 func RequiredVkFeatureStructs() []vxr.VkFeatureStruct {
@@ -55,14 +55,8 @@ func RequiredVkFeatureStructs() []vxr.VkFeatureStruct {
 	}
 }
 
-type platform struct{}
-
-func (platform) Abort()                           { panic("Fatal Error") }
-func (platform) AbortPopup(f string, args ...any) { panic("Fatal Error") }
-
 var instance = struct {
-	platform goarrg.PlatformInterface
-	logger   *debug.Logger
+	logger *debug.Logger
 
 	dispatcher                    *vxr.ComputePipeline
 	solid2DPipeline               vxr.GraphicsPipelineLibrary
@@ -84,12 +78,10 @@ var instance = struct {
 	lineStrip2DVertexShaderLayout         *vxr.ShaderLayout
 	lineStrip2DVertexShaderObjectMetadata vxr.ShaderBindingTypeBufferMetadata
 }{
-	platform: platform{},
-	logger:   debug.NewLogger("vxr", "shapes"),
+	logger: debug.NewLogger("vxr", "shapes"),
 }
 
-func Init(platform goarrg.PlatformInterface) {
-	instance.platform = platform
+func Init() {
 	properties := vxr.DeviceProperties()
 
 	// solid2DPipeline
@@ -173,5 +165,5 @@ func Destroy() {
 
 func abort(fmt string, args ...any) {
 	instance.logger.EPrintf(fmt, args...)
-	instance.platform.Abort()
+	util.Abort()
 }

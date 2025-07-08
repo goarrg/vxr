@@ -61,7 +61,6 @@ func (d destroyFunc) Destroy() {
 }
 
 type state struct {
-	platform        goarrg.PlatformInterface
 	logger          *debug.Logger
 	vkInstance      goarrg.VkInstance
 	config          config
@@ -83,16 +82,10 @@ type state struct {
 	sizeY float64
 }
 
-type platform struct{}
-
-func (platform) Abort()                           { panic("Fatal Error") }
-func (platform) AbortPopup(f string, args ...any) { panic("Fatal Error") }
-
 var instanceInitOnce sync.Once
 
 var instance = state{
-	platform: platform{},
-	logger:   debug.NewLogger("vxr"),
+	logger: debug.NewLogger("vxr"),
 
 	formatProperties: formatProperties{
 		color: colorFormatProperties{
@@ -158,7 +151,6 @@ func SetLogLevel(l uint32) {
 func InitInstance(platform goarrg.PlatformInterface, vkInstance goarrg.VkInstance) {
 	instanceInitOnce.Do(func() {
 		util.Init(platform)
-		instance.platform = platform
 		instance.vkInstance = vkInstance
 		instance.logger.IPrintf("vxr_vk_init")
 		C.vxr_vk_init(C.uintptr_t(instance.vkInstance.Uintptr()), C.uintptr_t(instance.vkInstance.ProcAddr()),

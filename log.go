@@ -40,6 +40,7 @@ import (
 	"strings"
 	"unsafe"
 
+	"goarrg.com/rhi/vxr/internal/util"
 	"goarrg.com/rhi/vxr/internal/vk"
 )
 
@@ -49,12 +50,12 @@ func init() {
 
 func abort(fmt string, args ...any) {
 	instance.logger.EPrintf(fmt, args...)
-	instance.platform.Abort()
+	util.Abort()
 }
 
 func abortPopup(fmt string, args ...any) {
 	instance.logger.EPrintf("[popup] "+fmt, args...)
-	instance.platform.AbortPopup(fmt, args...)
+	util.AbortPopup(fmt, args...)
 }
 
 var (
