@@ -41,7 +41,7 @@ type DispatchInfo struct {
 }
 
 func (cb *ComputeCommandBuffer) Dispatch(p *ComputePipeline, info DispatchInfo) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 
 	if err := p.layout.cmdValidate(info.PushConstants, info.DescriptorSets); err != nil {
 		abort("Failed to validate DispatchInfo: %s", err)
@@ -49,7 +49,7 @@ func (cb *ComputeCommandBuffer) Dispatch(p *ComputePipeline, info DispatchInfo) 
 
 	descriptorSets := make([]C.VkDescriptorSet, 0, len(info.DescriptorSets))
 	for _, s := range info.DescriptorSets {
-		s.noCopy.check()
+		s.noCopy.Check()
 		descriptorSets = append(descriptorSets, s.cDescriptorSet)
 	}
 
@@ -92,7 +92,7 @@ type DispatchIndirectInfo struct {
 }
 
 func (cb *ComputeCommandBuffer) DispatchIndirect(p *ComputePipeline, info DispatchIndirectInfo) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 
 	if err := p.layout.cmdValidate(info.PushConstants, info.DescriptorSets); err != nil {
 		abort("Failed to validate DispatchIndirectInfo: %s", err)
@@ -107,7 +107,7 @@ func (cb *ComputeCommandBuffer) DispatchIndirect(p *ComputePipeline, info Dispat
 
 	descriptorSets := make([]C.VkDescriptorSet, 0, len(info.DescriptorSets))
 	for _, s := range info.DescriptorSets {
-		s.noCopy.check()
+		s.noCopy.Check()
 		descriptorSets = append(descriptorSets, s.cDescriptorSet)
 	}
 

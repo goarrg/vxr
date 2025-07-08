@@ -30,6 +30,7 @@ import (
 	"unsafe"
 
 	"goarrg.com/debug"
+	"goarrg.com/rhi/vxr/internal/util"
 	"goarrg.com/rhi/vxr/internal/vk"
 )
 
@@ -91,7 +92,7 @@ type Buffer interface {
 }
 
 type HostBuffer struct {
-	noCopy     noCopy
+	noCopy     util.NoCopy
 	bufferSize uint64
 	usageFlags BufferUsageFlags
 	cBuffer    C.vxr_vk_hostBuffer
@@ -124,7 +125,7 @@ func NewHostBuffer(name string, size uint64, usage BufferUsageFlags) *HostBuffer
 		abort("Failed trying to create HostBuffer with size [%d] and usage [%s]: %s", size, usage.String(), err)
 	}
 	b := HostBuffer{bufferSize: size, usageFlags: usage}
-	b.noCopy.init()
+	b.noCopy.Init()
 	info := C.vxr_vk_bufferCreateInfo{
 		size:  C.VkDeviceSize(size),
 		usage: C.VkBufferUsageFlags(usage),
@@ -136,7 +137,7 @@ func NewHostBuffer(name string, size uint64, usage BufferUsageFlags) *HostBuffer
 }
 
 func (b *HostBuffer) HostWrite(offset uintptr, data []byte) {
-	b.noCopy.check()
+	b.noCopy.Check()
 	if (uint64(len(data)) + uint64(offset)) > b.bufferSize {
 		abort("HostWrite(%d, len(data): %d) will overflow buffer of size %d", offset, len(data), b.bufferSize)
 	}
@@ -146,7 +147,7 @@ func (b *HostBuffer) HostWrite(offset uintptr, data []byte) {
 }
 
 func (b *HostBuffer) HostRead(offset uintptr, data []byte) {
-	b.noCopy.check()
+	b.noCopy.Check()
 	if (uint64(len(data)) + uint64(offset)) > b.bufferSize {
 		abort("HostRead(%d, len(data): %d) will overflow buffer of size %d", offset, len(data), b.bufferSize)
 	}
@@ -156,7 +157,7 @@ func (b *HostBuffer) HostRead(offset uintptr, data []byte) {
 }
 
 func (b *HostBuffer) Usage() BufferUsageFlags {
-	b.noCopy.check()
+	b.noCopy.Check()
 	return b.usageFlags
 }
 
@@ -164,7 +165,7 @@ func (b *HostBuffer) Size() uint64 {
 	if b == nil {
 		return 0
 	}
-	b.noCopy.check()
+	b.noCopy.Check()
 	return b.bufferSize
 }
 
@@ -172,18 +173,18 @@ func (b *HostBuffer) Destroy() {
 	if b == nil {
 		return
 	}
-	b.noCopy.check()
+	b.noCopy.Check()
 	C.vxr_vk_destroyHostBuffer(instance.cInstance, b.cBuffer)
-	b.noCopy.close()
+	b.noCopy.Close()
 }
 
 func (b *HostBuffer) vkBuffer() C.VkBuffer {
-	b.noCopy.check()
+	b.noCopy.Check()
 	return b.cBuffer.vkBuffer
 }
 
 type DeviceBuffer struct {
-	noCopy     noCopy
+	noCopy     util.NoCopy
 	bufferSize uint64
 	usageFlags BufferUsageFlags
 	cBuffer    C.vxr_vk_deviceBuffer
@@ -199,7 +200,7 @@ func NewDeviceBuffer(name string, size uint64, usage BufferUsageFlags) *DeviceBu
 		abort("Failed trying to create DeviceBuffer with size [%d] and usage [%s]: %s", size, usage.String(), err)
 	}
 	b := DeviceBuffer{bufferSize: size, usageFlags: usage}
-	b.noCopy.init()
+	b.noCopy.Init()
 	info := C.vxr_vk_bufferCreateInfo{
 		size:  C.VkDeviceSize(size),
 		usage: C.VkBufferUsageFlags(usage),
@@ -211,7 +212,7 @@ func NewDeviceBuffer(name string, size uint64, usage BufferUsageFlags) *DeviceBu
 }
 
 func (b *DeviceBuffer) Usage() BufferUsageFlags {
-	b.noCopy.check()
+	b.noCopy.Check()
 	return b.usageFlags
 }
 
@@ -219,7 +220,7 @@ func (b *DeviceBuffer) Size() uint64 {
 	if b == nil {
 		return 0
 	}
-	b.noCopy.check()
+	b.noCopy.Check()
 	return b.bufferSize
 }
 
@@ -227,12 +228,12 @@ func (b *DeviceBuffer) Destroy() {
 	if b == nil {
 		return
 	}
-	b.noCopy.check()
+	b.noCopy.Check()
 	C.vxr_vk_destroyDeviceBuffer(instance.cInstance, b.cBuffer)
-	b.noCopy.close()
+	b.noCopy.Close()
 }
 
 func (b *DeviceBuffer) vkBuffer() C.VkBuffer {
-	b.noCopy.check()
+	b.noCopy.Check()
 	return b.cBuffer.vkBuffer
 }

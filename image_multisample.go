@@ -29,6 +29,7 @@ import (
 	"unsafe"
 
 	"goarrg.com/gmath"
+	"goarrg.com/rhi/vxr/internal/util"
 	"goarrg.com/rhi/vxr/internal/vk"
 )
 
@@ -75,7 +76,7 @@ func (s SampleCountFlags) String() string {
 }
 
 type imageMultiSampled struct {
-	noCopy     noCopy
+	noCopy     util.NoCopy
 	usageFlags ImageUsageFlags
 	samples    SampleCountFlags
 	extent     gmath.Extent3i32
@@ -85,29 +86,29 @@ type imageMultiSampled struct {
 }
 
 func (img *imageMultiSampled) Destroy() {
-	img.noCopy.check()
+	img.noCopy.Check()
 	C.vxr_vk_destroyImage(instance.cInstance, img.cImage)
 	C.vxr_vk_destroyImageView(instance.cInstance, img.cImageView)
-	img.noCopy.close()
+	img.noCopy.Close()
 }
 
 func (img *imageMultiSampled) usage() ImageUsageFlags {
-	img.noCopy.check()
+	img.noCopy.Check()
 	return img.usageFlags
 }
 
 func (img *imageMultiSampled) vkImage() C.VkImage {
-	img.noCopy.check()
+	img.noCopy.Check()
 	return img.cImage.vkImage
 }
 
 func (img *imageMultiSampled) vkImageViewType() C.VkImageViewType {
-	img.noCopy.check()
+	img.noCopy.Check()
 	return vk.IMAGE_VIEW_TYPE_2D
 }
 
 func (img *imageMultiSampled) vkImageView() C.VkImageView {
-	img.noCopy.check()
+	img.noCopy.Check()
 	return img.cImageView
 }
 
@@ -132,12 +133,12 @@ func (img *DeviceColorImageMultiSampled) Extent() gmath.Extent3i32 {
 	if img == nil {
 		return gmath.Extent3i32{}
 	}
-	img.noCopy.check()
+	img.noCopy.Check()
 	return img.extent
 }
 
 func (img *DeviceColorImageMultiSampled) Format() Format {
-	img.noCopy.check()
+	img.noCopy.Check()
 	return img.format
 }
 
@@ -145,12 +146,12 @@ func (img *DeviceColorImageMultiSampled) sampleCount() SampleCountFlags {
 	if img == nil {
 		return 0
 	}
-	img.noCopy.check()
+	img.noCopy.Check()
 	return img.samples
 }
 
 func (img *DeviceColorImageMultiSampled) vkFormat() C.VkFormat {
-	img.noCopy.check()
+	img.noCopy.Check()
 	return C.VkFormat(img.format)
 }
 
@@ -180,12 +181,12 @@ func (img *DeviceDepthStencilImageMultiSampled) Extent() gmath.Extent3i32 {
 	if img == nil {
 		return gmath.Extent3i32{}
 	}
-	img.noCopy.check()
+	img.noCopy.Check()
 	return img.extent
 }
 
 func (img *DeviceDepthStencilImageMultiSampled) Format() DepthStencilFormat {
-	img.noCopy.check()
+	img.noCopy.Check()
 	return img.format
 }
 
@@ -193,17 +194,17 @@ func (img *DeviceDepthStencilImageMultiSampled) sampleCount() SampleCountFlags {
 	if img == nil {
 		return 0
 	}
-	img.noCopy.check()
+	img.noCopy.Check()
 	return img.samples
 }
 
 func (img *DeviceDepthStencilImageMultiSampled) vkFormat() C.VkFormat {
-	img.noCopy.check()
+	img.noCopy.Check()
 	return C.VkFormat(img.format)
 }
 
 func (img *DeviceDepthStencilImageMultiSampled) Aspect() ImageAspectFlags {
-	img.noCopy.check()
+	img.noCopy.Check()
 	return img.aspect
 }
 
@@ -263,8 +264,7 @@ func newImageMultiSampled(name string, format C.VkFormat, aspect C.VkImageAspect
 			Z: 1,
 		},
 
-		cImage: vkImage,
-
+		cImage:     vkImage,
 		cImageView: vkImageView,
 	}
 }
@@ -288,11 +288,11 @@ func NewColorImageMultiSampled(name string, format Format, info ImageMultiSample
 	img := &DeviceColorImageMultiSampled{format: format}
 	img.imageMultiSampled = newImageMultiSampled(name, C.VkFormat(format),
 		C.VkImageAspectFlags(img.Aspect()), info)
-	img.noCopy.init()
+	img.noCopy.Init()
 	return img
 }
 
-func NewDepthStencilImageMultiSampled(name string, format DepthStencilFormat, aspect ImageAspectFlags, info ImageMultiSampledCreateInfo) *DeviceDepthStencilImageMultiSampled {
+func NewDepthStencilImageMultiSampled(name string, format DepthStencilFormat, aspect ImageAspectFlags, info ImageMultiSampledCreateInfo) *DeviceDepthStencilImageMultiSampled { //nolint: dupl
 	if aspect == 0 {
 		aspect = format.ImageAspectFlags()
 	}
@@ -315,6 +315,6 @@ func NewDepthStencilImageMultiSampled(name string, format DepthStencilFormat, as
 		imageMultiSampled: newImageMultiSampled(name, C.VkFormat(format), C.VkImageAspectFlags(aspect), info),
 		format:            format, aspect: aspect,
 	}
-	img.noCopy.init()
+	img.noCopy.Init()
 	return img
 }

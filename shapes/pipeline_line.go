@@ -23,7 +23,7 @@ import (
 )
 
 type Pipeline2DLine struct {
-	noCopy noCopy
+	noCopy util.NoCopy
 	gpl    vxr.GraphicsPipelineLibrary
 }
 
@@ -46,14 +46,14 @@ func NewPipeline2DLine(fragmentLayout *vxr.ShaderLayout, specConstants []uint32)
 		instance.line2DVertexShader, instance.line2DVertexShaderLayout.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{
 			SpecConstants: []uint32{},
 		})
-	p.noCopy.init()
+	p.noCopy.Init()
 	return &p
 }
 
 func (p *Pipeline2DLine) Destroy() {
-	p.noCopy.check()
+	p.noCopy.Check()
 	p.gpl.VertexShader.Destroy()
-	p.noCopy.close()
+	p.noCopy.Close()
 }
 
 type InstanceData2DLine struct {
@@ -64,7 +64,7 @@ func (p *Pipeline2DLine) Draw(f *vxr.Frame, cb *vxr.GraphicsCommandBuffer, frag 
 	viewport gmath.Extent2i32, parameters vxr.DrawParameters, width float32,
 	instances ...InstanceData2DLine,
 ) {
-	p.noCopy.check()
+	p.noCopy.Check()
 	ds := p.gpl.Layout.NewDescriptorSet(0)
 	f.QueueDestory(ds)
 	{
@@ -103,7 +103,7 @@ func (p *Pipeline2DLine) Draw(f *vxr.Frame, cb *vxr.GraphicsCommandBuffer, frag 
 }
 
 type Pipeline2DLineStrip struct {
-	noCopy noCopy
+	noCopy util.NoCopy
 	gpl    vxr.GraphicsPipelineLibrary
 }
 
@@ -126,21 +126,21 @@ func NewPipeline2DLineStrip(fragmentLayout *vxr.ShaderLayout, specConstants []ui
 		instance.lineStrip2DVertexShader, instance.lineStrip2DVertexShaderLayout.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{
 			SpecConstants: []uint32{},
 		})
-	p.noCopy.init()
+	p.noCopy.Init()
 	return &p
 }
 
 func (p *Pipeline2DLineStrip) Destroy() {
-	p.noCopy.check()
+	p.noCopy.Check()
 	p.gpl.VertexShader.Destroy()
-	p.noCopy.close()
+	p.noCopy.Close()
 }
 
 func (p *Pipeline2DLineStrip) Draw(f *vxr.Frame, cb *vxr.GraphicsCommandBuffer, frag *vxr.GraphicsShaderPipeline,
 	viewport gmath.Extent2i32, parameters vxr.DrawParameters, width float32,
 	points ...gmath.Vector2f32,
 ) {
-	p.noCopy.check()
+	p.noCopy.Check()
 	ds := p.gpl.Layout.NewDescriptorSet(0)
 	f.QueueDestory(ds)
 	{

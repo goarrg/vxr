@@ -28,22 +28,23 @@ import (
 	"unsafe"
 
 	"goarrg.com/gmath"
+	"goarrg.com/rhi/vxr/internal/util"
 	"goarrg.com/rhi/vxr/internal/vk"
 )
 
 type commandBuffer struct {
-	noCopy          noCopy
+	noCopy          util.NoCopy
 	vkCommandBuffer C.VkCommandBuffer
 }
 
 func (cb *commandBuffer) BeginNamedRegion(name string) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	C.vxr_vk_commandBuffer_beginNamedRegion(instance.cInstance, cb.vkCommandBuffer, C.size_t(len(name)), (*C.char)(unsafe.Pointer(unsafe.StringData(name))))
 	runtime.KeepAlive(name)
 }
 
 func (cb *commandBuffer) EndNamedRegion() {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	C.vxr_vk_commandBuffer_endNamedRegion(instance.cInstance, cb.vkCommandBuffer)
 }
 
@@ -99,7 +100,7 @@ type ImageBarrier struct {
 }
 
 func (cb *commandBuffer) CompoundBarrier(memoryBarriers []MemoryBarrier, bufferBarriers []BufferBarrier, imageBarriers []ImageBarrier) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 
 	memoryBarrierInfos := make([]C.VkMemoryBarrier2, 0, len(memoryBarriers))
 	for _, barrier := range memoryBarriers {
@@ -183,12 +184,12 @@ func (cb *commandBuffer) ImageBarrier(barriers ...ImageBarrier) {
 }
 
 func (cb *commandBuffer) FillBuffer(buffer Buffer, offset, size uint64, value uint32) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	C.vxr_vk_commandBuffer_fillBuffer(instance.cInstance, cb.vkCommandBuffer, buffer.vkBuffer(), C.VkDeviceSize(offset), C.VkDeviceSize(size), C.uint32_t(value))
 }
 
 func (cb *commandBuffer) UpdateBuffer(buffer Buffer, offset uint64, data []byte) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	if len(data) > 65536 {
 		abort("UpdateBuffer is limited to 65536 bytes")
 	}
@@ -214,7 +215,7 @@ type BufferCopyRegion struct {
 }
 
 func (cb *commandBuffer) CopyBuffer(bIn, bOut Buffer, regions []BufferCopyRegion) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 
 	cRegions := make([]C.VkBufferCopy, len(regions))
 	for i, r := range regions {
@@ -249,7 +250,7 @@ type BufferImageCopyRegion struct {
 }
 
 func (cb *commandBuffer) CopyBufferToImageAspect(buffer Buffer, image ImageBufferCopyable, layout ImageLayout, aspect ImageAspectFlags, regions []BufferImageCopyRegion) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 
 	if !image.Aspect().HasBits(aspect) {
 		abort("Calling CopyBufferToImageAspect with image that has not have aspect [%s] image has [%s]", aspect, image.Aspect().String())

@@ -39,6 +39,7 @@ import (
 	"goarrg.com/debug"
 	"golang.org/x/exp/maps"
 
+	"goarrg.com/rhi/vxr/internal/util"
 	"goarrg.com/rhi/vxr/internal/vk"
 )
 
@@ -156,6 +157,7 @@ func SetLogLevel(l uint32) {
 
 func InitInstance(platform goarrg.PlatformInterface, vkInstance goarrg.VkInstance) {
 	instanceInitOnce.Do(func() {
+		util.Init(platform)
 		instance.platform = platform
 		instance.vkInstance = vkInstance
 		instance.logger.IPrintf("vxr_vk_init")

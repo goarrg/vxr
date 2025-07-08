@@ -189,7 +189,7 @@ type RenderAttachments struct {
 }
 
 func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32, parameters RenderParameters, attachments RenderAttachments) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	if cb.currentRenderPass != (renderPass{}) {
 		abort("RenderPassBegin called when there's an active renderpass")
 	}
@@ -215,6 +215,7 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 	if len(attachments.Color) > 0 {
 		sampleCount = attachments.Color[0].ImageMultiSampled.sampleCount()
 		for i, attachment := range attachments.Color {
+			//nolint: dupl
 			if sampleCount != attachment.ImageMultiSampled.sampleCount() {
 				abort("All RenderPass Attachments must be either multisampled with the same sample count or not multisampled")
 			}
@@ -282,6 +283,7 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 		if parameters.FlipViewport {
 			cInfo.flipViewport = vk.TRUE
 		}
+		//nolint: dupl
 		if attachments.Depth.Image != nil {
 			if sampleCount != attachments.Depth.ImageMultiSampled.sampleCount() {
 				abort("All RenderPass Attachments must be either multisampled with the same sample count or not multisampled")
@@ -314,6 +316,7 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 			cb.currentRenderPass.id += fmt.Sprintf("%s,", toHex(attachments.Depth.Image.vkFormat()))
 			cb.currentRenderPass.name += fmt.Sprintf("%s,", attachments.Depth.Image.Format().String())
 		}
+		//nolint: dupl
 		if attachments.Stencil.Image != nil {
 			if sampleCount != attachments.Stencil.ImageMultiSampled.sampleCount() {
 				abort("All RenderPass Attachments must be either multisampled with the same sample count or not multisampled")
@@ -382,7 +385,7 @@ func (cb *GraphicsCommandBuffer) RenderPassBegin(name string, area gmath.Recti32
 }
 
 func (cb *GraphicsCommandBuffer) RenderPassSetViewport(flip bool, viewport gmath.Recti32) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	if cb.currentRenderPass == (renderPass{}) {
 		abort("RenderPassSetViewport called outside a renderpass")
 	}
@@ -399,7 +402,7 @@ func (cb *GraphicsCommandBuffer) RenderPassSetViewport(flip bool, viewport gmath
 }
 
 func (cb *GraphicsCommandBuffer) RenderPassSetScissor(rect gmath.Recti32) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	if cb.currentRenderPass == (renderPass{}) {
 		abort("RenderPassSetScissor called outside a renderpass")
 	}
@@ -411,7 +414,7 @@ func (cb *GraphicsCommandBuffer) RenderPassSetScissor(rect gmath.Recti32) {
 }
 
 func (cb *GraphicsCommandBuffer) RenderPassSetViewportAndScissor(flip bool, viewport gmath.Recti32, rect gmath.Recti32) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	if cb.currentRenderPass == (renderPass{}) {
 		abort("RenderPassSetViewportAndScissor called outside a renderpass")
 	}
@@ -432,7 +435,7 @@ func (cb *GraphicsCommandBuffer) RenderPassSetViewportAndScissor(flip bool, view
 }
 
 func (cb *GraphicsCommandBuffer) RenderPassSetColorBlendParameters(firstAttachment int, infos []RenderColorBlendParameters) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	if cb.currentRenderPass == (renderPass{}) {
 		abort("RenderPassSetColorBlendParameters called outside a renderpass")
 	}
@@ -468,7 +471,7 @@ func (cb *GraphicsCommandBuffer) RenderPassSetColorBlendParameters(firstAttachme
 }
 
 func (cb *GraphicsCommandBuffer) RenderPassSetLineWidth(width float32) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	if cb.currentRenderPass == (renderPass{}) {
 		abort("RenderPassSetLineWidth called outside a renderpass")
 	}
@@ -558,7 +561,7 @@ type DrawParameters struct {
 }
 
 func (cb *GraphicsCommandBuffer) draw(p GraphicsPipelineLibrary, info DrawParameters, fn func(C.vxr_vk_graphics_drawParameters)) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 
 	if cb.currentRenderPass == (renderPass{}) {
 		abort("Draw called outside a renderpass")
@@ -573,7 +576,7 @@ func (cb *GraphicsCommandBuffer) draw(p GraphicsPipelineLibrary, info DrawParame
 	descriptorSets := make([]C.VkDescriptorSet, 0, len(info.DescriptorSets))
 	defer runtime.KeepAlive(descriptorSets)
 	for _, s := range info.DescriptorSets {
-		s.noCopy.check()
+		s.noCopy.Check()
 		descriptorSets = append(descriptorSets, s.cDescriptorSet)
 	}
 
@@ -639,7 +642,7 @@ type DrawInfo struct {
 }
 
 func (cb *GraphicsCommandBuffer) Draw(p GraphicsPipelineLibrary, info DrawInfo) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	cb.draw(p, info.DrawParameters, func(cParmameters C.vxr_vk_graphics_drawParameters) {
 		cInfo := C.vxr_vk_graphics_drawInfo{
 			parameters: cParmameters,
@@ -678,7 +681,7 @@ type DrawIndirectInfo struct {
 }
 
 func (cb *GraphicsCommandBuffer) DrawIndirect(p GraphicsPipelineLibrary, info DrawIndirectInfo) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 
 	cb.draw(p, info.DrawParameters, func(cParmameters C.vxr_vk_graphics_drawParameters) {
 		cInfo := C.vxr_vk_graphics_drawIndirectInfo{
@@ -732,7 +735,7 @@ type DrawIndexedInfo struct {
 }
 
 func (cb *GraphicsCommandBuffer) DrawIndexed(p GraphicsPipelineLibrary, info DrawIndexedInfo) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	cb.draw(p, info.DrawParameters, func(cParmameters C.vxr_vk_graphics_drawParameters) {
 		cInfo := C.vxr_vk_graphics_drawIndexedInfo{
 			parameters:    cParmameters,
@@ -750,7 +753,7 @@ type DrawIndexedIndirectInfo struct {
 }
 
 func (cb *GraphicsCommandBuffer) DrawIndexedIndirect(p GraphicsPipelineLibrary, info DrawIndexedIndirectInfo) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	cb.draw(p, info.DrawParameters, func(cParmameters C.vxr_vk_graphics_drawParameters) {
 		cInfo := C.vxr_vk_graphics_drawIndexedIndirectInfo{
 			parameters:     cParmameters,
@@ -762,7 +765,7 @@ func (cb *GraphicsCommandBuffer) DrawIndexedIndirect(p GraphicsPipelineLibrary, 
 }
 
 func (cb *GraphicsCommandBuffer) RenderPassEnd() {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	if cb.currentRenderPass == (renderPass{}) {
 		abort("RenderPassEnd called when there's no active renderpass")
 	}
@@ -771,7 +774,7 @@ func (cb *GraphicsCommandBuffer) RenderPassEnd() {
 }
 
 func (cb *GraphicsCommandBuffer) Submit(waitSemaphores []SemaphoreWaitInfo, signalSemaphores []SemaphoreSignalInfo) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	if cb.currentRenderPass != (renderPass{}) {
 		abort("End called when there's an active renderpass")
 	}
@@ -795,5 +798,5 @@ func (cb *GraphicsCommandBuffer) Submit(waitSemaphores []SemaphoreWaitInfo, sign
 	)
 	runtime.KeepAlive(waitSemaphores)
 	runtime.KeepAlive(signalSemaphores)
-	cb.noCopy.close()
+	cb.noCopy.Close()
 }

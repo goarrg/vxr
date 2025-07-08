@@ -48,7 +48,7 @@ type shape2d struct {
 }
 
 type CommandBuffer2D struct {
-	noCopy             noCopy
+	noCopy             util.NoCopy
 	cbState            cbState
 	shapesColored      []shape2d
 	shapesColoredAlpha []shape2d
@@ -65,10 +65,7 @@ type CommandBuffer2D struct {
 }
 
 func (cb *CommandBuffer2D) Begin() {
-	if cb.noCopy.addr == nil {
-		cb.noCopy.init()
-	}
-	cb.noCopy.check()
+	cb.noCopy.InitLazy()
 	if cb.cbState != cbIdle {
 		abort("Begin() called while CommandBuffer2D is not idle")
 	}
@@ -82,7 +79,7 @@ func (cb *CommandBuffer2D) Begin() {
 }
 
 func (cb *CommandBuffer2D) End() {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	if cb.cbState != cbRecording {
 		abort("End() called while CommandBuffer2D is not in a recording state")
 	}
@@ -93,16 +90,16 @@ func (cb *CommandBuffer2D) End() {
 Destroy will destroy all persistent objects, caller is responsible for synchronization.
 */
 func (cb *CommandBuffer2D) Destroy() {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	cb.objectBuffer.Destroy()
 	cb.triangleBuffer.Destroy()
 	cb.depthImage.Destroy()
-	cb.noCopy.close()
+	cb.noCopy.Close()
 	*cb = CommandBuffer2D{}
 }
 
 func (cb *CommandBuffer2D) PreExecuteDstImageBarrierInfo() vxr.ImageBarrierInfo {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	return vxr.ImageBarrierInfo{
 		Stage:  vxr.PipelineStageRenderAttachmentWrite,
 		Access: vxr.AccessFlagMemoryWrite,
@@ -111,7 +108,7 @@ func (cb *CommandBuffer2D) PreExecuteDstImageBarrierInfo() vxr.ImageBarrierInfo 
 }
 
 func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuffer, output vxr.ColorImage) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	if cb.cbState != cbIdle {
 		abort("Execute(...) called while CommandBuffer2D is not idle")
 	}
@@ -337,7 +334,7 @@ func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuf
 }
 
 func (cb *CommandBuffer2D) PostExecuteSrcImageBarrierInfo() vxr.ImageBarrierInfo {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	return vxr.ImageBarrierInfo{
 		Stage:  vxr.PipelineStageRenderAttachmentWrite,
 		Access: vxr.AccessFlagMemoryWrite,
@@ -346,7 +343,7 @@ func (cb *CommandBuffer2D) PostExecuteSrcImageBarrierInfo() vxr.ImageBarrierInfo
 }
 
 func (cb *CommandBuffer2D) DrawTriangle(t Transform2D, c color.UNorm[uint8]) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	shape := shape2d{
 		polygonMode:    C.POLYGON_MODE_REGULAR_CONCAVE,
 		triangleOffset: cb.triangleCount,
@@ -367,7 +364,7 @@ func (cb *CommandBuffer2D) DrawTriangle(t Transform2D, c color.UNorm[uint8]) {
 }
 
 func (cb *CommandBuffer2D) DrawSquare(t Transform2D, c color.UNorm[uint8]) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	shape := shape2d{
 		polygonMode:    C.POLYGON_MODE_REGULAR_CONCAVE,
 		triangleOffset: cb.triangleCount,
@@ -388,7 +385,7 @@ func (cb *CommandBuffer2D) DrawSquare(t Transform2D, c color.UNorm[uint8]) {
 }
 
 func (cb *CommandBuffer2D) DrawRegularNGon(sides uint32, t Transform2D, c color.UNorm[uint8]) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	if sides < 3 {
 		abort("The smallest possible shape is 3 sides")
 	}
@@ -417,7 +414,7 @@ func (cb *CommandBuffer2D) DrawRegularNGon(sides uint32, t Transform2D, c color.
 }
 
 func (cb *CommandBuffer2D) DrawRegularNGonStar(sides uint32, thickness float32, t Transform2D, c color.UNorm[uint8]) {
-	cb.noCopy.check()
+	cb.noCopy.Check()
 	if sides < 4 {
 		abort("The smallest possible shape is 4 sides")
 	}

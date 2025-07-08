@@ -28,7 +28,7 @@ import (
 )
 
 type Pipeline2D struct {
-	noCopy        noCopy
+	noCopy        util.NoCopy
 	gpl           vxr.GraphicsPipelineLibrary
 	mode          uint32
 	triangleCount uint32
@@ -64,7 +64,7 @@ func NewPipeline2DTriangle(fragmentLayout *vxr.ShaderLayout, specConstants []uin
 				1,
 			},
 		})
-	p.noCopy.init()
+	p.noCopy.Init()
 	return &p
 }
 
@@ -97,7 +97,7 @@ func NewPipeline2DSquare(fragmentLayout *vxr.ShaderLayout, specConstants []uint3
 				2,
 			},
 		})
-	p.noCopy.init()
+	p.noCopy.Init()
 	return &p
 }
 
@@ -136,7 +136,7 @@ func NewPipeline2DRegularNGon(fragmentLayout *vxr.ShaderLayout, specConstants []
 				sides,
 			},
 		})
-	p.noCopy.init()
+	p.noCopy.Init()
 	return &p
 }
 
@@ -172,14 +172,14 @@ func NewPipeline2DRegularNGonStar(fragmentLayout *vxr.ShaderLayout, specConstant
 				points,
 			},
 		})
-	p.noCopy.init()
+	p.noCopy.Init()
 	return &p
 }
 
 func (p *Pipeline2D) Destroy() {
-	p.noCopy.check()
+	p.noCopy.Check()
 	p.gpl.VertexShader.Destroy()
-	p.noCopy.close()
+	p.noCopy.Close()
 }
 
 type InstanceData2D struct {
@@ -199,7 +199,7 @@ func (p *Pipeline2D) Draw(f *vxr.Frame, cb *vxr.GraphicsCommandBuffer, frag *vxr
 	viewport gmath.Extent2i32, parameters vxr.DrawParameters,
 	instances ...InstanceData2D,
 ) {
-	p.noCopy.check()
+	p.noCopy.Check()
 	ds := p.gpl.Layout.NewDescriptorSet(0)
 	f.QueueDestory(ds)
 	{

@@ -14,30 +14,38 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package shapes
+package util
 
 import "goarrg.com/debug"
 
-type noCopy struct {
-	addr *noCopy
+type NoCopy struct {
+	addr *NoCopy
 }
 
-func (n *noCopy) init() {
+func (n *NoCopy) Init() {
 	if n.addr != nil {
 		abort("init called on non zero value")
 	}
 	n.addr = n
 }
 
-func (n *noCopy) check() {
+func (n *NoCopy) InitLazy() {
+	if n.addr == nil {
+		n.addr = n
+	} else if n.addr != n {
+		abort("Illegal copy by value or use of zero/dead value: \n%s", debug.StackTrace(0))
+	}
+}
+
+func (n *NoCopy) Check() {
 	if n.addr != n {
 		abort("Illegal copy by value or use of zero/dead value: \n%s", debug.StackTrace(0))
 	}
 }
 
-func (n *noCopy) close() {
+func (n *NoCopy) Close() {
 	n.addr = nil
 }
 
-func (*noCopy) Lock()   {}
-func (*noCopy) Unlock() {}
+func (*NoCopy) Lock()   {}
+func (*NoCopy) Unlock() {}

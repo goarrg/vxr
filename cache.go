@@ -165,7 +165,7 @@ func (b *descriptorPoolBank) createOrRetrieveDescriptorSet(layout descriptorSetL
 		descriptorSetLayout: layout,
 		bank:                b,
 	}
-	descriptorSet.noCopy.init()
+	descriptorSet.noCopy.Init()
 
 	if !b.freeSets.Empty() {
 		descriptorSet.cDescriptorSet = b.freeSets.Pop()

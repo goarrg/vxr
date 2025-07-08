@@ -25,6 +25,7 @@ import "C"
 
 import (
 	"goarrg.com/gmath"
+	"goarrg.com/rhi/vxr/internal/util"
 	"goarrg.com/rhi/vxr/internal/vk"
 )
 
@@ -54,7 +55,7 @@ func CurrentSurfaceInfo() SurfaceInfo {
 }
 
 type Surface struct {
-	noCopy   noCopy
+	noCopy   util.NoCopy
 	waited   bool
 	cSurface C.vxr_vk_surface
 }
@@ -62,7 +63,7 @@ type Surface struct {
 var _ Image = (*Surface)(nil)
 
 func (s *Surface) Extent() gmath.Extent3i32 {
-	s.noCopy.check()
+	s.noCopy.Check()
 	return gmath.Extent3i32{
 		X: int32(s.cSurface.info.extent.width),
 		Y: int32(s.cSurface.info.extent.height),
@@ -71,43 +72,43 @@ func (s *Surface) Extent() gmath.Extent3i32 {
 }
 
 func (s *Surface) Format() Format {
-	s.noCopy.check()
+	s.noCopy.Check()
 	return Format(s.cSurface.info.format)
 }
 
 func (s *Surface) Aspect() ImageAspectFlags {
-	s.noCopy.check()
+	s.noCopy.Check()
 	return vk.IMAGE_ASPECT_COLOR_BIT
 }
 
 func (s *Surface) usage() ImageUsageFlags {
-	s.noCopy.check()
+	s.noCopy.Check()
 	return ImageUsageColorAttachment
 }
 
 func (s *Surface) vkFormat() C.VkFormat {
-	s.noCopy.check()
+	s.noCopy.Check()
 	return s.cSurface.info.format
 }
 
 func (s *Surface) vkImageViewType() C.VkImageViewType {
-	s.noCopy.check()
+	s.noCopy.Check()
 	return vk.IMAGE_VIEW_TYPE_2D
 }
 
 func (s *Surface) vkImage() C.VkImage {
-	s.noCopy.check()
+	s.noCopy.Check()
 	return s.cSurface.vkImage
 }
 
 func (s *Surface) vkImageView() C.VkImageView {
-	s.noCopy.check()
+	s.noCopy.Check()
 	return s.cSurface.vkImageView
 }
 
 func (s *Surface) vkSignalInfo(stage PipelineStage) C.VkSemaphoreSubmitInfo {
-	s.noCopy.check()
-	defer s.noCopy.close()
+	s.noCopy.Check()
+	defer s.noCopy.Close()
 	return C.VkSemaphoreSubmitInfo{
 		sType:     vk.STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO,
 		semaphore: s.cSurface.releaseSemaphore,
@@ -116,7 +117,7 @@ func (s *Surface) vkSignalInfo(stage PipelineStage) C.VkSemaphoreSubmitInfo {
 }
 
 func (s *Surface) vkWaitInfo(stage PipelineStage) C.VkSemaphoreSubmitInfo {
-	s.noCopy.check()
+	s.noCopy.Check()
 	if s.waited {
 		abort("Surface has already been waited on")
 	}

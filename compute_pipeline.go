@@ -29,6 +29,7 @@ import (
 	"unsafe"
 
 	"goarrg.com/gmath"
+	"goarrg.com/rhi/vxr/internal/util"
 	"goarrg.com/rhi/vxr/internal/vk"
 )
 
@@ -40,7 +41,7 @@ const (
 )
 
 type ComputePipeline struct {
-	noCopy     noCopy
+	noCopy     util.NoCopy
 	id         string
 	name       string
 	layout     *PipelineLayout
@@ -91,7 +92,7 @@ func NewComputePipeline(pipelineLayout *PipelineLayout, s *Shader, entryPoint Sh
 		layout:    pipelineLayout,
 		localSize: localSize,
 	}
-	pipeline.noCopy.init()
+	pipeline.noCopy.Init()
 
 	pipelineInfo := C.vxr_vk_compute_shaderPipelineCreateInfo{
 		stageFlags:     C.VkPipelineShaderStageCreateFlags(info.StageFlags),
@@ -120,7 +121,7 @@ func (p *ComputePipeline) Destroy() {
 	if p == nil {
 		return
 	}
-	p.noCopy.check()
+	p.noCopy.Check()
 	C.vxr_vk_shader_destroyPipeline(instance.cInstance, p.vkPipeline)
-	p.noCopy.close()
+	p.noCopy.Close()
 }

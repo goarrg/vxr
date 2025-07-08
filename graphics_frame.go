@@ -28,6 +28,7 @@ import (
 	"runtime"
 	"unsafe"
 
+	"goarrg.com/rhi/vxr/internal/util"
 	"goarrg.com/rhi/vxr/internal/vk"
 )
 
@@ -60,7 +61,7 @@ func (f *frame) destroy() {
 }
 
 type Frame struct {
-	noCopy     noCopy
+	noCopy     util.NoCopy
 	surface    *Surface
 	frame      *frame
 	name       string
@@ -74,7 +75,7 @@ func FrameBegin() *Frame {
 	f := &instance.graphics.framesInFlight[instance.graphics.frameIndex]
 	f.wait()
 	ret := Frame{frame: f, name: fmt.Sprintf("frame_%d", instance.graphics.frameIndex), cancelable: true}
-	ret.noCopy.init()
+	ret.noCopy.Init()
 	C.vxr_vk_graphics_frame_begin(instance.cInstance, C.size_t(len(ret.name)), (*C.char)(unsafe.Pointer(unsafe.StringData(ret.name))),
 		ret.frame.cFrame)
 	instance.graphics.frameStarted = true
@@ -82,12 +83,12 @@ func FrameBegin() *Frame {
 }
 
 func (f *Frame) Index() int {
-	f.noCopy.check()
+	f.noCopy.Check()
 	return instance.graphics.frameIndex
 }
 
 func (f *Frame) Surface() *Surface {
-	f.noCopy.check()
+	f.noCopy.Check()
 	if instance.sleep {
 		return nil
 	}
@@ -96,7 +97,7 @@ func (f *Frame) Surface() *Surface {
 	}
 	f.frame.waitSurface()
 	var surface Surface
-	surface.noCopy.init()
+	surface.noCopy.Init()
 	switch ret := C.vxr_vk_graphics_frame_acquireSurface(instance.cInstance, f.frame.cFrame, &surface.cSurface); ret {
 	case vk.SUCCESS:
 	case vk.SUBOPTIMAL_KHR:
@@ -112,7 +113,7 @@ func (f *Frame) Surface() *Surface {
 }
 
 type HostScratchBuffer struct {
-	noCopy     noCopy
+	noCopy     util.NoCopy
 	bufferSize uint64
 	usageFlags BufferUsageFlags
 	cBuffer    C.vxr_vk_hostBuffer
@@ -121,9 +122,9 @@ type HostScratchBuffer struct {
 var _ Buffer = (*HostScratchBuffer)(nil)
 
 func (f *Frame) NewHostScratchBuffer(name string, size uint64, usage BufferUsageFlags) *HostScratchBuffer {
-	f.noCopy.check()
+	f.noCopy.Check()
 	b := HostScratchBuffer{bufferSize: size, usageFlags: usage}
-	b.noCopy.init()
+	b.noCopy.Init()
 	info := C.vxr_vk_bufferCreateInfo{
 		size:  C.VkDeviceSize(size),
 		usage: C.VkBufferUsageFlags(usage),
@@ -137,7 +138,7 @@ func (f *Frame) NewHostScratchBuffer(name string, size uint64, usage BufferUsage
 }
 
 func (b *HostScratchBuffer) HostWrite(offset uintptr, data []byte) {
-	b.noCopy.check()
+	b.noCopy.Check()
 	if (uint64(len(data)) + uint64(offset)) > b.bufferSize {
 		abort("HostWrite(%d, len(data): %d) will overflow buffer of size %d", offset, len(data), b.bufferSize)
 	}
@@ -147,24 +148,24 @@ func (b *HostScratchBuffer) HostWrite(offset uintptr, data []byte) {
 }
 
 func (b *HostScratchBuffer) Usage() BufferUsageFlags {
-	b.noCopy.check()
+	b.noCopy.Check()
 	return b.usageFlags
 }
 
 func (b *HostScratchBuffer) Size() uint64 {
-	b.noCopy.check()
+	b.noCopy.Check()
 	return b.bufferSize
 }
 
 func (b *HostScratchBuffer) vkBuffer() C.VkBuffer {
-	b.noCopy.check()
+	b.noCopy.Check()
 	return b.cBuffer.vkBuffer
 }
 
 func (f *Frame) NewSingleUseCommandBuffer(name string) *GraphicsCommandBuffer {
-	f.noCopy.check()
+	f.noCopy.Check()
 	cb := GraphicsCommandBuffer{cFrame: f.frame.cFrame}
-	cb.noCopy.init()
+	cb.noCopy.Init()
 	name = fmt.Sprintf("%s_%s", f.name, name)
 	C.vxr_vk_graphics_frame_commandBufferBegin(instance.cInstance, f.frame.cFrame,
 		C.size_t(len(name)), (*C.char)(unsafe.Pointer(unsafe.StringData(name))), &cb.vkCommandBuffer)
@@ -174,14 +175,14 @@ func (f *Frame) NewSingleUseCommandBuffer(name string) *GraphicsCommandBuffer {
 }
 
 func (f *Frame) Cancel() {
-	f.noCopy.check()
+	f.noCopy.Check()
 	if !f.cancelable {
 		abort("Cannot cancel frame with acquired surface or after calling any of the New* functions")
 	}
 	C.vxr_vk_graphics_frame_end(instance.cInstance, f.frame.cFrame)
 	f.frame.waiter = nil
 	instance.graphics.frameStarted = false
-	f.noCopy.close()
+	f.noCopy.Close()
 }
 
 /*
@@ -189,12 +190,12 @@ QueueDestory is a convenience function to avoid having to store destroyers until
 it is eq to passing the destroyers to any of the End functions.
 */
 func (f *Frame) QueueDestory(destroyers ...Destroyer) {
-	f.noCopy.check()
+	f.noCopy.Check()
 	f.frame.destroyers = append(f.frame.destroyers, destroyers...)
 }
 
 func (f *Frame) EndWithWaiter(waiter *TimelineSemaphoreWaiter, destroyers ...Destroyer) {
-	f.noCopy.check()
+	f.noCopy.Check()
 	if f.surface != nil {
 		if ret := C.vxr_vk_graphics_frame_submit(instance.cInstance, f.frame.cFrame); ret != vk.SUCCESS {
 			instance.sleep = true
@@ -216,7 +217,7 @@ loop:
 	f.frame.destroyers = append(f.frame.destroyers, destroyers...)
 	instance.graphics.frameIndex = (instance.graphics.frameIndex + 1) % len(instance.graphics.framesInFlight)
 	instance.graphics.frameStarted = false
-	f.noCopy.close()
+	f.noCopy.Close()
 }
 
 func (f *Frame) End(destroyers ...Destroyer) {

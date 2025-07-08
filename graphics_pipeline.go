@@ -29,6 +29,7 @@ import (
 	"unsafe"
 
 	"goarrg.com/debug"
+	"goarrg.com/rhi/vxr/internal/util"
 	"goarrg.com/rhi/vxr/internal/vk"
 )
 
@@ -142,7 +143,7 @@ func NewVertexInputPipeline(info VertexInputPipelineCreateInfo) *VertexInputPipe
 }
 
 type GraphicsShaderPipeline struct {
-	noCopy noCopy
+	noCopy util.NoCopy
 	id     string
 	name   string
 	stage  ShaderStage
@@ -189,7 +190,7 @@ func NewGraphicsShaderPipeline(pipelineLayout *PipelineLayout, s *Shader, entryP
 		stage:      ShaderStage(pipelineInfo.stage),
 		vkPipeline: vkPipeline,
 	}
-	p.noCopy.init()
+	p.noCopy.Init()
 	return p
 }
 
@@ -197,9 +198,9 @@ func (s *GraphicsShaderPipeline) Destroy() {
 	if s == nil {
 		return
 	}
-	s.noCopy.check()
+	s.noCopy.Check()
 	instance.graphics.pipelineCache.destroyPipeline(s.id, s.vkPipeline)
-	s.noCopy.close()
+	s.noCopy.Close()
 }
 
 type GraphicsPipelineLibrary struct {
@@ -209,8 +210,8 @@ type GraphicsPipelineLibrary struct {
 }
 
 func (gp *GraphicsPipelineLibrary) validate() error {
-	gp.VertexShader.noCopy.check()
-	gp.FragmentShader.noCopy.check()
+	gp.VertexShader.noCopy.Check()
+	gp.FragmentShader.noCopy.Check()
 	if gp.VertexShader.stage != ShaderStageVertex {
 		return debug.Errorf("Vertex shader does not contain a vertex shader entry point")
 	}

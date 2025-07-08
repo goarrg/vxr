@@ -29,6 +29,7 @@ import (
 	"runtime"
 	"unsafe"
 
+	"goarrg.com/rhi/vxr/internal/util"
 	"goarrg.com/rhi/vxr/internal/vk"
 )
 
@@ -118,7 +119,7 @@ func (d DescriptorCombinedImageSamplerInfo) isDescriptorInfo() {
 }
 
 func (d DescriptorCombinedImageSamplerInfo) vkDescriptorImageInfo() C.VkDescriptorImageInfo {
-	d.Sampler.noCopy.check()
+	d.Sampler.noCopy.Check()
 	return C.VkDescriptorImageInfo{
 		sampler:     d.Sampler.cSampler,
 		imageView:   d.Image.vkImageView(),
@@ -127,14 +128,14 @@ func (d DescriptorCombinedImageSamplerInfo) vkDescriptorImageInfo() C.VkDescript
 }
 
 type DescriptorSet struct {
-	noCopy              noCopy
+	noCopy              util.NoCopy
 	descriptorSetLayout descriptorSetLayout
 	cDescriptorSet      C.VkDescriptorSet
 	bank                *descriptorPoolBank
 }
 
 func (s *DescriptorSet) Bind(bindingIndex, descriptorIndex int, descriptors ...DescriptorInfo) {
-	s.noCopy.check()
+	s.noCopy.Check()
 	if bindingIndex >= len(s.descriptorSetLayout.bindings) {
 		abort("Trying to bind to descriptor index %d while layout's max is %d", bindingIndex, len(s.descriptorSetLayout.bindings)-1)
 	}
@@ -189,9 +190,9 @@ func (s *DescriptorSet) Destroy() {
 	if s == nil {
 		return
 	}
-	s.noCopy.check()
+	s.noCopy.Check()
 	s.bank.releaseDescriptorSet(s)
-	s.noCopy.close()
+	s.noCopy.Close()
 }
 
 type descriptorSetBinding struct {
