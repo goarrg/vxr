@@ -37,7 +37,8 @@ type cbState uint
 const (
 	cbIdle cbState = iota
 	cbRecording
-	cbExecuted
+	cbExecutedPrePass
+	cbExecutedDraw
 )
 
 type shape2d struct {
@@ -55,6 +56,7 @@ type CommandBuffer2D struct {
 	cbState cbState
 	shapes  []shape2d
 
+	descriptorSetDrawInfo  *vxr.DescriptorSet
 	descriptorSetTextures  *vxr.DescriptorSet
 	managedTextureBindings *managed.DescriptorArrayImage
 
@@ -112,179 +114,170 @@ func (cb *CommandBuffer2D) UnBindTexture(f *vxr.Frame, img vxr.Image) {
 	cb.managedTextureBindings.Pop(f, img)
 }
 
-func (cb *CommandBuffer2D) PreExecuteDstImageBarrierInfo() vxr.ImageBarrierInfo {
+/*
+ExecutePrePass records commands that has to happen before ExecuteDraw.
+It must be called outside a renderpass.
+*/
+func (cb *CommandBuffer2D) ExecutePrePass(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuffer, viewport gmath.Extent2i32) {
 	cb.noCopy.Check()
-	return vxr.ImageBarrierInfo{
-		Stage:  vxr.PipelineStageRenderAttachmentWrite,
-		Access: vxr.AccessFlagMemoryWrite,
-		Layout: vxr.ImageLayoutAttachmentOptimal,
+	switch cb.cbState {
+	case cbRecording:
+		abort("ExecutePrePass(...) called while CommandBuffer2D is not idle")
+	case cbExecutedPrePass:
+		abort("ExecutePrePass(...) called twice without ExecuteDraw(...)")
 	}
-}
-
-func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuffer, output vxr.ColorImage) {
-	cb.noCopy.Check()
-	// don't check if we've Executed, Executeing multiple times is fine
-	if cb.cbState == cbRecording {
-		abort("Execute(...) called while CommandBuffer2D is not idle")
-	}
-	vcb.BeginNamedRegion("shapes2d")
-
-	dsDraw := instance.solid2DPipeline.Layout.NewDescriptorSet(0)
-	frame.QueueDestory(dsDraw)
-
-	if cb.objectCapacity < cb.objectCount {
-		const objectCapacityIncrement = 128
-		cb.objectCapacity = ((cb.objectCount + objectCapacityIncrement) / objectCapacityIncrement) * objectCapacityIncrement
-		frame.QueueDestory(cb.objectBuffer)
-		cb.objectBuffer = vxr.NewDeviceBuffer("vxr/shapes/object",
-			(instance.solid2DObjectBufferMetadata.Size + (instance.solid2DObjectBufferMetadata.RuntimeArrayStride * uint64(cb.objectCapacity))),
-			vxr.BufferUsageStorageBuffer|vxr.BufferUsageTransferDst)
-	}
-	if cb.triangleCapacity < cb.triangleCount {
-		const triangleCapacityIncrement = 512
-		cb.triangleCapacity = ((cb.triangleCapacity + triangleCapacityIncrement) / triangleCapacityIncrement) * triangleCapacityIncrement
-		frame.QueueDestory(cb.triangleBuffer)
-		cb.triangleBuffer = vxr.NewDeviceBuffer("vxr/shapes/triangle",
-			(instance.solid2DTriangleBufferMetadata.Size + (instance.solid2DTriangleBufferMetadata.RuntimeArrayStride * uint64(cb.triangleCapacity))),
-			vxr.BufferUsageStorageBuffer|vxr.BufferUsageIndirectBuffer|vxr.BufferUsageTransferDst)
-	}
-
-	dsDraw.Bind(0, 0, vxr.DescriptorBufferInfo{
-		Buffer: cb.objectBuffer,
-	})
-	dsDraw.Bind(1, 0, vxr.DescriptorBufferInfo{
-		Buffer: cb.triangleBuffer,
-		Offset: instance.solid2DTriangleBufferMetadata.Size,
-	})
-
-	vcb.BufferBarrier(vxr.BufferBarrier{
-		Buffer: cb.objectBuffer,
-		Src: vxr.BufferBarrierInfo{
-			Stage:  vxr.PipelineStageFragmentShader,
-			Access: vxr.AccessFlagMemoryRead,
-		},
-		Dst: vxr.BufferBarrierInfo{
-			Stage:  vxr.PipelineStageTransfer,
-			Access: vxr.AccessFlagMemoryWrite,
-		},
-	}, vxr.BufferBarrier{
-		Buffer: cb.triangleBuffer,
-		Src: vxr.BufferBarrierInfo{
-			Stage:  vxr.PipelineStageFragmentShader,
-			Access: vxr.AccessFlagMemoryRead,
-		},
-		Dst: vxr.BufferBarrierInfo{
-			Stage:  vxr.PipelineStageTransfer,
-			Access: vxr.AccessFlagMemoryWrite,
-		},
-	})
-
-	obj := frame.NewHostScratchBuffer("vxr/shapes/object", cb.objectBuffer.Size(), vxr.BufferUsageTransferSrc)
-	off := util.HostWrite(obj, 0, cb.objectCount)
+	cb.descriptorSetDrawInfo = instance.solid2DPipeline.Layout.NewDescriptorSet(0)
+	frame.QueueDestory(cb.descriptorSetDrawInfo)
+	vcb.BeginNamedRegion("shapes2d-prepass")
 	{
-		extent := output.Extent()
-		for _, s := range cb.shapes {
-			s.modelMatrix[0] = [3]float32{
-				s.modelMatrix[0][0] * (2 / float32(extent.X)),
-				s.modelMatrix[0][1] * (2 / float32(extent.X)),
-				s.modelMatrix[0][2] * (2 / float32(extent.X)),
-			}
-			s.modelMatrix[1] = [3]float32{
-				s.modelMatrix[1][0] * (2 / float32(extent.Y)),
-				s.modelMatrix[1][1] * (2 / float32(extent.Y)),
-				s.modelMatrix[1][2] * (2 / float32(extent.Y)),
-			}
-
-			off += util.HostWrite(obj, off, s)
+		if cb.objectCapacity < cb.objectCount {
+			const objectCapacityIncrement = 128
+			cb.objectCapacity = ((cb.objectCount + objectCapacityIncrement) / objectCapacityIncrement) * objectCapacityIncrement
+			frame.QueueDestory(cb.objectBuffer)
+			cb.objectBuffer = vxr.NewDeviceBuffer("vxr/shapes/object",
+				(instance.solid2DObjectBufferMetadata.Size + (instance.solid2DObjectBufferMetadata.RuntimeArrayStride * uint64(cb.objectCapacity))),
+				vxr.BufferUsageStorageBuffer|vxr.BufferUsageTransferDst)
 		}
-	}
+		if cb.triangleCapacity < cb.triangleCount {
+			const triangleCapacityIncrement = 512
+			cb.triangleCapacity = ((cb.triangleCapacity + triangleCapacityIncrement) / triangleCapacityIncrement) * triangleCapacityIncrement
+			frame.QueueDestory(cb.triangleBuffer)
+			cb.triangleBuffer = vxr.NewDeviceBuffer("vxr/shapes/triangle",
+				(instance.solid2DTriangleBufferMetadata.Size + (instance.solid2DTriangleBufferMetadata.RuntimeArrayStride * uint64(cb.triangleCapacity))),
+				vxr.BufferUsageStorageBuffer|vxr.BufferUsageIndirectBuffer|vxr.BufferUsageTransferDst)
+		}
 
-	vcb.CopyBuffer(obj, cb.objectBuffer, []vxr.BufferCopyRegion{
-		{
-			Size: cb.objectBuffer.Size(),
-		},
-	})
-	{
-		indirect := []byte{0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
-		_, _ = binary.Append(indirect[:0], binary.NativeEndian, cb.triangleCount*3)
-		vcb.UpdateBuffer(cb.triangleBuffer, 0, indirect)
-	}
+		cb.descriptorSetDrawInfo.Bind(0, 0, vxr.DescriptorBufferInfo{
+			Buffer: cb.objectBuffer,
+		})
+		cb.descriptorSetDrawInfo.Bind(1, 0, vxr.DescriptorBufferInfo{
+			Buffer: cb.triangleBuffer,
+			Offset: instance.solid2DTriangleBufferMetadata.Size,
+		})
 
-	vcb.BufferBarrier(vxr.BufferBarrier{
-		Buffer: cb.objectBuffer,
-		Src: vxr.BufferBarrierInfo{
-			Stage:  vxr.PipelineStageTransfer,
-			Access: vxr.AccessFlagMemoryWrite,
-		},
-		Dst: vxr.BufferBarrierInfo{
-			Stage:  vxr.PipelineStageCompute,
-			Access: vxr.AccessFlagMemoryRead | vxr.AccessFlagMemoryWrite,
-		},
-	}, vxr.BufferBarrier{
-		Buffer: cb.triangleBuffer,
-		Src: vxr.BufferBarrierInfo{
-			Stage:  vxr.PipelineStageTransfer,
-			Access: vxr.AccessFlagMemoryWrite,
-		},
-		Dst: vxr.BufferBarrierInfo{
-			Stage:  vxr.PipelineStageCompute,
-			Access: vxr.AccessFlagMemoryRead | vxr.AccessFlagMemoryWrite,
-		},
-	})
-
-	vcb.Dispatch(instance.dispatcher, vxr.DispatchInfo{
-		DescriptorSets: []*vxr.DescriptorSet{dsDraw, cb.descriptorSetTextures},
-		ThreadCount:    gmath.Extent3u32{X: cb.objectCount, Y: 1, Z: 1},
-	})
-
-	vcb.BufferBarrier(
-		vxr.BufferBarrier{
+		vcb.BufferBarrier(vxr.BufferBarrier{
 			Buffer: cb.objectBuffer,
 			Src: vxr.BufferBarrierInfo{
-				Stage:  vxr.PipelineStageCompute,
-				Access: vxr.AccessFlagMemoryWrite,
-			},
-			Dst: vxr.BufferBarrierInfo{
-				Stage:  vxr.PipelineStageVertexShader,
+				Stage:  vxr.PipelineStageFragmentShader,
 				Access: vxr.AccessFlagMemoryRead,
 			},
-		},
-		vxr.BufferBarrier{
+			Dst: vxr.BufferBarrierInfo{
+				Stage:  vxr.PipelineStageTransfer,
+				Access: vxr.AccessFlagMemoryWrite,
+			},
+		}, vxr.BufferBarrier{
 			Buffer: cb.triangleBuffer,
 			Src: vxr.BufferBarrierInfo{
-				Stage:  vxr.PipelineStageCompute,
+				Stage:  vxr.PipelineStageFragmentShader,
+				Access: vxr.AccessFlagMemoryRead,
+			},
+			Dst: vxr.BufferBarrierInfo{
+				Stage:  vxr.PipelineStageTransfer,
+				Access: vxr.AccessFlagMemoryWrite,
+			},
+		})
+
+		obj := frame.NewHostScratchBuffer("vxr/shapes/object", cb.objectBuffer.Size(), vxr.BufferUsageTransferSrc)
+		off := util.HostWrite(obj, 0, cb.objectCount)
+		{
+			for _, s := range cb.shapes {
+				s.modelMatrix[0] = [3]float32{
+					s.modelMatrix[0][0] * (2 / float32(viewport.X)),
+					s.modelMatrix[0][1] * (2 / float32(viewport.X)),
+					s.modelMatrix[0][2] * (2 / float32(viewport.X)),
+				}
+				s.modelMatrix[1] = [3]float32{
+					s.modelMatrix[1][0] * (2 / float32(viewport.Y)),
+					s.modelMatrix[1][1] * (2 / float32(viewport.Y)),
+					s.modelMatrix[1][2] * (2 / float32(viewport.Y)),
+				}
+
+				off += util.HostWrite(obj, off, s)
+			}
+		}
+
+		vcb.CopyBuffer(obj, cb.objectBuffer, []vxr.BufferCopyRegion{
+			{
+				Size: cb.objectBuffer.Size(),
+			},
+		})
+		{
+			indirect := []byte{0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
+			_, _ = binary.Append(indirect[:0], binary.NativeEndian, cb.triangleCount*3)
+			vcb.UpdateBuffer(cb.triangleBuffer, 0, indirect)
+		}
+
+		vcb.BufferBarrier(vxr.BufferBarrier{
+			Buffer: cb.objectBuffer,
+			Src: vxr.BufferBarrierInfo{
+				Stage:  vxr.PipelineStageTransfer,
 				Access: vxr.AccessFlagMemoryWrite,
 			},
 			Dst: vxr.BufferBarrierInfo{
-				Stage:  vxr.PipelineStageIndirect | vxr.PipelineStageVertexShader,
-				Access: vxr.AccessFlagMemoryRead,
+				Stage:  vxr.PipelineStageCompute,
+				Access: vxr.AccessFlagMemoryRead | vxr.AccessFlagMemoryWrite,
 			},
-		},
-	)
-
-	vcb.RenderPassBegin("vxr/shapes",
-		gmath.Recti32{W: output.Extent().X, H: output.Extent().Y},
-		vxr.RenderParameters{
-			FlipViewport: true,
-		},
-		vxr.RenderAttachments{
-			Color: []vxr.RenderColorAttachment{
-				{
-					Image:   output,
-					Layout:  vxr.ImageLayoutAttachmentOptimal,
-					LoadOp:  vxr.RenderAttachmentLoadOpClear,
-					StoreOp: vxr.RenderAttachmentStoreOpStore,
-					ColorBlend: vxr.RenderColorBlendParameters{
-						Enable:         true,
-						Equation:       vxr.RenderColorAttachmentBlendPremultipliedAlpha(),
-						ComponentFlags: output.Format().ColorComponentFlags(),
-					},
-				},
+		}, vxr.BufferBarrier{
+			Buffer: cb.triangleBuffer,
+			Src: vxr.BufferBarrierInfo{
+				Stage:  vxr.PipelineStageTransfer,
+				Access: vxr.AccessFlagMemoryWrite,
+			},
+			Dst: vxr.BufferBarrierInfo{
+				Stage:  vxr.PipelineStageCompute,
+				Access: vxr.AccessFlagMemoryRead | vxr.AccessFlagMemoryWrite,
 			},
 		})
+
+		vcb.Dispatch(instance.dispatcher, vxr.DispatchInfo{
+			DescriptorSets: []*vxr.DescriptorSet{cb.descriptorSetDrawInfo, cb.descriptorSetTextures},
+			ThreadCount:    gmath.Extent3u32{X: cb.objectCount, Y: 1, Z: 1},
+		})
+
+		vcb.BufferBarrier(
+			vxr.BufferBarrier{
+				Buffer: cb.objectBuffer,
+				Src: vxr.BufferBarrierInfo{
+					Stage:  vxr.PipelineStageCompute,
+					Access: vxr.AccessFlagMemoryWrite,
+				},
+				Dst: vxr.BufferBarrierInfo{
+					Stage:  vxr.PipelineStageVertexShader,
+					Access: vxr.AccessFlagMemoryRead,
+				},
+			},
+			vxr.BufferBarrier{
+				Buffer: cb.triangleBuffer,
+				Src: vxr.BufferBarrierInfo{
+					Stage:  vxr.PipelineStageCompute,
+					Access: vxr.AccessFlagMemoryWrite,
+				},
+				Dst: vxr.BufferBarrierInfo{
+					Stage:  vxr.PipelineStageIndirect | vxr.PipelineStageVertexShader,
+					Access: vxr.AccessFlagMemoryRead,
+				},
+			},
+		)
+	}
+	vcb.EndNamedRegion()
+
+	cb.cbState = cbExecutedPrePass
+}
+
+/*
+ExecuteDraw records draw commands that has to happen after ExecutePrePass.
+It must be called inside a renderpass.
+*/
+func (cb *CommandBuffer2D) ExecuteDraw(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuffer) {
+	cb.noCopy.Check()
+	if cb.cbState != cbExecutedPrePass {
+		abort("ExecuteDraw(...) called before ExecutePrePass(...)")
+	}
+	vcb.BeginNamedRegion("shapes2d-draw")
+
 	vcb.DrawIndirect(instance.solid2DPipeline, vxr.DrawIndirectInfo{
 		DrawParameters: vxr.DrawParameters{
-			DescriptorSets:   []*vxr.DescriptorSet{dsDraw, cb.descriptorSetTextures},
+			DescriptorSets:   []*vxr.DescriptorSet{cb.descriptorSetDrawInfo, cb.descriptorSetTextures},
 			DepthTestEnable:  true,
 			DepthWriteEnable: true,
 			DepthCompareOp:   vxr.CompareOpGreaterOrEqual,
@@ -294,20 +287,10 @@ func (cb *CommandBuffer2D) Execute(frame *vxr.Frame, vcb *vxr.GraphicsCommandBuf
 			DrawCount: 1,
 		},
 	})
-	vcb.RenderPassEnd()
 
 	vcb.EndNamedRegion()
 
-	cb.cbState = cbExecuted
-}
-
-func (cb *CommandBuffer2D) PostExecuteSrcImageBarrierInfo() vxr.ImageBarrierInfo {
-	cb.noCopy.Check()
-	return vxr.ImageBarrierInfo{
-		Stage:  vxr.PipelineStageRenderAttachmentWrite,
-		Access: vxr.AccessFlagMemoryWrite,
-		Layout: vxr.ImageLayoutAttachmentOptimal,
-	}
+	cb.cbState = cbExecutedDraw
 }
 
 func (cb *CommandBuffer2D) drawTriangle(t Transform2D, c uint32, flags uint32) {

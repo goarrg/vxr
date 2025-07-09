@@ -98,6 +98,14 @@ func Init(c Config) {
 	properties := vxr.DeviceProperties()
 
 	{
+		if c.Limits.PerCommandBuffer2D.MaxTextures == 0 {
+			c.Limits.PerCommandBuffer2D.MaxTextures = 2
+		} else if c.Limits.PerCommandBuffer2D.MaxTextures < 2 {
+			abort("Config.Limits.PerCommandBuffer2D.MaxTextures must be >= 2")
+		}
+	}
+
+	{
 		instance.linearSampler = vxr.NewSampler("linear", vxr.SamplerCreateInfo{
 			MagFilter:  vxr.SamplerFilterLinear,
 			MinFilter:  vxr.SamplerFilterLinear,
@@ -175,6 +183,8 @@ func Init(c Config) {
 }
 
 func Destroy() {
+	instance.linearSampler.Destroy()
+
 	instance.dispatcher.Destroy()
 	instance.dispatcher = nil
 
