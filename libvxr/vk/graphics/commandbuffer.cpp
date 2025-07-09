@@ -169,7 +169,11 @@ VXR_FN void vxr_vk_graphics_renderPassBegin(vxr_vk_instance, VkCommandBuffer cb,
 	}
 
 	VK_PROC_DEVICE(vkCmdSetLineWidth)(cb, 1);
-	VK_PROC_DEVICE(vkCmdSetRasterizationSamplesEXT)(cb, info.samples);
+	if (info.samples == 0) {
+		VK_PROC_DEVICE(vkCmdSetRasterizationSamplesEXT)(cb, VK_SAMPLE_COUNT_1_BIT);
+	} else {
+		VK_PROC_DEVICE(vkCmdSetRasterizationSamplesEXT)(cb, info.samples);
+	}
 }
 VXR_FN void vxr_vk_graphics_renderPassSetViewport(vxr_vk_instance, VkCommandBuffer cb, VkBool32 flip, VkViewport viewport) {
 	if (flip == VK_FALSE) {
