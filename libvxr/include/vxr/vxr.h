@@ -399,6 +399,7 @@ typedef struct {
 	vxr_vk_graphics_drawParameters parameters;
 
 	uint32_t vertexCount;
+	uint32_t vertexOffset;
 	uint32_t instanceCount;
 } vxr_vk_graphics_drawInfo;
 typedef struct {

@@ -638,6 +638,7 @@ func (cb *GraphicsCommandBuffer) draw(p GraphicsPipelineLibrary, info DrawParame
 type DrawInfo struct {
 	DrawParameters DrawParameters
 	VertexCount    uint32
+	VertexOffset   uint32
 	InstanceCount  uint32
 }
 
@@ -648,6 +649,7 @@ func (cb *GraphicsCommandBuffer) Draw(p GraphicsPipelineLibrary, info DrawInfo) 
 			parameters: cParmameters,
 
 			vertexCount:   C.uint32_t(info.VertexCount),
+			vertexOffset:  C.uint32_t(info.VertexOffset),
 			instanceCount: C.uint32_t(info.InstanceCount),
 		}
 		C.vxr_vk_graphics_draw(instance.cInstance, cb.vkCommandBuffer, cInfo)

@@ -280,7 +280,7 @@ inline static VXR_FN void setupDraw(vxr_vk_graphics_drawParameters parameters, V
 }
 VXR_FN void vxr_vk_graphics_draw(vxr_vk_instance, VkCommandBuffer cb, vxr_vk_graphics_drawInfo info) {
 	setupDraw(info.parameters, cb);
-	VK_PROC_DEVICE(vkCmdDraw)(cb, info.vertexCount, info.instanceCount, 0, 0);
+	VK_PROC_DEVICE(vkCmdDraw)(cb, info.vertexCount, info.instanceCount, info.vertexOffset, 0);
 }
 VXR_FN void vxr_vk_graphics_drawIndirect(vxr_vk_instance, VkCommandBuffer cb, vxr_vk_graphics_drawIndirectInfo info) {
 	setupDraw(info.parameters, cb);
