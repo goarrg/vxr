@@ -22,7 +22,6 @@ package shapes
 import "C"
 
 import (
-	"encoding/binary"
 	"unsafe"
 
 	"goarrg.com/gmath"
@@ -51,10 +50,17 @@ type shape2d struct {
 	modelMatrix    [2][3]float32
 }
 
+type region struct {
+	vertexOffset uint32
+	vertexCount  uint32
+	scissor      gmath.Recti32
+}
+
 type CommandBuffer2D struct {
 	noCopy  util.NoCopy
 	cbState cbState
 	shapes  []shape2d
+	regions []region
 
 	descriptorSetDrawInfo  *vxr.DescriptorSet
 	descriptorSetTextures  *vxr.DescriptorSet
@@ -80,6 +86,7 @@ func (cb *CommandBuffer2D) Begin() {
 	}
 
 	cb.shapes = cb.shapes[:0]
+	cb.regions = cb.regions[:0]
 	cb.objectCount = 0
 	cb.triangleCount = 0
 
@@ -90,6 +97,10 @@ func (cb *CommandBuffer2D) End() {
 	cb.noCopy.Check()
 	if cb.cbState != cbRecording {
 		abort("End() called while CommandBuffer2D is not in a recording state")
+	}
+	if len(cb.regions) > 0 {
+		i := len(cb.regions) - 1
+		cb.regions[i].vertexCount = (cb.triangleCount * 3) - cb.regions[i].vertexOffset
 	}
 	cb.cbState = cbIdle
 }
@@ -152,21 +163,10 @@ func (cb *CommandBuffer2D) ExecutePrePass(frame *vxr.Frame, vcb *vxr.GraphicsCom
 		})
 		cb.descriptorSetDrawInfo.Bind(1, 0, vxr.DescriptorBufferInfo{
 			Buffer: cb.triangleBuffer,
-			Offset: instance.solid2DTriangleBufferMetadata.Size,
 		})
 
 		vcb.BufferBarrier(vxr.BufferBarrier{
 			Buffer: cb.objectBuffer,
-			Src: vxr.BufferBarrierInfo{
-				Stage:  vxr.PipelineStageFragmentShader,
-				Access: vxr.AccessFlagMemoryRead,
-			},
-			Dst: vxr.BufferBarrierInfo{
-				Stage:  vxr.PipelineStageTransfer,
-				Access: vxr.AccessFlagMemoryWrite,
-			},
-		}, vxr.BufferBarrier{
-			Buffer: cb.triangleBuffer,
 			Src: vxr.BufferBarrierInfo{
 				Stage:  vxr.PipelineStageFragmentShader,
 				Access: vxr.AccessFlagMemoryRead,
@@ -201,11 +201,6 @@ func (cb *CommandBuffer2D) ExecutePrePass(frame *vxr.Frame, vcb *vxr.GraphicsCom
 				Size: cb.objectBuffer.Size(),
 			},
 		})
-		{
-			indirect := []byte{0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
-			_, _ = binary.Append(indirect[:0], binary.NativeEndian, cb.triangleCount*3)
-			vcb.UpdateBuffer(cb.triangleBuffer, 0, indirect)
-		}
 
 		vcb.BufferBarrier(vxr.BufferBarrier{
 			Buffer: cb.objectBuffer,
@@ -217,17 +212,18 @@ func (cb *CommandBuffer2D) ExecutePrePass(frame *vxr.Frame, vcb *vxr.GraphicsCom
 				Stage:  vxr.PipelineStageCompute,
 				Access: vxr.AccessFlagMemoryRead | vxr.AccessFlagMemoryWrite,
 			},
-		}, vxr.BufferBarrier{
-			Buffer: cb.triangleBuffer,
-			Src: vxr.BufferBarrierInfo{
-				Stage:  vxr.PipelineStageTransfer,
-				Access: vxr.AccessFlagMemoryWrite,
-			},
-			Dst: vxr.BufferBarrierInfo{
-				Stage:  vxr.PipelineStageCompute,
-				Access: vxr.AccessFlagMemoryRead | vxr.AccessFlagMemoryWrite,
-			},
-		})
+		},
+			vxr.BufferBarrier{
+				Buffer: cb.triangleBuffer,
+				Src: vxr.BufferBarrierInfo{
+					Stage:  vxr.PipelineStageVertexShader,
+					Access: vxr.AccessFlagMemoryRead,
+				},
+				Dst: vxr.BufferBarrierInfo{
+					Stage:  vxr.PipelineStageCompute,
+					Access: vxr.AccessFlagMemoryWrite,
+				},
+			})
 
 		vcb.Dispatch(instance.dispatcher, vxr.DispatchInfo{
 			DescriptorSets: []*vxr.DescriptorSet{cb.descriptorSetDrawInfo, cb.descriptorSetTextures},
@@ -253,7 +249,7 @@ func (cb *CommandBuffer2D) ExecutePrePass(frame *vxr.Frame, vcb *vxr.GraphicsCom
 					Access: vxr.AccessFlagMemoryWrite,
 				},
 				Dst: vxr.BufferBarrierInfo{
-					Stage:  vxr.PipelineStageIndirect | vxr.PipelineStageVertexShader,
+					Stage:  vxr.PipelineStageVertexShader,
 					Access: vxr.AccessFlagMemoryRead,
 				},
 			},
@@ -275,22 +271,54 @@ func (cb *CommandBuffer2D) ExecuteDraw(frame *vxr.Frame, vcb *vxr.GraphicsComman
 	}
 	vcb.BeginNamedRegion("shapes2d-draw")
 
-	vcb.DrawIndirect(instance.solid2DPipeline, vxr.DrawIndirectInfo{
-		DrawParameters: vxr.DrawParameters{
-			DescriptorSets:   []*vxr.DescriptorSet{cb.descriptorSetDrawInfo, cb.descriptorSetTextures},
-			DepthTestEnable:  true,
-			DepthWriteEnable: true,
-			DepthCompareOp:   vxr.CompareOpGreaterOrEqual,
-		},
-		IndirectBuffer: vxr.DrawIndirectBufferInfo{
-			Buffer:    cb.triangleBuffer,
-			DrawCount: 1,
-		},
-	})
+	if len(cb.regions) > 0 {
+		if cb.regions[0].vertexOffset > 0 {
+			vcb.Draw(instance.solid2DPipeline, vxr.DrawInfo{
+				DrawParameters: vxr.DrawParameters{
+					DescriptorSets: []*vxr.DescriptorSet{cb.descriptorSetDrawInfo, cb.descriptorSetTextures},
+				},
+				VertexCount:   cb.regions[0].vertexOffset,
+				InstanceCount: 1,
+			})
+		}
+		for _, r := range cb.regions {
+			vcb.RenderPassSetScissor(r.scissor)
+			vcb.Draw(instance.solid2DPipeline, vxr.DrawInfo{
+				DrawParameters: vxr.DrawParameters{
+					DescriptorSets: []*vxr.DescriptorSet{cb.descriptorSetDrawInfo, cb.descriptorSetTextures},
+				},
+				VertexCount:   r.vertexCount,
+				VertexOffset:  r.vertexOffset,
+				InstanceCount: 1,
+			})
+		}
+	} else {
+		vcb.Draw(instance.solid2DPipeline, vxr.DrawInfo{
+			DrawParameters: vxr.DrawParameters{
+				DescriptorSets: []*vxr.DescriptorSet{cb.descriptorSetDrawInfo, cb.descriptorSetTextures},
+			},
+			VertexCount:   cb.triangleCount * 3,
+			InstanceCount: 1,
+		})
+	}
 
 	vcb.EndNamedRegion()
 
 	cb.cbState = cbExecutedDraw
+}
+
+func (cb *CommandBuffer2D) SetScissor(s gmath.Recti32) {
+	if len(cb.regions) > 0 {
+		i := len(cb.regions) - 1
+		cb.regions[i].vertexCount = (cb.triangleCount * 3) - cb.regions[i].vertexOffset
+		if cb.regions[i].vertexCount <= 0 {
+			cb.regions = cb.regions[:len(cb.regions)-1]
+		}
+	}
+	cb.regions = append(cb.regions, region{
+		vertexOffset: cb.triangleCount * 3,
+		scissor:      s,
+	})
 }
 
 func (cb *CommandBuffer2D) drawTriangle(t Transform2D, c uint32, flags uint32) {

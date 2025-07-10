@@ -25,8 +25,6 @@ limitations under the License.
 package shapes
 
 import (
-	"unsafe"
-
 	"goarrg.com/debug"
 	"goarrg.com/rhi/vxr"
 	"goarrg.com/rhi/vxr/internal/util"
@@ -145,10 +143,6 @@ func Init(c Config) {
 			fs, fl.EntryPoints["main"], vxr.GraphicsShaderPipelineCreateInfo{
 				SpecConstants: []uint32{uint32(c.Limits.PerCommandBuffer2D.MaxTextures)},
 			})
-
-		// we are packing the indirect buffer into the triangle buffer, do this after creating the layouts
-		// as we may use the size there in the future
-		instance.solid2DTriangleBufferMetadata.Size = uint64(unsafe.Sizeof(uint32(0)) * 4)
 	}
 
 	// poly2DPipeline
