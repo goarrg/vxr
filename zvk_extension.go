@@ -15,6 +15,8 @@ func getExtensionDependencies(name string) []string {
 		return []string{"VK_ANDROID_external_memory_android_hardware_buffer"}
 	case "VK_ANDROID_external_memory_android_hardware_buffer":
 		return []string{"VK_KHR_sampler_ycbcr_conversion", "VK_KHR_external_memory", "VK_KHR_dedicated_allocation", "VK_EXT_queue_family_foreign"}
+	case "VK_ARM_data_graph":
+		return []string{"VK_KHR_maintenance5", "VK_KHR_deferred_host_operations"}
 	case "VK_ARM_pipeline_opacity_micromap":
 		return []string{"VK_EXT_opacity_micromap"}
 	case "VK_ARM_render_pass_striped":
@@ -163,8 +165,14 @@ func getExtensionDependencies(name string) []string {
 		return []string{"VK_KHR_maintenance5"}
 	case "VK_KHR_present_id":
 		return []string{"VK_KHR_swapchain"}
+	case "VK_KHR_present_id2":
+		return []string{"VK_KHR_swapchain"}
+	case "VK_KHR_present_mode_fifo_latest_ready":
+		return []string{"VK_KHR_swapchain"}
 	case "VK_KHR_present_wait":
 		return []string{"VK_KHR_swapchain", "VK_KHR_present_id"}
+	case "VK_KHR_present_wait2":
+		return []string{"VK_KHR_swapchain", "VK_KHR_present_id2"}
 	case "VK_KHR_ray_query":
 		return []string{"VK_KHR_spirv_1_4", "VK_KHR_acceleration_structure"}
 	case "VK_KHR_ray_tracing_maintenance1":
@@ -185,6 +193,8 @@ func getExtensionDependencies(name string) []string {
 		return []string{"VK_KHR_swapchain"}
 	case "VK_KHR_spirv_1_4":
 		return []string{"VK_KHR_shader_float_controls"}
+	case "VK_KHR_swapchain_maintenance1":
+		return []string{"VK_KHR_swapchain"}
 	case "VK_KHR_swapchain_mutable_format":
 		return []string{"VK_KHR_swapchain", "VK_KHR_maintenance2", "VK_KHR_image_format_list"}
 	case "VK_KHR_variable_pointers":
@@ -197,11 +207,15 @@ func getExtensionDependencies(name string) []string {
 		return []string{"VK_KHR_video_decode_queue"}
 	case "VK_KHR_video_decode_queue":
 		return []string{"VK_KHR_video_queue", "VK_KHR_synchronization2"}
+	case "VK_KHR_video_decode_vp9":
+		return []string{"VK_KHR_video_decode_queue"}
 	case "VK_KHR_video_encode_av1":
 		return []string{"VK_KHR_video_encode_queue"}
 	case "VK_KHR_video_encode_h264":
 		return []string{"VK_KHR_video_encode_queue"}
 	case "VK_KHR_video_encode_h265":
+		return []string{"VK_KHR_video_encode_queue"}
+	case "VK_KHR_video_encode_intra_refresh":
 		return []string{"VK_KHR_video_encode_queue"}
 	case "VK_KHR_video_encode_quantization_map":
 		return []string{"VK_KHR_video_encode_queue", "VK_KHR_format_feature_flags2"}
@@ -238,7 +252,7 @@ func getExtensionDependencies(name string) []string {
 	case "VK_NV_fragment_shading_rate_enums":
 		return []string{"VK_KHR_fragment_shading_rate"}
 	case "VK_NV_low_latency2":
-		return []string{"VK_KHR_timeline_semaphore"}
+		return []string{"VK_KHR_timeline_semaphore", "VK_KHR_present_id", "VK_KHR_present_id2"}
 	case "VK_NV_memory_decompression":
 		return []string{"VK_KHR_buffer_device_address"}
 	case "VK_NV_optical_flow":
@@ -277,6 +291,8 @@ func getExtensionDependencies(name string) []string {
 		return []string{"VK_QCOM_tile_properties"}
 	case "VK_QNX_external_memory_screen_buffer":
 		return []string{"VK_KHR_sampler_ycbcr_conversion", "VK_KHR_external_memory", "VK_KHR_dedicated_allocation", "VK_EXT_queue_family_foreign"}
+	case "VK_VALVE_fragment_density_map_layered":
+		return []string{"VK_KHR_maintenance5", "VK_EXT_fragment_density_map"}
 	case "VK_VALVE_mutable_descriptor_type":
 		return []string{"VK_KHR_maintenance3"}
 	}

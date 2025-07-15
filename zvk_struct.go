@@ -616,6 +616,38 @@ func (s VkPhysicalDeviceCustomBorderColorFeaturesEXT) enabledList() []C.size_t {
 	}
 	return list
 }
+type VkPhysicalDeviceDataGraphFeaturesARM struct {
+	DataGraph bool
+	DataGraphUpdateAfterBind bool
+	DataGraphSpecializationConstants bool
+	DataGraphDescriptorBuffer bool
+	DataGraphShaderModule bool
+}
+func (VkPhysicalDeviceDataGraphFeaturesARM) extension() string {
+	return "VK_ARM_data_graph"
+}
+func (VkPhysicalDeviceDataGraphFeaturesARM) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_DATA_GRAPH_FEATURES_ARM
+}
+func (s VkPhysicalDeviceDataGraphFeaturesARM) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 5)
+	if s.DataGraph {
+		list = append(list, 2)
+	}
+	if s.DataGraphUpdateAfterBind {
+		list = append(list, 3)
+	}
+	if s.DataGraphSpecializationConstants {
+		list = append(list, 4)
+	}
+	if s.DataGraphDescriptorBuffer {
+		list = append(list, 5)
+	}
+	if s.DataGraphShaderModule {
+		list = append(list, 6)
+	}
+	return list
+}
 type VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV struct {
 	DedicatedAllocationImageAliasing bool
 }
@@ -765,6 +797,22 @@ func (s VkPhysicalDeviceDescriptorBufferFeaturesEXT) enabledList() []C.size_t {
 	}
 	if s.DescriptorBufferPushDescriptors {
 		list = append(list, 5)
+	}
+	return list
+}
+type VkPhysicalDeviceDescriptorBufferTensorFeaturesARM struct {
+	DescriptorBufferTensorDescriptors bool
+}
+func (VkPhysicalDeviceDescriptorBufferTensorFeaturesARM) extension() string {
+	return "VK_ARM_tensors"
+}
+func (VkPhysicalDeviceDescriptorBufferTensorFeaturesARM) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_TENSOR_FEATURES_ARM
+}
+func (s VkPhysicalDeviceDescriptorBufferTensorFeaturesARM) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.DescriptorBufferTensorDescriptors {
+		list = append(list, 2)
 	}
 	return list
 }
@@ -1484,6 +1532,22 @@ func (s VkPhysicalDeviceFeatures) enabledList() []C.size_t {
 	}
 	return list
 }
+type VkPhysicalDeviceFormatPackFeaturesARM struct {
+	FormatPack bool
+}
+func (VkPhysicalDeviceFormatPackFeaturesARM) extension() string {
+	return "VK_ARM_format_pack"
+}
+func (VkPhysicalDeviceFormatPackFeaturesARM) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_FORMAT_PACK_FEATURES_ARM
+}
+func (s VkPhysicalDeviceFormatPackFeaturesARM) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.FormatPack {
+		list = append(list, 2)
+	}
+	return list
+}
 type VkPhysicalDeviceFragmentDensityMap2FeaturesEXT struct {
 	FragmentDensityMapDeferred bool
 }
@@ -1521,6 +1585,22 @@ func (s VkPhysicalDeviceFragmentDensityMapFeaturesEXT) enabledList() []C.size_t 
 	}
 	if s.FragmentDensityMapNonSubsampledImages {
 		list = append(list, 4)
+	}
+	return list
+}
+type VkPhysicalDeviceFragmentDensityMapLayeredFeaturesVALVE struct {
+	FragmentDensityMapLayered bool
+}
+func (VkPhysicalDeviceFragmentDensityMapLayeredFeaturesVALVE) extension() string {
+	return "VK_VALVE_fragment_density_map_layered"
+}
+func (VkPhysicalDeviceFragmentDensityMapLayeredFeaturesVALVE) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_LAYERED_FEATURES_VALVE
+}
+func (s VkPhysicalDeviceFragmentDensityMapLayeredFeaturesVALVE) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.FragmentDensityMapLayered {
+		list = append(list, 2)
 	}
 	return list
 }
@@ -2344,6 +2424,22 @@ func (s VkPhysicalDeviceMaintenance8FeaturesKHR) enabledList() []C.size_t {
 	}
 	return list
 }
+type VkPhysicalDeviceMaintenance9FeaturesKHR struct {
+	Maintenance9 bool
+}
+func (VkPhysicalDeviceMaintenance9FeaturesKHR) extension() string {
+	return "VK_KHR_maintenance9"
+}
+func (VkPhysicalDeviceMaintenance9FeaturesKHR) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_9_FEATURES_KHR
+}
+func (s VkPhysicalDeviceMaintenance9FeaturesKHR) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.Maintenance9 {
+		list = append(list, 2)
+	}
+	return list
+}
 type VkPhysicalDeviceMapMemoryPlacedFeaturesEXT struct {
 	MemoryMapPlaced bool
 	MemoryMapRangePlaced bool
@@ -2740,6 +2836,22 @@ func (s VkPhysicalDevicePipelineBinaryFeaturesKHR) enabledList() []C.size_t {
 	}
 	return list
 }
+type VkPhysicalDevicePipelineCacheIncrementalModeFeaturesSEC struct {
+	PipelineCacheIncrementalMode bool
+}
+func (VkPhysicalDevicePipelineCacheIncrementalModeFeaturesSEC) extension() string {
+	return "VK_SEC_pipeline_cache_incremental_mode"
+}
+func (VkPhysicalDevicePipelineCacheIncrementalModeFeaturesSEC) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_CACHE_INCREMENTAL_MODE_FEATURES_SEC
+}
+func (s VkPhysicalDevicePipelineCacheIncrementalModeFeaturesSEC) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.PipelineCacheIncrementalMode {
+		list = append(list, 2)
+	}
+	return list
+}
 type VkPhysicalDevicePipelineCreationCacheControlFeatures struct {
 	PipelineCreationCacheControl bool
 }
@@ -2900,6 +3012,22 @@ func (s VkPhysicalDevicePresentBarrierFeaturesNV) enabledList() []C.size_t {
 	}
 	return list
 }
+type VkPhysicalDevicePresentId2FeaturesKHR struct {
+	PresentId2 bool
+}
+func (VkPhysicalDevicePresentId2FeaturesKHR) extension() string {
+	return "VK_KHR_present_id2"
+}
+func (VkPhysicalDevicePresentId2FeaturesKHR) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_ID_2_FEATURES_KHR
+}
+func (s VkPhysicalDevicePresentId2FeaturesKHR) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.PresentId2 {
+		list = append(list, 2)
+	}
+	return list
+}
 type VkPhysicalDevicePresentIdFeaturesKHR struct {
 	PresentId bool
 }
@@ -2928,6 +3056,38 @@ func (VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT) sType() C.VkStructu
 func (s VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT) enabledList() []C.size_t {
 	list := make([]C.size_t, 0, 1)
 	if s.PresentModeFifoLatestReady {
+		list = append(list, 2)
+	}
+	return list
+}
+type VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR struct {
+	PresentModeFifoLatestReady bool
+}
+func (VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR) extension() string {
+	return "VK_KHR_present_mode_fifo_latest_ready"
+}
+func (VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_MODE_FIFO_LATEST_READY_FEATURES_KHR
+}
+func (s VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.PresentModeFifoLatestReady {
+		list = append(list, 2)
+	}
+	return list
+}
+type VkPhysicalDevicePresentWait2FeaturesKHR struct {
+	PresentWait2 bool
+}
+func (VkPhysicalDevicePresentWait2FeaturesKHR) extension() string {
+	return "VK_KHR_present_wait2"
+}
+func (VkPhysicalDevicePresentWait2FeaturesKHR) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_WAIT_2_FEATURES_KHR
+}
+func (s VkPhysicalDevicePresentWait2FeaturesKHR) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.PresentWait2 {
 		list = append(list, 2)
 	}
 	return list
@@ -3352,6 +3512,30 @@ func (s VkPhysicalDeviceRobustness2FeaturesEXT) enabledList() []C.size_t {
 	}
 	return list
 }
+type VkPhysicalDeviceRobustness2FeaturesKHR struct {
+	RobustBufferAccess2 bool
+	RobustImageAccess2 bool
+	NullDescriptor bool
+}
+func (VkPhysicalDeviceRobustness2FeaturesKHR) extension() string {
+	return "VK_KHR_robustness2"
+}
+func (VkPhysicalDeviceRobustness2FeaturesKHR) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_KHR
+}
+func (s VkPhysicalDeviceRobustness2FeaturesKHR) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 3)
+	if s.RobustBufferAccess2 {
+		list = append(list, 2)
+	}
+	if s.RobustImageAccess2 {
+		list = append(list, 3)
+	}
+	if s.NullDescriptor {
+		list = append(list, 4)
+	}
+	return list
+}
 type VkPhysicalDeviceSamplerYCbCrConversionFeatures struct {
 	SamplerYCbCrConversion bool
 }
@@ -3728,6 +3912,26 @@ func (s VkPhysicalDeviceShaderFloat16Int8Features) enabledList() []C.size_t {
 		list = append(list, 2)
 	}
 	if s.ShaderInt8 {
+		list = append(list, 3)
+	}
+	return list
+}
+type VkPhysicalDeviceShaderFloat8FeaturesEXT struct {
+	ShaderFloat8 bool
+	ShaderFloat8CooperativeMatrix bool
+}
+func (VkPhysicalDeviceShaderFloat8FeaturesEXT) extension() string {
+	return "VK_EXT_shader_float8"
+}
+func (VkPhysicalDeviceShaderFloat8FeaturesEXT) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_FLOAT8_FEATURES_EXT
+}
+func (s VkPhysicalDeviceShaderFloat8FeaturesEXT) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 2)
+	if s.ShaderFloat8 {
+		list = append(list, 2)
+	}
+	if s.ShaderFloat8CooperativeMatrix {
 		list = append(list, 3)
 	}
 	return list
@@ -4144,6 +4348,22 @@ func (s VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT) enabledList() []C.size
 	}
 	return list
 }
+type VkPhysicalDeviceSwapchainMaintenance1FeaturesKHR struct {
+	SwapchainMaintenance1 bool
+}
+func (VkPhysicalDeviceSwapchainMaintenance1FeaturesKHR) extension() string {
+	return "VK_KHR_swapchain_maintenance1"
+}
+func (VkPhysicalDeviceSwapchainMaintenance1FeaturesKHR) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_SWAPCHAIN_MAINTENANCE_1_FEATURES_KHR
+}
+func (s VkPhysicalDeviceSwapchainMaintenance1FeaturesKHR) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.SwapchainMaintenance1 {
+		list = append(list, 2)
+	}
+	return list
+}
 type VkPhysicalDeviceSynchronization2Features struct {
 	Synchronization2 bool
 }
@@ -4157,6 +4377,42 @@ func (s VkPhysicalDeviceSynchronization2Features) enabledList() []C.size_t {
 	list := make([]C.size_t, 0, 1)
 	if s.Synchronization2 {
 		list = append(list, 2)
+	}
+	return list
+}
+type VkPhysicalDeviceTensorFeaturesARM struct {
+	TensorNonPacked bool
+	ShaderTensorAccess bool
+	ShaderStorageTensorArrayDynamicIndexing bool
+	ShaderStorageTensorArrayNonUniformIndexing bool
+	DescriptorBindingStorageTensorUpdateAfterBind bool
+	Tensors bool
+}
+func (VkPhysicalDeviceTensorFeaturesARM) extension() string {
+	return "VK_ARM_tensors"
+}
+func (VkPhysicalDeviceTensorFeaturesARM) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_TENSOR_FEATURES_ARM
+}
+func (s VkPhysicalDeviceTensorFeaturesARM) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 6)
+	if s.TensorNonPacked {
+		list = append(list, 2)
+	}
+	if s.ShaderTensorAccess {
+		list = append(list, 3)
+	}
+	if s.ShaderStorageTensorArrayDynamicIndexing {
+		list = append(list, 4)
+	}
+	if s.ShaderStorageTensorArrayNonUniformIndexing {
+		list = append(list, 5)
+	}
+	if s.DescriptorBindingStorageTensorUpdateAfterBind {
+		list = append(list, 6)
+	}
+	if s.Tensors {
+		list = append(list, 7)
 	}
 	return list
 }
@@ -4312,6 +4568,26 @@ func (s VkPhysicalDeviceTransformFeedbackFeaturesEXT) enabledList() []C.size_t {
 	}
 	return list
 }
+type VkPhysicalDeviceUnifiedImageLayoutsFeaturesKHR struct {
+	UnifiedImageLayouts bool
+	UnifiedImageLayoutsVideo bool
+}
+func (VkPhysicalDeviceUnifiedImageLayoutsFeaturesKHR) extension() string {
+	return "VK_KHR_unified_image_layouts"
+}
+func (VkPhysicalDeviceUnifiedImageLayoutsFeaturesKHR) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_UNIFIED_IMAGE_LAYOUTS_FEATURES_KHR
+}
+func (s VkPhysicalDeviceUnifiedImageLayoutsFeaturesKHR) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 2)
+	if s.UnifiedImageLayouts {
+		list = append(list, 2)
+	}
+	if s.UnifiedImageLayoutsVideo {
+		list = append(list, 3)
+	}
+	return list
+}
 type VkPhysicalDeviceUniformBufferStandardLayoutFeatures struct {
 	UniformBufferStandardLayout bool
 }
@@ -4440,6 +4716,22 @@ func (s VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT) enabledList() []C.si
 	}
 	return list
 }
+type VkPhysicalDeviceVideoDecodeVP9FeaturesKHR struct {
+	VideoDecodeVP9 bool
+}
+func (VkPhysicalDeviceVideoDecodeVP9FeaturesKHR) extension() string {
+	return "VK_KHR_video_decode_vp9"
+}
+func (VkPhysicalDeviceVideoDecodeVP9FeaturesKHR) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_DECODE_VP9_FEATURES_KHR
+}
+func (s VkPhysicalDeviceVideoDecodeVP9FeaturesKHR) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.VideoDecodeVP9 {
+		list = append(list, 2)
+	}
+	return list
+}
 type VkPhysicalDeviceVideoEncodeAV1FeaturesKHR struct {
 	VideoEncodeAV1 bool
 }
@@ -4452,6 +4744,22 @@ func (VkPhysicalDeviceVideoEncodeAV1FeaturesKHR) sType() C.VkStructureType {
 func (s VkPhysicalDeviceVideoEncodeAV1FeaturesKHR) enabledList() []C.size_t {
 	list := make([]C.size_t, 0, 1)
 	if s.VideoEncodeAV1 {
+		list = append(list, 2)
+	}
+	return list
+}
+type VkPhysicalDeviceVideoEncodeIntraRefreshFeaturesKHR struct {
+	VideoEncodeIntraRefresh bool
+}
+func (VkPhysicalDeviceVideoEncodeIntraRefreshFeaturesKHR) extension() string {
+	return "VK_KHR_video_encode_intra_refresh"
+}
+func (VkPhysicalDeviceVideoEncodeIntraRefreshFeaturesKHR) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_INTRA_REFRESH_FEATURES_KHR
+}
+func (s VkPhysicalDeviceVideoEncodeIntraRefreshFeaturesKHR) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.VideoEncodeIntraRefresh {
 		list = append(list, 2)
 	}
 	return list
@@ -5012,6 +5320,22 @@ func (VkPhysicalDeviceYCbCrImageArraysFeaturesEXT) sType() C.VkStructureType {
 func (s VkPhysicalDeviceYCbCrImageArraysFeaturesEXT) enabledList() []C.size_t {
 	list := make([]C.size_t, 0, 1)
 	if s.YCbCrImageArrays {
+		list = append(list, 2)
+	}
+	return list
+}
+type VkPhysicalDeviceZeroInitializeDeviceMemoryFeaturesEXT struct {
+	ZeroInitializeDeviceMemory bool
+}
+func (VkPhysicalDeviceZeroInitializeDeviceMemoryFeaturesEXT) extension() string {
+	return "VK_EXT_zero_initialize_device_memory"
+}
+func (VkPhysicalDeviceZeroInitializeDeviceMemoryFeaturesEXT) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_ZERO_INITIALIZE_DEVICE_MEMORY_FEATURES_EXT
+}
+func (s VkPhysicalDeviceZeroInitializeDeviceMemoryFeaturesEXT) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.ZeroInitializeDeviceMemory {
 		list = append(list, 2)
 	}
 	return list
