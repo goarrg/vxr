@@ -18,8 +18,6 @@ limitations under the License.
 
 #include <stdint.h>
 
-#include "std/utility.hpp"
-
 #include "vk/vk.hpp"
 #include "vk/graphics/graphics.hpp"
 #include "vk/graphics/swapchain/swapchain.hpp"
@@ -45,8 +43,7 @@ VXR_FN void vxr_vk_graphics_getSurfaceInfo(vxr_vk_instance instanceHandle, vxr_v
 
 	info->format = graphics->swapchain.surfaceFormat.format;
 	info->extent = graphics->swapchain.extent;
-	// -1 to get useable count, TODO: handle mailbox
-	info->numImages = graphics->swapchain.size() > 0 ? (vxr::std::max<uint32_t>(2, graphics->swapchain.size()) - 1) : 0;
+	info->numImages = graphics->swapchain.size();
 }
 VXR_FN void vxr_vk_graphics_destroy(vxr_vk_instance instanceHandle) {
 	auto* instance = vxr::vk::instance::fromHandle(instanceHandle);

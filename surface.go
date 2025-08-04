@@ -43,14 +43,16 @@ func CurrentSurfaceInfo() SurfaceInfo {
 		return SurfaceInfo{}
 	}
 
+	numFrames := gmath.Clamp(int32(cInfo.numImages)-instance.config.swapchainImageCountPadding, 1, instance.config.maxFramesInFlight)
+
 	if instance.sleep {
-		return SurfaceInfo{Format: Format(cInfo.format), NumFramesInFlight: min((int32)(cInfo.numImages), instance.config.maxFramesInFlight)}
+		return SurfaceInfo{Format: Format(cInfo.format), NumFramesInFlight: numFrames}
 	}
 
 	return SurfaceInfo{
 		Extent:            gmath.Extent3i32{X: int32(cInfo.extent.width), Y: int32(cInfo.extent.height), Z: 1},
 		Format:            Format(cInfo.format),
-		NumFramesInFlight: min((int32)(cInfo.numImages), instance.config.maxFramesInFlight),
+		NumFramesInFlight: numFrames,
 	}
 }
 

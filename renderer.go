@@ -257,7 +257,8 @@ func Resize(w int, h int) {
 		}
 
 		instance.logger.IPrintf("vxr_vk_graphics_init")
-		ret := C.vxr_vk_graphics_init(instance.cInstance, C.uint64_t(instance.cSurface), C.uint32_t(instance.config.maxFramesInFlight))
+		ret := C.vxr_vk_graphics_init(instance.cInstance, C.uint64_t(instance.cSurface),
+			C.uint32_t(instance.config.maxFramesInFlight+instance.config.swapchainImageCountPadding))
 		if ret != vk.SUCCESS {
 			abort("Failed to initialize graphics system: %s", vkResultStr(ret))
 		}

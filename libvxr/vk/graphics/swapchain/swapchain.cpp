@@ -199,7 +199,7 @@ VkResult initSwapchain(instance* instance, VkSurfaceKHR surface, uint32_t wantNu
 			.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
 			.pNext = &presentModesCreateInfo,
 			.surface = surface,
-			.minImageCount = vxr::std::max(surfaceCapabilities.minImageCount, wantNumImages + 1),
+			.minImageCount = vxr::std::max(surfaceCapabilities.minImageCount, wantNumImages),
 			.imageFormat = swapchain->surfaceFormat.format,
 			.imageColorSpace = swapchain->surfaceFormat.colorSpace,
 			.imageExtent = surfaceCapabilities.currentExtent,

@@ -34,11 +34,18 @@ import (
 	"golang.org/x/exp/maps"
 )
 
+const (
+	defaultImageCountPadding      = 1
+	defaultMaxFramesInFlight      = 2
+	defaultDescriptorPoolBankSize = 8
+)
+
 type Config struct {
-	PreferredVkPhysicalDevice uintptr
-	API                       uint32
-	MaxFramesInFlight         int32
-	DescriptorPoolBankSize    int32
+	PreferredVkPhysicalDevice  uintptr
+	API                        uint32
+	SwapchainImageCountPadding int32
+	MaxFramesInFlight          int32
+	DescriptorPoolBankSize     int32
 
 	RequiredExtensions []string
 	OptionalExtensions []string
@@ -103,11 +110,20 @@ func (c *Config) validate() {
 	} else if !gmath.InRange(c.API, C.VXR_VK_MIN_API, C.VXR_VK_MAX_API) {
 		abort("Config.API is outside of valid api range [%q, %q]", vkAPI2String(C.VXR_VK_MIN_API), vkAPI2String(C.VXR_VK_MAX_API))
 	}
-	if c.MaxFramesInFlight <= 0 {
-		abort("Config.MaxFramesInFlight must be >= 1")
+	if c.SwapchainImageCountPadding == 0 {
+		c.SwapchainImageCountPadding = defaultImageCountPadding
+	} else if c.SwapchainImageCountPadding < 0 {
+		abort("Config.SwapchainImageCountPadding must be >= 0")
 	}
-	if c.DescriptorPoolBankSize <= 0 {
-		abort("Config.DescriptorPoolBankSize must be >= 1")
+	if c.MaxFramesInFlight == 0 {
+		c.MaxFramesInFlight = defaultMaxFramesInFlight
+	} else if c.MaxFramesInFlight < 0 {
+		abort("Config.MaxFramesInFlight must be >= 0")
+	}
+	if c.DescriptorPoolBankSize == 0 {
+		c.DescriptorPoolBankSize = defaultDescriptorPoolBankSize
+	} else if c.DescriptorPoolBankSize < 0 {
+		abort("Config.DescriptorPoolBankSize must be >= 0")
 	}
 }
 
@@ -285,11 +301,13 @@ func (c *Config) createDeviceSelector(surface uint64) C.vxr_vk_device_selector {
 }
 
 type config struct {
-	maxFramesInFlight      int32
-	descriptorPoolBankSize int32
+	swapchainImageCountPadding int32
+	maxFramesInFlight          int32
+	descriptorPoolBankSize     int32
 }
 
 func (c *config) use(user Config) {
+	c.swapchainImageCountPadding = user.SwapchainImageCountPadding
 	c.maxFramesInFlight = user.MaxFramesInFlight
 	c.descriptorPoolBankSize = user.DescriptorPoolBankSize
 
