@@ -42,8 +42,6 @@ func (f *frame) wait() {
 	if f.waiter != nil {
 		f.waiter.Wait()
 		f.waiter = nil
-	} else {
-		f.waitSurface()
 	}
 	for _, d := range f.destroyers {
 		d.Destroy()
@@ -194,14 +192,15 @@ func (f *Frame) QueueDestory(destroyers ...Destroyer) {
 	f.frame.destroyers = append(f.frame.destroyers, destroyers...)
 }
 
-func (f *Frame) EndWithWaiter(waiter *TimelineSemaphoreWaiter, destroyers ...Destroyer) {
+func (f *Frame) End(waiter *TimelineSemaphoreWaiter, destroyers ...Destroyer) {
 	f.noCopy.Check()
+	if waiter == nil {
+		abort("Cannot end frame without a TimelineSemaphoreWaiter")
+	}
 	if f.surface != nil {
 		if ret := C.vxr_vk_graphics_frame_submit(instance.cInstance, f.frame.cFrame); ret != vk.SUCCESS {
 			instance.sleep = true
 		}
-	} else if waiter == nil {
-		abort("Cannot end frame without an acquired surface and without a TimelineSemaphoreWaiter")
 	}
 	C.vxr_vk_graphics_frame_end(instance.cInstance, f.frame.cFrame)
 loop:
@@ -218,8 +217,4 @@ loop:
 	instance.graphics.frameIndex = (instance.graphics.frameIndex + 1) % len(instance.graphics.framesInFlight)
 	instance.graphics.frameStarted = false
 	f.noCopy.Close()
-}
-
-func (f *Frame) End(destroyers ...Destroyer) {
-	f.EndWithWaiter(nil, destroyers...)
 }
