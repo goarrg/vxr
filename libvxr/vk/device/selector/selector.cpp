@@ -131,25 +131,16 @@ inline static auto getDeviceUUID(VkPhysicalDevice target, uint16_t index) {
 		};
 		VK_PROC(vkGetPhysicalDeviceProperties2)(target, &deviceProperties2);
 
-		static constexpr vxr::std::array<uint8_t, 6> test;
-		static_assert((VK_UUID_SIZE - test.size()) == 10);
-		// drivers will have either all 0s, front half 0s or second half 0s, a valid and useable uuid will not have those regions completely 0ed
-		if (vxr::std::inRange(device11Properties.deviceUUID[6] >> 4, 1, 8) &&
-			memcmp(device11Properties.deviceUUID, test.get(), test.size()) != 0 &&
-			memcmp(&device11Properties.deviceUUID[10], test.get(), test.size()) != 0) {
-			memcpy(uuid.get(), device11Properties.deviceUUID, VK_UUID_SIZE);
-		} else {
-			auto properties = deviceProperties2.properties;
-			// byte 6 contains UUID version, version 8 means do whatever you want, byte 8 contains variant, F is an
-			// invalid value we use that as we are not following any known variant
-			// NOLINTNEXTLINE(modernize-avoid-c-arrays)
-			static constexpr uint8_t uuidBaseBits[VK_UUID_SIZE] = {0, 0, 0, 0, 0, 0, 0x80, 0, 0xF0};
-			memcpy(uuid.get(), uuidBaseBits, VK_UUID_SIZE);
-			memcpy(uuid.get(), &properties.vendorID, sizeof(properties.vendorID));
-			// deviceID is not unique enough on multi-gpu systems, throw in the index inot the uuid too
-			memcpy(uuid.get() + 4, &index, sizeof(index));
-			memcpy(uuid.get() + 10, &properties.deviceID, sizeof(properties.deviceID));
-		}
+		auto properties = deviceProperties2.properties;
+		// byte 6 contains UUID version, version 8 means do whatever you want, byte 8 contains variant, F is an
+		// invalid value we use that as we are not following any known variant
+		// NOLINTNEXTLINE(modernize-avoid-c-arrays)
+		static constexpr uint8_t uuidBaseBits[VK_UUID_SIZE] = {0, 0, 0, 0, 0, 0, 0x80, 0, 0xF0};
+		memcpy(uuid.get(), uuidBaseBits, VK_UUID_SIZE);
+		memcpy(uuid.get(), &properties.vendorID, sizeof(properties.vendorID));
+		// deviceID is not unique enough on multi-gpu systems, throw in the index inot the uuid too
+		memcpy(uuid.get() + 4, &index, sizeof(index));
+		memcpy(uuid.get() + 10, &properties.deviceID, sizeof(properties.deviceID));
 	}
 	return uuid;
 }
