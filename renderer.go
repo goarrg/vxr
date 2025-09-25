@@ -30,6 +30,7 @@ import "C"
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"slices"
 	"sync"
 	"time"
@@ -37,8 +38,6 @@ import (
 
 	"goarrg.com"
 	"goarrg.com/debug"
-	"golang.org/x/exp/maps"
-
 	"goarrg.com/rhi/vxr/internal/util"
 	"goarrg.com/rhi/vxr/internal/vk"
 )
@@ -219,6 +218,7 @@ func InitDevice(config Config) {
 		{
 			var enabledFeatures *C.char
 			C.vxr_vk_device_selector_getEnabledFeatures(selector, &enabledFeatures)
+			instance.deviceProperties.EnabledFeatures = VkFeatureMap{}
 			err := json.Unmarshal([]byte(C.GoString(enabledFeatures)), &instance.deviceProperties.EnabledFeatures)
 			if err != nil {
 				abort("Failed to get enabled features: %v", err)
@@ -236,10 +236,8 @@ func InitDevice(config Config) {
 func DeviceProperties() Properties {
 	ret := instance.deviceProperties
 	ret.EnabledExtensions = slices.Clone(instance.deviceProperties.EnabledExtensions)
-	ret.EnabledFeatures = make(map[string]map[string]bool)
-	for k, v := range instance.deviceProperties.EnabledFeatures {
-		ret.EnabledFeatures[k] = maps.Clone(v)
-	}
+	ret.EnabledFeatures = make(map[string]VkFeatureStruct)
+	maps.Copy(ret.EnabledFeatures, instance.deviceProperties.EnabledFeatures)
 	return ret
 }
 

@@ -139,7 +139,7 @@ type (
 		}
 		Limits            Limits
 		EnabledExtensions []string
-		EnabledFeatures   map[string]map[string]bool
+		EnabledFeatures   VkFeatureMap
 	}
 )
 

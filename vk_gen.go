@@ -1139,7 +1139,11 @@ func genStruct(types map[string][]string, extensions []extension) {
 	#include "vxr/vxr.h"
 */
 import "C"
-import "goarrg.com/rhi/vxr/internal/vk"
+import (
+	"encoding/json"
+	"goarrg.com/debug"
+	"goarrg.com/rhi/vxr/internal/vk"
+)
 `)
 
 		{
@@ -1150,9 +1154,41 @@ import "goarrg.com/rhi/vxr/internal/vk"
 			fmt.Fprintf(fOut, "}\n")
 		}
 
+		goTypeName := func(s string) string {
+			return strings.ReplaceAll(s, "Ycbcr", "YCbCr")
+		}
+
+		{
+			fmt.Fprintf(fOut, "\ntype VkFeatureMap map[string]VkFeatureStruct\n")
+			fmt.Fprintf(fOut, "func (m VkFeatureMap) UnmarshalJSON(b []byte) error {\n")
+			fmt.Fprintf(fOut, "\tvar rawMap map[string]json.RawMessage\n")
+			fmt.Fprintf(fOut, "\tif err := json.Unmarshal(b, &rawMap); err != nil {\n")
+			fmt.Fprintf(fOut, "\t\treturn err\n")
+			fmt.Fprintf(fOut, "\t}\n")
+			fmt.Fprintf(fOut, "\tfor k, v := range rawMap {\n")
+			fmt.Fprintf(fOut, "\t\tswitch k {\n")
+
+			for _, s := range structs {
+				fmt.Fprintf(fOut, "\t\tcase %q:\n", s)
+				fmt.Fprintf(fOut, "\t\t\ttarget := %s{}\n", goTypeName(s))
+				fmt.Fprintf(fOut, "\t\t\tif err := json.Unmarshal([]byte(v), &target); err != nil {\n")
+				fmt.Fprintf(fOut, "\t\t\t\treturn err\n")
+				fmt.Fprintf(fOut, "\t\t\t}\n")
+				fmt.Fprintf(fOut, "\t\t\tm[k] = target\n")
+			}
+
+			fmt.Fprintf(fOut, "\t\tdefault:\n")
+			fmt.Fprintf(fOut, "\t\t\treturn debug.Errorf(\"Unknown/Invalid struct name: %%q\", k)\n")
+
+			fmt.Fprintf(fOut, "\t\t}\n")
+			fmt.Fprintf(fOut, "\t}\n")
+			fmt.Fprintf(fOut, "\treturn nil\n")
+			fmt.Fprintf(fOut, "}\n\n")
+		}
+
 		{
 			for _, s := range structs {
-				typename := strings.ReplaceAll(s, "Ycbcr", "YCbCr")
+				typename := goTypeName(s)
 				fmt.Fprintf(fOut, "type %s struct {\n", typename)
 
 				offset := 0
@@ -1160,16 +1196,17 @@ import "goarrg.com/rhi/vxr/internal/vk"
 				for i, line := range types[s] {
 					field := strings.Fields(line)
 					if field[0] == "VkBool32" {
+						cName := field[1]
 						member := field[1]
-						if strings.HasPrefix(member, "ycbcr") {
-							member = "YCbCr" + strings.TrimPrefix(member, "ycbcr")
+						if after, ok := strings.CutPrefix(member, "ycbcr"); ok {
+							member = "YCbCr" + after
 						} else {
 							member = strings.ToUpper(string(member[0])) + string(member[1:])
 						}
 						member = strings.ReplaceAll(member, "Ycbcr", "YCbCr")
 						member = strings.ReplaceAll(member, "plane", "Plane")
 						features = append(features, member)
-						fmt.Fprintf(fOut, "\t%s bool\n", member)
+						fmt.Fprintf(fOut, "\t%s bool `json:\"%s,omitempty\"`\n", member, cName)
 					} else {
 						offset = i + 1
 					}

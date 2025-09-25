@@ -9,18 +9,1502 @@ package vxr
 	#include "vxr/vxr.h"
 */
 import "C"
-import "goarrg.com/rhi/vxr/internal/vk"
+import (
+	"encoding/json"
+	"goarrg.com/debug"
+	"goarrg.com/rhi/vxr/internal/vk"
+)
 
 type VkFeatureStruct interface {
 	sType() C.VkStructureType
 	enabledList() []C.size_t
 	extension() string
 }
+
+type VkFeatureMap map[string]VkFeatureStruct
+func (m VkFeatureMap) UnmarshalJSON(b []byte) error {
+	var rawMap map[string]json.RawMessage
+	if err := json.Unmarshal(b, &rawMap); err != nil {
+		return err
+	}
+	for k, v := range rawMap {
+		switch k {
+		case "VkPhysicalDevice16BitStorageFeatures":
+			target := VkPhysicalDevice16BitStorageFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevice8BitStorageFeatures":
+			target := VkPhysicalDevice8BitStorageFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceASTCDecodeFeaturesEXT":
+			target := VkPhysicalDeviceASTCDecodeFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceAccelerationStructureFeaturesKHR":
+			target := VkPhysicalDeviceAccelerationStructureFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceAddressBindingReportFeaturesEXT":
+			target := VkPhysicalDeviceAddressBindingReportFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceAmigoProfilingFeaturesSEC":
+			target := VkPhysicalDeviceAmigoProfilingFeaturesSEC{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceAntiLagFeaturesAMD":
+			target := VkPhysicalDeviceAntiLagFeaturesAMD{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceAttachmentFeedbackLoopDynamicStateFeaturesEXT":
+			target := VkPhysicalDeviceAttachmentFeedbackLoopDynamicStateFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceAttachmentFeedbackLoopLayoutFeaturesEXT":
+			target := VkPhysicalDeviceAttachmentFeedbackLoopLayoutFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT":
+			target := VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceBorderColorSwizzleFeaturesEXT":
+			target := VkPhysicalDeviceBorderColorSwizzleFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceBufferDeviceAddressFeatures":
+			target := VkPhysicalDeviceBufferDeviceAddressFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceClusterAccelerationStructureFeaturesNV":
+			target := VkPhysicalDeviceClusterAccelerationStructureFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI":
+			target := VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceClusterCullingShaderVrsFeaturesHUAWEI":
+			target := VkPhysicalDeviceClusterCullingShaderVrsFeaturesHUAWEI{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceCoherentMemoryFeaturesAMD":
+			target := VkPhysicalDeviceCoherentMemoryFeaturesAMD{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceColorWriteEnableFeaturesEXT":
+			target := VkPhysicalDeviceColorWriteEnableFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceCommandBufferInheritanceFeaturesNV":
+			target := VkPhysicalDeviceCommandBufferInheritanceFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR":
+			target := VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceComputeShaderDerivativesFeaturesNV":
+			target := VkPhysicalDeviceComputeShaderDerivativesFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceConditionalRenderingFeaturesEXT":
+			target := VkPhysicalDeviceConditionalRenderingFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceCooperativeMatrix2FeaturesNV":
+			target := VkPhysicalDeviceCooperativeMatrix2FeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceCooperativeMatrixFeaturesKHR":
+			target := VkPhysicalDeviceCooperativeMatrixFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceCooperativeMatrixFeaturesNV":
+			target := VkPhysicalDeviceCooperativeMatrixFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceCooperativeVectorFeaturesNV":
+			target := VkPhysicalDeviceCooperativeVectorFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceCopyMemoryIndirectFeaturesNV":
+			target := VkPhysicalDeviceCopyMemoryIndirectFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceCornerSampledImageFeaturesNV":
+			target := VkPhysicalDeviceCornerSampledImageFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceCoverageReductionModeFeaturesNV":
+			target := VkPhysicalDeviceCoverageReductionModeFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceCubicClampFeaturesQCOM":
+			target := VkPhysicalDeviceCubicClampFeaturesQCOM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceCubicWeightsFeaturesQCOM":
+			target := VkPhysicalDeviceCubicWeightsFeaturesQCOM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceCustomBorderColorFeaturesEXT":
+			target := VkPhysicalDeviceCustomBorderColorFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDataGraphFeaturesARM":
+			target := VkPhysicalDeviceDataGraphFeaturesARM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV":
+			target := VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDepthBiasControlFeaturesEXT":
+			target := VkPhysicalDeviceDepthBiasControlFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDepthClampControlFeaturesEXT":
+			target := VkPhysicalDeviceDepthClampControlFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDepthClampZeroOneFeaturesEXT":
+			target := VkPhysicalDeviceDepthClampZeroOneFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDepthClampZeroOneFeaturesKHR":
+			target := VkPhysicalDeviceDepthClampZeroOneFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDepthClipControlFeaturesEXT":
+			target := VkPhysicalDeviceDepthClipControlFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDepthClipEnableFeaturesEXT":
+			target := VkPhysicalDeviceDepthClipEnableFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDescriptorBufferFeaturesEXT":
+			target := VkPhysicalDeviceDescriptorBufferFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDescriptorBufferTensorFeaturesARM":
+			target := VkPhysicalDeviceDescriptorBufferTensorFeaturesARM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDescriptorIndexingFeatures":
+			target := VkPhysicalDeviceDescriptorIndexingFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNV":
+			target := VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE":
+			target := VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV":
+			target := VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDeviceGeneratedCommandsFeaturesEXT":
+			target := VkPhysicalDeviceDeviceGeneratedCommandsFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV":
+			target := VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDeviceMemoryReportFeaturesEXT":
+			target := VkPhysicalDeviceDeviceMemoryReportFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDiagnosticsConfigFeaturesNV":
+			target := VkPhysicalDeviceDiagnosticsConfigFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDynamicRenderingFeatures":
+			target := VkPhysicalDeviceDynamicRenderingFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDynamicRenderingLocalReadFeatures":
+			target := VkPhysicalDeviceDynamicRenderingLocalReadFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDynamicRenderingLocalReadFeaturesKHR":
+			target := VkPhysicalDeviceDynamicRenderingLocalReadFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT":
+			target := VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceExclusiveScissorFeaturesNV":
+			target := VkPhysicalDeviceExclusiveScissorFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceExtendedDynamicState3FeaturesEXT":
+			target := VkPhysicalDeviceExtendedDynamicState3FeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNV":
+			target := VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceExternalMemoryRDMAFeaturesNV":
+			target := VkPhysicalDeviceExternalMemoryRDMAFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceFaultFeaturesEXT":
+			target := VkPhysicalDeviceFaultFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceFeatures":
+			target := VkPhysicalDeviceFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceFormatPackFeaturesARM":
+			target := VkPhysicalDeviceFormatPackFeaturesARM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceFragmentDensityMap2FeaturesEXT":
+			target := VkPhysicalDeviceFragmentDensityMap2FeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceFragmentDensityMapFeaturesEXT":
+			target := VkPhysicalDeviceFragmentDensityMapFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceFragmentDensityMapLayeredFeaturesVALVE":
+			target := VkPhysicalDeviceFragmentDensityMapLayeredFeaturesVALVE{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT":
+			target := VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceFragmentDensityMapOffsetFeaturesQCOM":
+			target := VkPhysicalDeviceFragmentDensityMapOffsetFeaturesQCOM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR":
+			target := VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV":
+			target := VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT":
+			target := VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV":
+			target := VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceFragmentShadingRateFeaturesKHR":
+			target := VkPhysicalDeviceFragmentShadingRateFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceFrameBoundaryFeaturesEXT":
+			target := VkPhysicalDeviceFrameBoundaryFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceGlobalPriorityQueryFeatures":
+			target := VkPhysicalDeviceGlobalPriorityQueryFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceGlobalPriorityQueryFeaturesEXT":
+			target := VkPhysicalDeviceGlobalPriorityQueryFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceGlobalPriorityQueryFeaturesKHR":
+			target := VkPhysicalDeviceGlobalPriorityQueryFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT":
+			target := VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceHdrVividFeaturesHUAWEI":
+			target := VkPhysicalDeviceHdrVividFeaturesHUAWEI{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceHostImageCopyFeatures":
+			target := VkPhysicalDeviceHostImageCopyFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceHostImageCopyFeaturesEXT":
+			target := VkPhysicalDeviceHostImageCopyFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceHostQueryResetFeatures":
+			target := VkPhysicalDeviceHostQueryResetFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceImage2DViewOf3DFeaturesEXT":
+			target := VkPhysicalDeviceImage2DViewOf3DFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceImageAlignmentControlFeaturesMESA":
+			target := VkPhysicalDeviceImageAlignmentControlFeaturesMESA{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceImageCompressionControlFeaturesEXT":
+			target := VkPhysicalDeviceImageCompressionControlFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT":
+			target := VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceImageProcessing2FeaturesQCOM":
+			target := VkPhysicalDeviceImageProcessing2FeaturesQCOM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceImageProcessingFeaturesQCOM":
+			target := VkPhysicalDeviceImageProcessingFeaturesQCOM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceImageRobustnessFeatures":
+			target := VkPhysicalDeviceImageRobustnessFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT":
+			target := VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceImageViewMinLodFeaturesEXT":
+			target := VkPhysicalDeviceImageViewMinLodFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceImagelessFramebufferFeatures":
+			target := VkPhysicalDeviceImagelessFramebufferFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceIndexTypeUint8Features":
+			target := VkPhysicalDeviceIndexTypeUint8Features{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceIndexTypeUint8FeaturesEXT":
+			target := VkPhysicalDeviceIndexTypeUint8FeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceIndexTypeUint8FeaturesKHR":
+			target := VkPhysicalDeviceIndexTypeUint8FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceInheritedViewportScissorFeaturesNV":
+			target := VkPhysicalDeviceInheritedViewportScissorFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceInlineUniformBlockFeatures":
+			target := VkPhysicalDeviceInlineUniformBlockFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceInvocationMaskFeaturesHUAWEI":
+			target := VkPhysicalDeviceInvocationMaskFeaturesHUAWEI{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceLegacyDitheringFeaturesEXT":
+			target := VkPhysicalDeviceLegacyDitheringFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT":
+			target := VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceLineRasterizationFeatures":
+			target := VkPhysicalDeviceLineRasterizationFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceLineRasterizationFeaturesEXT":
+			target := VkPhysicalDeviceLineRasterizationFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceLineRasterizationFeaturesKHR":
+			target := VkPhysicalDeviceLineRasterizationFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceLinearColorAttachmentFeaturesNV":
+			target := VkPhysicalDeviceLinearColorAttachmentFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMaintenance4Features":
+			target := VkPhysicalDeviceMaintenance4Features{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMaintenance5Features":
+			target := VkPhysicalDeviceMaintenance5Features{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMaintenance5FeaturesKHR":
+			target := VkPhysicalDeviceMaintenance5FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMaintenance6Features":
+			target := VkPhysicalDeviceMaintenance6Features{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMaintenance6FeaturesKHR":
+			target := VkPhysicalDeviceMaintenance6FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMaintenance7FeaturesKHR":
+			target := VkPhysicalDeviceMaintenance7FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMaintenance8FeaturesKHR":
+			target := VkPhysicalDeviceMaintenance8FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMaintenance9FeaturesKHR":
+			target := VkPhysicalDeviceMaintenance9FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMapMemoryPlacedFeaturesEXT":
+			target := VkPhysicalDeviceMapMemoryPlacedFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMemoryDecompressionFeaturesNV":
+			target := VkPhysicalDeviceMemoryDecompressionFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMemoryPriorityFeaturesEXT":
+			target := VkPhysicalDeviceMemoryPriorityFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMeshShaderFeaturesEXT":
+			target := VkPhysicalDeviceMeshShaderFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMeshShaderFeaturesNV":
+			target := VkPhysicalDeviceMeshShaderFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMultiDrawFeaturesEXT":
+			target := VkPhysicalDeviceMultiDrawFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT":
+			target := VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMultiviewFeatures":
+			target := VkPhysicalDeviceMultiviewFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM":
+			target := VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM":
+			target := VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT":
+			target := VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE":
+			target := VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceNestedCommandBufferFeaturesEXT":
+			target := VkPhysicalDeviceNestedCommandBufferFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT":
+			target := VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceOpacityMicromapFeaturesEXT":
+			target := VkPhysicalDeviceOpacityMicromapFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceOpticalFlowFeaturesNV":
+			target := VkPhysicalDeviceOpticalFlowFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT":
+			target := VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV":
+			target := VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePerStageDescriptorSetFeaturesNV":
+			target := VkPhysicalDevicePerStageDescriptorSetFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePerformanceQueryFeaturesKHR":
+			target := VkPhysicalDevicePerformanceQueryFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePipelineBinaryFeaturesKHR":
+			target := VkPhysicalDevicePipelineBinaryFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePipelineCacheIncrementalModeFeaturesSEC":
+			target := VkPhysicalDevicePipelineCacheIncrementalModeFeaturesSEC{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePipelineCreationCacheControlFeatures":
+			target := VkPhysicalDevicePipelineCreationCacheControlFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR":
+			target := VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT":
+			target := VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePipelineOpacityMicromapFeaturesARM":
+			target := VkPhysicalDevicePipelineOpacityMicromapFeaturesARM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePipelinePropertiesFeaturesEXT":
+			target := VkPhysicalDevicePipelinePropertiesFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePipelineProtectedAccessFeatures":
+			target := VkPhysicalDevicePipelineProtectedAccessFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePipelineProtectedAccessFeaturesEXT":
+			target := VkPhysicalDevicePipelineProtectedAccessFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePipelineRobustnessFeatures":
+			target := VkPhysicalDevicePipelineRobustnessFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePipelineRobustnessFeaturesEXT":
+			target := VkPhysicalDevicePipelineRobustnessFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePresentBarrierFeaturesNV":
+			target := VkPhysicalDevicePresentBarrierFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePresentId2FeaturesKHR":
+			target := VkPhysicalDevicePresentId2FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePresentIdFeaturesKHR":
+			target := VkPhysicalDevicePresentIdFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT":
+			target := VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR":
+			target := VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePresentWait2FeaturesKHR":
+			target := VkPhysicalDevicePresentWait2FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePresentWaitFeaturesKHR":
+			target := VkPhysicalDevicePresentWaitFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT":
+			target := VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePrimitivesGeneratedQueryFeaturesEXT":
+			target := VkPhysicalDevicePrimitivesGeneratedQueryFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDevicePrivateDataFeatures":
+			target := VkPhysicalDevicePrivateDataFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceProtectedMemoryFeatures":
+			target := VkPhysicalDeviceProtectedMemoryFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceProvokingVertexFeaturesEXT":
+			target := VkPhysicalDeviceProvokingVertexFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRGBA10X6FormatsFeaturesEXT":
+			target := VkPhysicalDeviceRGBA10X6FormatsFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM":
+			target := VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT":
+			target := VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRawAccessChainsFeaturesNV":
+			target := VkPhysicalDeviceRawAccessChainsFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRayQueryFeaturesKHR":
+			target := VkPhysicalDeviceRayQueryFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV":
+			target := VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV":
+			target := VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR":
+			target := VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRayTracingMotionBlurFeaturesNV":
+			target := VkPhysicalDeviceRayTracingMotionBlurFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRayTracingPipelineFeaturesKHR":
+			target := VkPhysicalDeviceRayTracingPipelineFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRayTracingPositionFetchFeaturesKHR":
+			target := VkPhysicalDeviceRayTracingPositionFetchFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRayTracingValidationFeaturesNV":
+			target := VkPhysicalDeviceRayTracingValidationFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG":
+			target := VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRenderPassStripedFeaturesARM":
+			target := VkPhysicalDeviceRenderPassStripedFeaturesARM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV":
+			target := VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRobustness2FeaturesEXT":
+			target := VkPhysicalDeviceRobustness2FeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceRobustness2FeaturesKHR":
+			target := VkPhysicalDeviceRobustness2FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceSamplerYcbcrConversionFeatures":
+			target := VkPhysicalDeviceSamplerYCbCrConversionFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceScalarBlockLayoutFeatures":
+			target := VkPhysicalDeviceScalarBlockLayoutFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceSchedulingControlsFeaturesARM":
+			target := VkPhysicalDeviceSchedulingControlsFeaturesARM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures":
+			target := VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV":
+			target := VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderAtomicFloat2FeaturesEXT":
+			target := VkPhysicalDeviceShaderAtomicFloat2FeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderAtomicFloatFeaturesEXT":
+			target := VkPhysicalDeviceShaderAtomicFloatFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderAtomicInt64Features":
+			target := VkPhysicalDeviceShaderAtomicInt64Features{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderBfloat16FeaturesKHR":
+			target := VkPhysicalDeviceShaderBfloat16FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderClockFeaturesKHR":
+			target := VkPhysicalDeviceShaderClockFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM":
+			target := VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures":
+			target := VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderDrawParametersFeatures":
+			target := VkPhysicalDeviceShaderDrawParametersFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD":
+			target := VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderExpectAssumeFeatures":
+			target := VkPhysicalDeviceShaderExpectAssumeFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderExpectAssumeFeaturesKHR":
+			target := VkPhysicalDeviceShaderExpectAssumeFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderFloat16Int8Features":
+			target := VkPhysicalDeviceShaderFloat16Int8Features{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderFloat8FeaturesEXT":
+			target := VkPhysicalDeviceShaderFloat8FeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderFloatControls2Features":
+			target := VkPhysicalDeviceShaderFloatControls2Features{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderFloatControls2FeaturesKHR":
+			target := VkPhysicalDeviceShaderFloatControls2FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT":
+			target := VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderImageFootprintFeaturesNV":
+			target := VkPhysicalDeviceShaderImageFootprintFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderIntegerDotProductFeatures":
+			target := VkPhysicalDeviceShaderIntegerDotProductFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL":
+			target := VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR":
+			target := VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderModuleIdentifierFeaturesEXT":
+			target := VkPhysicalDeviceShaderModuleIdentifierFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderObjectFeaturesEXT":
+			target := VkPhysicalDeviceShaderObjectFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderQuadControlFeaturesKHR":
+			target := VkPhysicalDeviceShaderQuadControlFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderRelaxedExtendedInstructionFeaturesKHR":
+			target := VkPhysicalDeviceShaderRelaxedExtendedInstructionFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT":
+			target := VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderSMBuiltinsFeaturesNV":
+			target := VkPhysicalDeviceShaderSMBuiltinsFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures":
+			target := VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderSubgroupRotateFeatures":
+			target := VkPhysicalDeviceShaderSubgroupRotateFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderSubgroupRotateFeaturesKHR":
+			target := VkPhysicalDeviceShaderSubgroupRotateFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderSubgroupUniformControlFlowFeaturesKHR":
+			target := VkPhysicalDeviceShaderSubgroupUniformControlFlowFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderTerminateInvocationFeatures":
+			target := VkPhysicalDeviceShaderTerminateInvocationFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShaderTileImageFeaturesEXT":
+			target := VkPhysicalDeviceShaderTileImageFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceShadingRateImageFeaturesNV":
+			target := VkPhysicalDeviceShadingRateImageFeaturesNV{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceSubgroupSizeControlFeatures":
+			target := VkPhysicalDeviceSubgroupSizeControlFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT":
+			target := VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceSubpassShadingFeaturesHUAWEI":
+			target := VkPhysicalDeviceSubpassShadingFeaturesHUAWEI{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT":
+			target := VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceSwapchainMaintenance1FeaturesKHR":
+			target := VkPhysicalDeviceSwapchainMaintenance1FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceSynchronization2Features":
+			target := VkPhysicalDeviceSynchronization2Features{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceTensorFeaturesARM":
+			target := VkPhysicalDeviceTensorFeaturesARM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceTextureCompressionASTCHDRFeatures":
+			target := VkPhysicalDeviceTextureCompressionASTCHDRFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceTileMemoryHeapFeaturesQCOM":
+			target := VkPhysicalDeviceTileMemoryHeapFeaturesQCOM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceTilePropertiesFeaturesQCOM":
+			target := VkPhysicalDeviceTilePropertiesFeaturesQCOM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceTileShadingFeaturesQCOM":
+			target := VkPhysicalDeviceTileShadingFeaturesQCOM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceTimelineSemaphoreFeatures":
+			target := VkPhysicalDeviceTimelineSemaphoreFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceTransformFeedbackFeaturesEXT":
+			target := VkPhysicalDeviceTransformFeedbackFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceUnifiedImageLayoutsFeaturesKHR":
+			target := VkPhysicalDeviceUnifiedImageLayoutsFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceUniformBufferStandardLayoutFeatures":
+			target := VkPhysicalDeviceUniformBufferStandardLayoutFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVariablePointersFeatures":
+			target := VkPhysicalDeviceVariablePointersFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVertexAttributeDivisorFeatures":
+			target := VkPhysicalDeviceVertexAttributeDivisorFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT":
+			target := VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR":
+			target := VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVertexAttributeRobustnessFeaturesEXT":
+			target := VkPhysicalDeviceVertexAttributeRobustnessFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT":
+			target := VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVideoDecodeVP9FeaturesKHR":
+			target := VkPhysicalDeviceVideoDecodeVP9FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVideoEncodeAV1FeaturesKHR":
+			target := VkPhysicalDeviceVideoEncodeAV1FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVideoEncodeIntraRefreshFeaturesKHR":
+			target := VkPhysicalDeviceVideoEncodeIntraRefreshFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR":
+			target := VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVideoMaintenance1FeaturesKHR":
+			target := VkPhysicalDeviceVideoMaintenance1FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVideoMaintenance2FeaturesKHR":
+			target := VkPhysicalDeviceVideoMaintenance2FeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVulkan11Features":
+			target := VkPhysicalDeviceVulkan11Features{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVulkan12Features":
+			target := VkPhysicalDeviceVulkan12Features{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVulkan13Features":
+			target := VkPhysicalDeviceVulkan13Features{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVulkan14Features":
+			target := VkPhysicalDeviceVulkan14Features{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVulkanMemoryModelFeatures":
+			target := VkPhysicalDeviceVulkanMemoryModelFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR":
+			target := VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceYcbcrDegammaFeaturesQCOM":
+			target := VkPhysicalDeviceYCbCrDegammaFeaturesQCOM{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceYcbcrImageArraysFeaturesEXT":
+			target := VkPhysicalDeviceYCbCrImageArraysFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceZeroInitializeDeviceMemoryFeaturesEXT":
+			target := VkPhysicalDeviceZeroInitializeDeviceMemoryFeaturesEXT{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeatures":
+			target := VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeatures{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		default:
+			return debug.Errorf("Unknown/Invalid struct name: %q", k)
+		}
+	}
+	return nil
+}
+
 type VkPhysicalDevice16BitStorageFeatures struct {
-	StorageBuffer16BitAccess bool
-	UniformAndStorageBuffer16BitAccess bool
-	StoragePushConstant16 bool
-	StorageInputOutput16 bool
+	StorageBuffer16BitAccess bool `json:"storageBuffer16BitAccess,omitempty"`
+	UniformAndStorageBuffer16BitAccess bool `json:"uniformAndStorageBuffer16BitAccess,omitempty"`
+	StoragePushConstant16 bool `json:"storagePushConstant16,omitempty"`
+	StorageInputOutput16 bool `json:"storageInputOutput16,omitempty"`
 }
 func (VkPhysicalDevice16BitStorageFeatures) extension() string {
 	return ""
@@ -45,9 +1529,9 @@ func (s VkPhysicalDevice16BitStorageFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDevice8BitStorageFeatures struct {
-	StorageBuffer8BitAccess bool
-	UniformAndStorageBuffer8BitAccess bool
-	StoragePushConstant8 bool
+	StorageBuffer8BitAccess bool `json:"storageBuffer8BitAccess,omitempty"`
+	UniformAndStorageBuffer8BitAccess bool `json:"uniformAndStorageBuffer8BitAccess,omitempty"`
+	StoragePushConstant8 bool `json:"storagePushConstant8,omitempty"`
 }
 func (VkPhysicalDevice8BitStorageFeatures) extension() string {
 	return ""
@@ -69,7 +1553,7 @@ func (s VkPhysicalDevice8BitStorageFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceASTCDecodeFeaturesEXT struct {
-	DecodeModeSharedExponent bool
+	DecodeModeSharedExponent bool `json:"decodeModeSharedExponent,omitempty"`
 }
 func (VkPhysicalDeviceASTCDecodeFeaturesEXT) extension() string {
 	return "VK_EXT_astc_decode_mode"
@@ -85,11 +1569,11 @@ func (s VkPhysicalDeviceASTCDecodeFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceAccelerationStructureFeaturesKHR struct {
-	AccelerationStructure bool
-	AccelerationStructureCaptureReplay bool
-	AccelerationStructureIndirectBuild bool
-	AccelerationStructureHostCommands bool
-	DescriptorBindingAccelerationStructureUpdateAfterBind bool
+	AccelerationStructure bool `json:"accelerationStructure,omitempty"`
+	AccelerationStructureCaptureReplay bool `json:"accelerationStructureCaptureReplay,omitempty"`
+	AccelerationStructureIndirectBuild bool `json:"accelerationStructureIndirectBuild,omitempty"`
+	AccelerationStructureHostCommands bool `json:"accelerationStructureHostCommands,omitempty"`
+	DescriptorBindingAccelerationStructureUpdateAfterBind bool `json:"descriptorBindingAccelerationStructureUpdateAfterBind,omitempty"`
 }
 func (VkPhysicalDeviceAccelerationStructureFeaturesKHR) extension() string {
 	return "VK_KHR_acceleration_structure"
@@ -117,7 +1601,7 @@ func (s VkPhysicalDeviceAccelerationStructureFeaturesKHR) enabledList() []C.size
 	return list
 }
 type VkPhysicalDeviceAddressBindingReportFeaturesEXT struct {
-	ReportAddressBinding bool
+	ReportAddressBinding bool `json:"reportAddressBinding,omitempty"`
 }
 func (VkPhysicalDeviceAddressBindingReportFeaturesEXT) extension() string {
 	return "VK_EXT_device_address_binding_report"
@@ -133,7 +1617,7 @@ func (s VkPhysicalDeviceAddressBindingReportFeaturesEXT) enabledList() []C.size_
 	return list
 }
 type VkPhysicalDeviceAmigoProfilingFeaturesSEC struct {
-	AmigoProfiling bool
+	AmigoProfiling bool `json:"amigoProfiling,omitempty"`
 }
 func (VkPhysicalDeviceAmigoProfilingFeaturesSEC) extension() string {
 	return "VK_SEC_amigo_profiling"
@@ -149,7 +1633,7 @@ func (s VkPhysicalDeviceAmigoProfilingFeaturesSEC) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceAntiLagFeaturesAMD struct {
-	AntiLag bool
+	AntiLag bool `json:"antiLag,omitempty"`
 }
 func (VkPhysicalDeviceAntiLagFeaturesAMD) extension() string {
 	return "VK_AMD_anti_lag"
@@ -165,7 +1649,7 @@ func (s VkPhysicalDeviceAntiLagFeaturesAMD) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceAttachmentFeedbackLoopDynamicStateFeaturesEXT struct {
-	AttachmentFeedbackLoopDynamicState bool
+	AttachmentFeedbackLoopDynamicState bool `json:"attachmentFeedbackLoopDynamicState,omitempty"`
 }
 func (VkPhysicalDeviceAttachmentFeedbackLoopDynamicStateFeaturesEXT) extension() string {
 	return "VK_EXT_attachment_feedback_loop_dynamic_state"
@@ -181,7 +1665,7 @@ func (s VkPhysicalDeviceAttachmentFeedbackLoopDynamicStateFeaturesEXT) enabledLi
 	return list
 }
 type VkPhysicalDeviceAttachmentFeedbackLoopLayoutFeaturesEXT struct {
-	AttachmentFeedbackLoopLayout bool
+	AttachmentFeedbackLoopLayout bool `json:"attachmentFeedbackLoopLayout,omitempty"`
 }
 func (VkPhysicalDeviceAttachmentFeedbackLoopLayoutFeaturesEXT) extension() string {
 	return "VK_EXT_attachment_feedback_loop_layout"
@@ -197,7 +1681,7 @@ func (s VkPhysicalDeviceAttachmentFeedbackLoopLayoutFeaturesEXT) enabledList() [
 	return list
 }
 type VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT struct {
-	AdvancedBlendCoherentOperations bool
+	AdvancedBlendCoherentOperations bool `json:"advancedBlendCoherentOperations,omitempty"`
 }
 func (VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT) extension() string {
 	return "VK_EXT_blend_operation_advanced"
@@ -213,8 +1697,8 @@ func (s VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT) enabledList() []C.siz
 	return list
 }
 type VkPhysicalDeviceBorderColorSwizzleFeaturesEXT struct {
-	BorderColorSwizzle bool
-	BorderColorSwizzleFromImage bool
+	BorderColorSwizzle bool `json:"borderColorSwizzle,omitempty"`
+	BorderColorSwizzleFromImage bool `json:"borderColorSwizzleFromImage,omitempty"`
 }
 func (VkPhysicalDeviceBorderColorSwizzleFeaturesEXT) extension() string {
 	return "VK_EXT_border_color_swizzle"
@@ -233,9 +1717,9 @@ func (s VkPhysicalDeviceBorderColorSwizzleFeaturesEXT) enabledList() []C.size_t 
 	return list
 }
 type VkPhysicalDeviceBufferDeviceAddressFeatures struct {
-	BufferDeviceAddress bool
-	BufferDeviceAddressCaptureReplay bool
-	BufferDeviceAddressMultiDevice bool
+	BufferDeviceAddress bool `json:"bufferDeviceAddress,omitempty"`
+	BufferDeviceAddressCaptureReplay bool `json:"bufferDeviceAddressCaptureReplay,omitempty"`
+	BufferDeviceAddressMultiDevice bool `json:"bufferDeviceAddressMultiDevice,omitempty"`
 }
 func (VkPhysicalDeviceBufferDeviceAddressFeatures) extension() string {
 	return ""
@@ -257,7 +1741,7 @@ func (s VkPhysicalDeviceBufferDeviceAddressFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceClusterAccelerationStructureFeaturesNV struct {
-	ClusterAccelerationStructure bool
+	ClusterAccelerationStructure bool `json:"clusterAccelerationStructure,omitempty"`
 }
 func (VkPhysicalDeviceClusterAccelerationStructureFeaturesNV) extension() string {
 	return "VK_NV_cluster_acceleration_structure"
@@ -273,8 +1757,8 @@ func (s VkPhysicalDeviceClusterAccelerationStructureFeaturesNV) enabledList() []
 	return list
 }
 type VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI struct {
-	ClustercullingShader bool
-	MultiviewClusterCullingShader bool
+	ClustercullingShader bool `json:"clustercullingShader,omitempty"`
+	MultiviewClusterCullingShader bool `json:"multiviewClusterCullingShader,omitempty"`
 }
 func (VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI) extension() string {
 	return "VK_HUAWEI_cluster_culling_shader"
@@ -293,7 +1777,7 @@ func (s VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI) enabledList() []C.si
 	return list
 }
 type VkPhysicalDeviceClusterCullingShaderVrsFeaturesHUAWEI struct {
-	ClusterShadingRate bool
+	ClusterShadingRate bool `json:"clusterShadingRate,omitempty"`
 }
 func (VkPhysicalDeviceClusterCullingShaderVrsFeaturesHUAWEI) extension() string {
 	return "VK_HUAWEI_cluster_culling_shader"
@@ -309,7 +1793,7 @@ func (s VkPhysicalDeviceClusterCullingShaderVrsFeaturesHUAWEI) enabledList() []C
 	return list
 }
 type VkPhysicalDeviceCoherentMemoryFeaturesAMD struct {
-	DeviceCoherentMemory bool
+	DeviceCoherentMemory bool `json:"deviceCoherentMemory,omitempty"`
 }
 func (VkPhysicalDeviceCoherentMemoryFeaturesAMD) extension() string {
 	return "VK_AMD_device_coherent_memory"
@@ -325,7 +1809,7 @@ func (s VkPhysicalDeviceCoherentMemoryFeaturesAMD) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceColorWriteEnableFeaturesEXT struct {
-	ColorWriteEnable bool
+	ColorWriteEnable bool `json:"colorWriteEnable,omitempty"`
 }
 func (VkPhysicalDeviceColorWriteEnableFeaturesEXT) extension() string {
 	return "VK_EXT_color_write_enable"
@@ -341,7 +1825,7 @@ func (s VkPhysicalDeviceColorWriteEnableFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceCommandBufferInheritanceFeaturesNV struct {
-	CommandBufferInheritance bool
+	CommandBufferInheritance bool `json:"commandBufferInheritance,omitempty"`
 }
 func (VkPhysicalDeviceCommandBufferInheritanceFeaturesNV) extension() string {
 	return "VK_NV_command_buffer_inheritance"
@@ -357,8 +1841,8 @@ func (s VkPhysicalDeviceCommandBufferInheritanceFeaturesNV) enabledList() []C.si
 	return list
 }
 type VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR struct {
-	ComputeDerivativeGroupQuads bool
-	ComputeDerivativeGroupLinear bool
+	ComputeDerivativeGroupQuads bool `json:"computeDerivativeGroupQuads,omitempty"`
+	ComputeDerivativeGroupLinear bool `json:"computeDerivativeGroupLinear,omitempty"`
 }
 func (VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR) extension() string {
 	return "VK_KHR_compute_shader_derivatives"
@@ -377,8 +1861,8 @@ func (s VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR) enabledList() []C.s
 	return list
 }
 type VkPhysicalDeviceComputeShaderDerivativesFeaturesNV struct {
-	ComputeDerivativeGroupQuads bool
-	ComputeDerivativeGroupLinear bool
+	ComputeDerivativeGroupQuads bool `json:"computeDerivativeGroupQuads,omitempty"`
+	ComputeDerivativeGroupLinear bool `json:"computeDerivativeGroupLinear,omitempty"`
 }
 func (VkPhysicalDeviceComputeShaderDerivativesFeaturesNV) extension() string {
 	return "VK_NV_compute_shader_derivatives"
@@ -397,8 +1881,8 @@ func (s VkPhysicalDeviceComputeShaderDerivativesFeaturesNV) enabledList() []C.si
 	return list
 }
 type VkPhysicalDeviceConditionalRenderingFeaturesEXT struct {
-	ConditionalRendering bool
-	InheritedConditionalRendering bool
+	ConditionalRendering bool `json:"conditionalRendering,omitempty"`
+	InheritedConditionalRendering bool `json:"inheritedConditionalRendering,omitempty"`
 }
 func (VkPhysicalDeviceConditionalRenderingFeaturesEXT) extension() string {
 	return "VK_EXT_conditional_rendering"
@@ -417,13 +1901,13 @@ func (s VkPhysicalDeviceConditionalRenderingFeaturesEXT) enabledList() []C.size_
 	return list
 }
 type VkPhysicalDeviceCooperativeMatrix2FeaturesNV struct {
-	CooperativeMatrixWorkgroupScope bool
-	CooperativeMatrixFlexibleDimensions bool
-	CooperativeMatrixReductions bool
-	CooperativeMatrixConversions bool
-	CooperativeMatrixPerElementOperations bool
-	CooperativeMatrixTensorAddressing bool
-	CooperativeMatrixBlockLoads bool
+	CooperativeMatrixWorkgroupScope bool `json:"cooperativeMatrixWorkgroupScope,omitempty"`
+	CooperativeMatrixFlexibleDimensions bool `json:"cooperativeMatrixFlexibleDimensions,omitempty"`
+	CooperativeMatrixReductions bool `json:"cooperativeMatrixReductions,omitempty"`
+	CooperativeMatrixConversions bool `json:"cooperativeMatrixConversions,omitempty"`
+	CooperativeMatrixPerElementOperations bool `json:"cooperativeMatrixPerElementOperations,omitempty"`
+	CooperativeMatrixTensorAddressing bool `json:"cooperativeMatrixTensorAddressing,omitempty"`
+	CooperativeMatrixBlockLoads bool `json:"cooperativeMatrixBlockLoads,omitempty"`
 }
 func (VkPhysicalDeviceCooperativeMatrix2FeaturesNV) extension() string {
 	return "VK_NV_cooperative_matrix2"
@@ -457,8 +1941,8 @@ func (s VkPhysicalDeviceCooperativeMatrix2FeaturesNV) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceCooperativeMatrixFeaturesKHR struct {
-	CooperativeMatrix bool
-	CooperativeMatrixRobustBufferAccess bool
+	CooperativeMatrix bool `json:"cooperativeMatrix,omitempty"`
+	CooperativeMatrixRobustBufferAccess bool `json:"cooperativeMatrixRobustBufferAccess,omitempty"`
 }
 func (VkPhysicalDeviceCooperativeMatrixFeaturesKHR) extension() string {
 	return "VK_KHR_cooperative_matrix"
@@ -477,8 +1961,8 @@ func (s VkPhysicalDeviceCooperativeMatrixFeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceCooperativeMatrixFeaturesNV struct {
-	CooperativeMatrix bool
-	CooperativeMatrixRobustBufferAccess bool
+	CooperativeMatrix bool `json:"cooperativeMatrix,omitempty"`
+	CooperativeMatrixRobustBufferAccess bool `json:"cooperativeMatrixRobustBufferAccess,omitempty"`
 }
 func (VkPhysicalDeviceCooperativeMatrixFeaturesNV) extension() string {
 	return "VK_NV_cooperative_matrix"
@@ -497,8 +1981,8 @@ func (s VkPhysicalDeviceCooperativeMatrixFeaturesNV) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceCooperativeVectorFeaturesNV struct {
-	CooperativeVector bool
-	CooperativeVectorTraining bool
+	CooperativeVector bool `json:"cooperativeVector,omitempty"`
+	CooperativeVectorTraining bool `json:"cooperativeVectorTraining,omitempty"`
 }
 func (VkPhysicalDeviceCooperativeVectorFeaturesNV) extension() string {
 	return "VK_NV_cooperative_vector"
@@ -517,7 +2001,7 @@ func (s VkPhysicalDeviceCooperativeVectorFeaturesNV) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceCopyMemoryIndirectFeaturesNV struct {
-	IndirectCopy bool
+	IndirectCopy bool `json:"indirectCopy,omitempty"`
 }
 func (VkPhysicalDeviceCopyMemoryIndirectFeaturesNV) extension() string {
 	return "VK_NV_copy_memory_indirect"
@@ -533,7 +2017,7 @@ func (s VkPhysicalDeviceCopyMemoryIndirectFeaturesNV) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceCornerSampledImageFeaturesNV struct {
-	CornerSampledImage bool
+	CornerSampledImage bool `json:"cornerSampledImage,omitempty"`
 }
 func (VkPhysicalDeviceCornerSampledImageFeaturesNV) extension() string {
 	return "VK_NV_corner_sampled_image"
@@ -549,7 +2033,7 @@ func (s VkPhysicalDeviceCornerSampledImageFeaturesNV) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceCoverageReductionModeFeaturesNV struct {
-	CoverageReductionMode bool
+	CoverageReductionMode bool `json:"coverageReductionMode,omitempty"`
 }
 func (VkPhysicalDeviceCoverageReductionModeFeaturesNV) extension() string {
 	return "VK_NV_coverage_reduction_mode"
@@ -565,7 +2049,7 @@ func (s VkPhysicalDeviceCoverageReductionModeFeaturesNV) enabledList() []C.size_
 	return list
 }
 type VkPhysicalDeviceCubicClampFeaturesQCOM struct {
-	CubicRangeClamp bool
+	CubicRangeClamp bool `json:"cubicRangeClamp,omitempty"`
 }
 func (VkPhysicalDeviceCubicClampFeaturesQCOM) extension() string {
 	return "VK_QCOM_filter_cubic_clamp"
@@ -581,7 +2065,7 @@ func (s VkPhysicalDeviceCubicClampFeaturesQCOM) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceCubicWeightsFeaturesQCOM struct {
-	SelectableCubicWeights bool
+	SelectableCubicWeights bool `json:"selectableCubicWeights,omitempty"`
 }
 func (VkPhysicalDeviceCubicWeightsFeaturesQCOM) extension() string {
 	return "VK_QCOM_filter_cubic_weights"
@@ -597,8 +2081,8 @@ func (s VkPhysicalDeviceCubicWeightsFeaturesQCOM) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceCustomBorderColorFeaturesEXT struct {
-	CustomBorderColors bool
-	CustomBorderColorWithoutFormat bool
+	CustomBorderColors bool `json:"customBorderColors,omitempty"`
+	CustomBorderColorWithoutFormat bool `json:"customBorderColorWithoutFormat,omitempty"`
 }
 func (VkPhysicalDeviceCustomBorderColorFeaturesEXT) extension() string {
 	return "VK_EXT_custom_border_color"
@@ -617,11 +2101,11 @@ func (s VkPhysicalDeviceCustomBorderColorFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceDataGraphFeaturesARM struct {
-	DataGraph bool
-	DataGraphUpdateAfterBind bool
-	DataGraphSpecializationConstants bool
-	DataGraphDescriptorBuffer bool
-	DataGraphShaderModule bool
+	DataGraph bool `json:"dataGraph,omitempty"`
+	DataGraphUpdateAfterBind bool `json:"dataGraphUpdateAfterBind,omitempty"`
+	DataGraphSpecializationConstants bool `json:"dataGraphSpecializationConstants,omitempty"`
+	DataGraphDescriptorBuffer bool `json:"dataGraphDescriptorBuffer,omitempty"`
+	DataGraphShaderModule bool `json:"dataGraphShaderModule,omitempty"`
 }
 func (VkPhysicalDeviceDataGraphFeaturesARM) extension() string {
 	return "VK_ARM_data_graph"
@@ -649,7 +2133,7 @@ func (s VkPhysicalDeviceDataGraphFeaturesARM) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV struct {
-	DedicatedAllocationImageAliasing bool
+	DedicatedAllocationImageAliasing bool `json:"dedicatedAllocationImageAliasing,omitempty"`
 }
 func (VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV) extension() string {
 	return "VK_NV_dedicated_allocation_image_aliasing"
@@ -665,10 +2149,10 @@ func (s VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV) enabledList(
 	return list
 }
 type VkPhysicalDeviceDepthBiasControlFeaturesEXT struct {
-	DepthBiasControl bool
-	LeastRepresentableValueForceUnormRepresentation bool
-	FloatRepresentation bool
-	DepthBiasExact bool
+	DepthBiasControl bool `json:"depthBiasControl,omitempty"`
+	LeastRepresentableValueForceUnormRepresentation bool `json:"leastRepresentableValueForceUnormRepresentation,omitempty"`
+	FloatRepresentation bool `json:"floatRepresentation,omitempty"`
+	DepthBiasExact bool `json:"depthBiasExact,omitempty"`
 }
 func (VkPhysicalDeviceDepthBiasControlFeaturesEXT) extension() string {
 	return "VK_EXT_depth_bias_control"
@@ -693,7 +2177,7 @@ func (s VkPhysicalDeviceDepthBiasControlFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceDepthClampControlFeaturesEXT struct {
-	DepthClampControl bool
+	DepthClampControl bool `json:"depthClampControl,omitempty"`
 }
 func (VkPhysicalDeviceDepthClampControlFeaturesEXT) extension() string {
 	return "VK_EXT_depth_clamp_control"
@@ -709,7 +2193,7 @@ func (s VkPhysicalDeviceDepthClampControlFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceDepthClampZeroOneFeaturesEXT struct {
-	DepthClampZeroOne bool
+	DepthClampZeroOne bool `json:"depthClampZeroOne,omitempty"`
 }
 func (VkPhysicalDeviceDepthClampZeroOneFeaturesEXT) extension() string {
 	return "VK_EXT_depth_clamp_zero_one"
@@ -725,7 +2209,7 @@ func (s VkPhysicalDeviceDepthClampZeroOneFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceDepthClampZeroOneFeaturesKHR struct {
-	DepthClampZeroOne bool
+	DepthClampZeroOne bool `json:"depthClampZeroOne,omitempty"`
 }
 func (VkPhysicalDeviceDepthClampZeroOneFeaturesKHR) extension() string {
 	return "VK_KHR_depth_clamp_zero_one"
@@ -741,7 +2225,7 @@ func (s VkPhysicalDeviceDepthClampZeroOneFeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceDepthClipControlFeaturesEXT struct {
-	DepthClipControl bool
+	DepthClipControl bool `json:"depthClipControl,omitempty"`
 }
 func (VkPhysicalDeviceDepthClipControlFeaturesEXT) extension() string {
 	return "VK_EXT_depth_clip_control"
@@ -757,7 +2241,7 @@ func (s VkPhysicalDeviceDepthClipControlFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceDepthClipEnableFeaturesEXT struct {
-	DepthClipEnable bool
+	DepthClipEnable bool `json:"depthClipEnable,omitempty"`
 }
 func (VkPhysicalDeviceDepthClipEnableFeaturesEXT) extension() string {
 	return "VK_EXT_depth_clip_enable"
@@ -773,10 +2257,10 @@ func (s VkPhysicalDeviceDepthClipEnableFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceDescriptorBufferFeaturesEXT struct {
-	DescriptorBuffer bool
-	DescriptorBufferCaptureReplay bool
-	DescriptorBufferImageLayoutIgnored bool
-	DescriptorBufferPushDescriptors bool
+	DescriptorBuffer bool `json:"descriptorBuffer,omitempty"`
+	DescriptorBufferCaptureReplay bool `json:"descriptorBufferCaptureReplay,omitempty"`
+	DescriptorBufferImageLayoutIgnored bool `json:"descriptorBufferImageLayoutIgnored,omitempty"`
+	DescriptorBufferPushDescriptors bool `json:"descriptorBufferPushDescriptors,omitempty"`
 }
 func (VkPhysicalDeviceDescriptorBufferFeaturesEXT) extension() string {
 	return "VK_EXT_descriptor_buffer"
@@ -801,7 +2285,7 @@ func (s VkPhysicalDeviceDescriptorBufferFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceDescriptorBufferTensorFeaturesARM struct {
-	DescriptorBufferTensorDescriptors bool
+	DescriptorBufferTensorDescriptors bool `json:"descriptorBufferTensorDescriptors,omitempty"`
 }
 func (VkPhysicalDeviceDescriptorBufferTensorFeaturesARM) extension() string {
 	return "VK_ARM_tensors"
@@ -817,26 +2301,26 @@ func (s VkPhysicalDeviceDescriptorBufferTensorFeaturesARM) enabledList() []C.siz
 	return list
 }
 type VkPhysicalDeviceDescriptorIndexingFeatures struct {
-	ShaderInputAttachmentArrayDynamicIndexing bool
-	ShaderUniformTexelBufferArrayDynamicIndexing bool
-	ShaderStorageTexelBufferArrayDynamicIndexing bool
-	ShaderUniformBufferArrayNonUniformIndexing bool
-	ShaderSampledImageArrayNonUniformIndexing bool
-	ShaderStorageBufferArrayNonUniformIndexing bool
-	ShaderStorageImageArrayNonUniformIndexing bool
-	ShaderInputAttachmentArrayNonUniformIndexing bool
-	ShaderUniformTexelBufferArrayNonUniformIndexing bool
-	ShaderStorageTexelBufferArrayNonUniformIndexing bool
-	DescriptorBindingUniformBufferUpdateAfterBind bool
-	DescriptorBindingSampledImageUpdateAfterBind bool
-	DescriptorBindingStorageImageUpdateAfterBind bool
-	DescriptorBindingStorageBufferUpdateAfterBind bool
-	DescriptorBindingUniformTexelBufferUpdateAfterBind bool
-	DescriptorBindingStorageTexelBufferUpdateAfterBind bool
-	DescriptorBindingUpdateUnusedWhilePending bool
-	DescriptorBindingPartiallyBound bool
-	DescriptorBindingVariableDescriptorCount bool
-	RuntimeDescriptorArray bool
+	ShaderInputAttachmentArrayDynamicIndexing bool `json:"shaderInputAttachmentArrayDynamicIndexing,omitempty"`
+	ShaderUniformTexelBufferArrayDynamicIndexing bool `json:"shaderUniformTexelBufferArrayDynamicIndexing,omitempty"`
+	ShaderStorageTexelBufferArrayDynamicIndexing bool `json:"shaderStorageTexelBufferArrayDynamicIndexing,omitempty"`
+	ShaderUniformBufferArrayNonUniformIndexing bool `json:"shaderUniformBufferArrayNonUniformIndexing,omitempty"`
+	ShaderSampledImageArrayNonUniformIndexing bool `json:"shaderSampledImageArrayNonUniformIndexing,omitempty"`
+	ShaderStorageBufferArrayNonUniformIndexing bool `json:"shaderStorageBufferArrayNonUniformIndexing,omitempty"`
+	ShaderStorageImageArrayNonUniformIndexing bool `json:"shaderStorageImageArrayNonUniformIndexing,omitempty"`
+	ShaderInputAttachmentArrayNonUniformIndexing bool `json:"shaderInputAttachmentArrayNonUniformIndexing,omitempty"`
+	ShaderUniformTexelBufferArrayNonUniformIndexing bool `json:"shaderUniformTexelBufferArrayNonUniformIndexing,omitempty"`
+	ShaderStorageTexelBufferArrayNonUniformIndexing bool `json:"shaderStorageTexelBufferArrayNonUniformIndexing,omitempty"`
+	DescriptorBindingUniformBufferUpdateAfterBind bool `json:"descriptorBindingUniformBufferUpdateAfterBind,omitempty"`
+	DescriptorBindingSampledImageUpdateAfterBind bool `json:"descriptorBindingSampledImageUpdateAfterBind,omitempty"`
+	DescriptorBindingStorageImageUpdateAfterBind bool `json:"descriptorBindingStorageImageUpdateAfterBind,omitempty"`
+	DescriptorBindingStorageBufferUpdateAfterBind bool `json:"descriptorBindingStorageBufferUpdateAfterBind,omitempty"`
+	DescriptorBindingUniformTexelBufferUpdateAfterBind bool `json:"descriptorBindingUniformTexelBufferUpdateAfterBind,omitempty"`
+	DescriptorBindingStorageTexelBufferUpdateAfterBind bool `json:"descriptorBindingStorageTexelBufferUpdateAfterBind,omitempty"`
+	DescriptorBindingUpdateUnusedWhilePending bool `json:"descriptorBindingUpdateUnusedWhilePending,omitempty"`
+	DescriptorBindingPartiallyBound bool `json:"descriptorBindingPartiallyBound,omitempty"`
+	DescriptorBindingVariableDescriptorCount bool `json:"descriptorBindingVariableDescriptorCount,omitempty"`
+	RuntimeDescriptorArray bool `json:"runtimeDescriptorArray,omitempty"`
 }
 func (VkPhysicalDeviceDescriptorIndexingFeatures) extension() string {
 	return ""
@@ -909,7 +2393,7 @@ func (s VkPhysicalDeviceDescriptorIndexingFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNV struct {
-	DescriptorPoolOverallocation bool
+	DescriptorPoolOverallocation bool `json:"descriptorPoolOverallocation,omitempty"`
 }
 func (VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNV) extension() string {
 	return "VK_NV_descriptor_pool_overallocation"
@@ -925,7 +2409,7 @@ func (s VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNV) enabledList() []
 	return list
 }
 type VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE struct {
-	DescriptorSetHostMapping bool
+	DescriptorSetHostMapping bool `json:"descriptorSetHostMapping,omitempty"`
 }
 func (VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE) extension() string {
 	return "VK_VALVE_descriptor_set_host_mapping"
@@ -941,9 +2425,9 @@ func (s VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE) enabledList() []C
 	return list
 }
 type VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV struct {
-	DeviceGeneratedCompute bool
-	DeviceGeneratedComputePipelines bool
-	DeviceGeneratedComputeCaptureReplay bool
+	DeviceGeneratedCompute bool `json:"deviceGeneratedCompute,omitempty"`
+	DeviceGeneratedComputePipelines bool `json:"deviceGeneratedComputePipelines,omitempty"`
+	DeviceGeneratedComputeCaptureReplay bool `json:"deviceGeneratedComputeCaptureReplay,omitempty"`
 }
 func (VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV) extension() string {
 	return "VK_NV_device_generated_commands_compute"
@@ -965,8 +2449,8 @@ func (s VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV) enabledList() 
 	return list
 }
 type VkPhysicalDeviceDeviceGeneratedCommandsFeaturesEXT struct {
-	DeviceGeneratedCommands bool
-	DynamicGeneratedPipelineLayout bool
+	DeviceGeneratedCommands bool `json:"deviceGeneratedCommands,omitempty"`
+	DynamicGeneratedPipelineLayout bool `json:"dynamicGeneratedPipelineLayout,omitempty"`
 }
 func (VkPhysicalDeviceDeviceGeneratedCommandsFeaturesEXT) extension() string {
 	return "VK_EXT_device_generated_commands"
@@ -985,7 +2469,7 @@ func (s VkPhysicalDeviceDeviceGeneratedCommandsFeaturesEXT) enabledList() []C.si
 	return list
 }
 type VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV struct {
-	DeviceGeneratedCommands bool
+	DeviceGeneratedCommands bool `json:"deviceGeneratedCommands,omitempty"`
 }
 func (VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV) extension() string {
 	return "VK_NV_device_generated_commands"
@@ -1001,7 +2485,7 @@ func (s VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV) enabledList() []C.siz
 	return list
 }
 type VkPhysicalDeviceDeviceMemoryReportFeaturesEXT struct {
-	DeviceMemoryReport bool
+	DeviceMemoryReport bool `json:"deviceMemoryReport,omitempty"`
 }
 func (VkPhysicalDeviceDeviceMemoryReportFeaturesEXT) extension() string {
 	return "VK_EXT_device_memory_report"
@@ -1017,7 +2501,7 @@ func (s VkPhysicalDeviceDeviceMemoryReportFeaturesEXT) enabledList() []C.size_t 
 	return list
 }
 type VkPhysicalDeviceDiagnosticsConfigFeaturesNV struct {
-	DiagnosticsConfig bool
+	DiagnosticsConfig bool `json:"diagnosticsConfig,omitempty"`
 }
 func (VkPhysicalDeviceDiagnosticsConfigFeaturesNV) extension() string {
 	return "VK_NV_device_diagnostics_config"
@@ -1033,7 +2517,7 @@ func (s VkPhysicalDeviceDiagnosticsConfigFeaturesNV) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceDynamicRenderingFeatures struct {
-	DynamicRendering bool
+	DynamicRendering bool `json:"dynamicRendering,omitempty"`
 }
 func (VkPhysicalDeviceDynamicRenderingFeatures) extension() string {
 	return ""
@@ -1049,7 +2533,7 @@ func (s VkPhysicalDeviceDynamicRenderingFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceDynamicRenderingLocalReadFeatures struct {
-	DynamicRenderingLocalRead bool
+	DynamicRenderingLocalRead bool `json:"dynamicRenderingLocalRead,omitempty"`
 }
 func (VkPhysicalDeviceDynamicRenderingLocalReadFeatures) extension() string {
 	return ""
@@ -1065,7 +2549,7 @@ func (s VkPhysicalDeviceDynamicRenderingLocalReadFeatures) enabledList() []C.siz
 	return list
 }
 type VkPhysicalDeviceDynamicRenderingLocalReadFeaturesKHR struct {
-	DynamicRenderingLocalRead bool
+	DynamicRenderingLocalRead bool `json:"dynamicRenderingLocalRead,omitempty"`
 }
 func (VkPhysicalDeviceDynamicRenderingLocalReadFeaturesKHR) extension() string {
 	return "VK_KHR_dynamic_rendering_local_read"
@@ -1081,7 +2565,7 @@ func (s VkPhysicalDeviceDynamicRenderingLocalReadFeaturesKHR) enabledList() []C.
 	return list
 }
 type VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT struct {
-	DynamicRenderingUnusedAttachments bool
+	DynamicRenderingUnusedAttachments bool `json:"dynamicRenderingUnusedAttachments,omitempty"`
 }
 func (VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT) extension() string {
 	return "VK_EXT_dynamic_rendering_unused_attachments"
@@ -1097,7 +2581,7 @@ func (s VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT) enabledLis
 	return list
 }
 type VkPhysicalDeviceExclusiveScissorFeaturesNV struct {
-	ExclusiveScissor bool
+	ExclusiveScissor bool `json:"exclusiveScissor,omitempty"`
 }
 func (VkPhysicalDeviceExclusiveScissorFeaturesNV) extension() string {
 	return "VK_NV_scissor_exclusive"
@@ -1113,37 +2597,37 @@ func (s VkPhysicalDeviceExclusiveScissorFeaturesNV) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceExtendedDynamicState3FeaturesEXT struct {
-	ExtendedDynamicState3TessellationDomainOrigin bool
-	ExtendedDynamicState3DepthClampEnable bool
-	ExtendedDynamicState3PolygonMode bool
-	ExtendedDynamicState3RasterizationSamples bool
-	ExtendedDynamicState3SampleMask bool
-	ExtendedDynamicState3AlphaToCoverageEnable bool
-	ExtendedDynamicState3AlphaToOneEnable bool
-	ExtendedDynamicState3LogicOpEnable bool
-	ExtendedDynamicState3ColorBlendEnable bool
-	ExtendedDynamicState3ColorBlendEquation bool
-	ExtendedDynamicState3ColorWriteMask bool
-	ExtendedDynamicState3RasterizationStream bool
-	ExtendedDynamicState3ConservativeRasterizationMode bool
-	ExtendedDynamicState3ExtraPrimitiveOverestimationSize bool
-	ExtendedDynamicState3DepthClipEnable bool
-	ExtendedDynamicState3SampleLocationsEnable bool
-	ExtendedDynamicState3ColorBlendAdvanced bool
-	ExtendedDynamicState3ProvokingVertexMode bool
-	ExtendedDynamicState3LineRasterizationMode bool
-	ExtendedDynamicState3LineStippleEnable bool
-	ExtendedDynamicState3DepthClipNegativeOneToOne bool
-	ExtendedDynamicState3ViewportWScalingEnable bool
-	ExtendedDynamicState3ViewportSwizzle bool
-	ExtendedDynamicState3CoverageToColorEnable bool
-	ExtendedDynamicState3CoverageToColorLocation bool
-	ExtendedDynamicState3CoverageModulationMode bool
-	ExtendedDynamicState3CoverageModulationTableEnable bool
-	ExtendedDynamicState3CoverageModulationTable bool
-	ExtendedDynamicState3CoverageReductionMode bool
-	ExtendedDynamicState3RepresentativeFragmentTestEnable bool
-	ExtendedDynamicState3ShadingRateImageEnable bool
+	ExtendedDynamicState3TessellationDomainOrigin bool `json:"extendedDynamicState3TessellationDomainOrigin,omitempty"`
+	ExtendedDynamicState3DepthClampEnable bool `json:"extendedDynamicState3DepthClampEnable,omitempty"`
+	ExtendedDynamicState3PolygonMode bool `json:"extendedDynamicState3PolygonMode,omitempty"`
+	ExtendedDynamicState3RasterizationSamples bool `json:"extendedDynamicState3RasterizationSamples,omitempty"`
+	ExtendedDynamicState3SampleMask bool `json:"extendedDynamicState3SampleMask,omitempty"`
+	ExtendedDynamicState3AlphaToCoverageEnable bool `json:"extendedDynamicState3AlphaToCoverageEnable,omitempty"`
+	ExtendedDynamicState3AlphaToOneEnable bool `json:"extendedDynamicState3AlphaToOneEnable,omitempty"`
+	ExtendedDynamicState3LogicOpEnable bool `json:"extendedDynamicState3LogicOpEnable,omitempty"`
+	ExtendedDynamicState3ColorBlendEnable bool `json:"extendedDynamicState3ColorBlendEnable,omitempty"`
+	ExtendedDynamicState3ColorBlendEquation bool `json:"extendedDynamicState3ColorBlendEquation,omitempty"`
+	ExtendedDynamicState3ColorWriteMask bool `json:"extendedDynamicState3ColorWriteMask,omitempty"`
+	ExtendedDynamicState3RasterizationStream bool `json:"extendedDynamicState3RasterizationStream,omitempty"`
+	ExtendedDynamicState3ConservativeRasterizationMode bool `json:"extendedDynamicState3ConservativeRasterizationMode,omitempty"`
+	ExtendedDynamicState3ExtraPrimitiveOverestimationSize bool `json:"extendedDynamicState3ExtraPrimitiveOverestimationSize,omitempty"`
+	ExtendedDynamicState3DepthClipEnable bool `json:"extendedDynamicState3DepthClipEnable,omitempty"`
+	ExtendedDynamicState3SampleLocationsEnable bool `json:"extendedDynamicState3SampleLocationsEnable,omitempty"`
+	ExtendedDynamicState3ColorBlendAdvanced bool `json:"extendedDynamicState3ColorBlendAdvanced,omitempty"`
+	ExtendedDynamicState3ProvokingVertexMode bool `json:"extendedDynamicState3ProvokingVertexMode,omitempty"`
+	ExtendedDynamicState3LineRasterizationMode bool `json:"extendedDynamicState3LineRasterizationMode,omitempty"`
+	ExtendedDynamicState3LineStippleEnable bool `json:"extendedDynamicState3LineStippleEnable,omitempty"`
+	ExtendedDynamicState3DepthClipNegativeOneToOne bool `json:"extendedDynamicState3DepthClipNegativeOneToOne,omitempty"`
+	ExtendedDynamicState3ViewportWScalingEnable bool `json:"extendedDynamicState3ViewportWScalingEnable,omitempty"`
+	ExtendedDynamicState3ViewportSwizzle bool `json:"extendedDynamicState3ViewportSwizzle,omitempty"`
+	ExtendedDynamicState3CoverageToColorEnable bool `json:"extendedDynamicState3CoverageToColorEnable,omitempty"`
+	ExtendedDynamicState3CoverageToColorLocation bool `json:"extendedDynamicState3CoverageToColorLocation,omitempty"`
+	ExtendedDynamicState3CoverageModulationMode bool `json:"extendedDynamicState3CoverageModulationMode,omitempty"`
+	ExtendedDynamicState3CoverageModulationTableEnable bool `json:"extendedDynamicState3CoverageModulationTableEnable,omitempty"`
+	ExtendedDynamicState3CoverageModulationTable bool `json:"extendedDynamicState3CoverageModulationTable,omitempty"`
+	ExtendedDynamicState3CoverageReductionMode bool `json:"extendedDynamicState3CoverageReductionMode,omitempty"`
+	ExtendedDynamicState3RepresentativeFragmentTestEnable bool `json:"extendedDynamicState3RepresentativeFragmentTestEnable,omitempty"`
+	ExtendedDynamicState3ShadingRateImageEnable bool `json:"extendedDynamicState3ShadingRateImageEnable,omitempty"`
 }
 func (VkPhysicalDeviceExtendedDynamicState3FeaturesEXT) extension() string {
 	return "VK_EXT_extended_dynamic_state3"
@@ -1249,7 +2733,7 @@ func (s VkPhysicalDeviceExtendedDynamicState3FeaturesEXT) enabledList() []C.size
 	return list
 }
 type VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNV struct {
-	ExtendedSparseAddressSpace bool
+	ExtendedSparseAddressSpace bool `json:"extendedSparseAddressSpace,omitempty"`
 }
 func (VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNV) extension() string {
 	return "VK_NV_extended_sparse_address_space"
@@ -1265,7 +2749,7 @@ func (s VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNV) enabledList() []C.
 	return list
 }
 type VkPhysicalDeviceExternalMemoryRDMAFeaturesNV struct {
-	ExternalMemoryRDMA bool
+	ExternalMemoryRDMA bool `json:"externalMemoryRDMA,omitempty"`
 }
 func (VkPhysicalDeviceExternalMemoryRDMAFeaturesNV) extension() string {
 	return "VK_NV_external_memory_rdma"
@@ -1281,8 +2765,8 @@ func (s VkPhysicalDeviceExternalMemoryRDMAFeaturesNV) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceFaultFeaturesEXT struct {
-	DeviceFault bool
-	DeviceFaultVendorBinary bool
+	DeviceFault bool `json:"deviceFault,omitempty"`
+	DeviceFaultVendorBinary bool `json:"deviceFaultVendorBinary,omitempty"`
 }
 func (VkPhysicalDeviceFaultFeaturesEXT) extension() string {
 	return "VK_EXT_device_fault"
@@ -1301,61 +2785,61 @@ func (s VkPhysicalDeviceFaultFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceFeatures struct {
-	RobustBufferAccess bool
-	FullDrawIndexUint32 bool
-	ImageCubeArray bool
-	IndependentBlend bool
-	GeometryShader bool
-	TessellationShader bool
-	SampleRateShading bool
-	DualSrcBlend bool
-	LogicOp bool
-	MultiDrawIndirect bool
-	DrawIndirectFirstInstance bool
-	DepthClamp bool
-	DepthBiasClamp bool
-	FillModeNonSolid bool
-	DepthBounds bool
-	WideLines bool
-	LargePoints bool
-	AlphaToOne bool
-	MultiViewport bool
-	SamplerAnisotropy bool
-	TextureCompressionETC2 bool
-	TextureCompressionASTC_LDR bool
-	TextureCompressionBC bool
-	OcclusionQueryPrecise bool
-	PipelineStatisticsQuery bool
-	VertexPipelineStoresAndAtomics bool
-	FragmentStoresAndAtomics bool
-	ShaderTessellationAndGeometryPointSize bool
-	ShaderImageGatherExtended bool
-	ShaderStorageImageExtendedFormats bool
-	ShaderStorageImageMultisample bool
-	ShaderStorageImageReadWithoutFormat bool
-	ShaderStorageImageWriteWithoutFormat bool
-	ShaderUniformBufferArrayDynamicIndexing bool
-	ShaderSampledImageArrayDynamicIndexing bool
-	ShaderStorageBufferArrayDynamicIndexing bool
-	ShaderStorageImageArrayDynamicIndexing bool
-	ShaderClipDistance bool
-	ShaderCullDistance bool
-	ShaderFloat64 bool
-	ShaderInt64 bool
-	ShaderInt16 bool
-	ShaderResourceResidency bool
-	ShaderResourceMinLod bool
-	SparseBinding bool
-	SparseResidencyBuffer bool
-	SparseResidencyImage2D bool
-	SparseResidencyImage3D bool
-	SparseResidency2Samples bool
-	SparseResidency4Samples bool
-	SparseResidency8Samples bool
-	SparseResidency16Samples bool
-	SparseResidencyAliased bool
-	VariableMultisampleRate bool
-	InheritedQueries bool
+	RobustBufferAccess bool `json:"robustBufferAccess,omitempty"`
+	FullDrawIndexUint32 bool `json:"fullDrawIndexUint32,omitempty"`
+	ImageCubeArray bool `json:"imageCubeArray,omitempty"`
+	IndependentBlend bool `json:"independentBlend,omitempty"`
+	GeometryShader bool `json:"geometryShader,omitempty"`
+	TessellationShader bool `json:"tessellationShader,omitempty"`
+	SampleRateShading bool `json:"sampleRateShading,omitempty"`
+	DualSrcBlend bool `json:"dualSrcBlend,omitempty"`
+	LogicOp bool `json:"logicOp,omitempty"`
+	MultiDrawIndirect bool `json:"multiDrawIndirect,omitempty"`
+	DrawIndirectFirstInstance bool `json:"drawIndirectFirstInstance,omitempty"`
+	DepthClamp bool `json:"depthClamp,omitempty"`
+	DepthBiasClamp bool `json:"depthBiasClamp,omitempty"`
+	FillModeNonSolid bool `json:"fillModeNonSolid,omitempty"`
+	DepthBounds bool `json:"depthBounds,omitempty"`
+	WideLines bool `json:"wideLines,omitempty"`
+	LargePoints bool `json:"largePoints,omitempty"`
+	AlphaToOne bool `json:"alphaToOne,omitempty"`
+	MultiViewport bool `json:"multiViewport,omitempty"`
+	SamplerAnisotropy bool `json:"samplerAnisotropy,omitempty"`
+	TextureCompressionETC2 bool `json:"textureCompressionETC2,omitempty"`
+	TextureCompressionASTC_LDR bool `json:"textureCompressionASTC_LDR,omitempty"`
+	TextureCompressionBC bool `json:"textureCompressionBC,omitempty"`
+	OcclusionQueryPrecise bool `json:"occlusionQueryPrecise,omitempty"`
+	PipelineStatisticsQuery bool `json:"pipelineStatisticsQuery,omitempty"`
+	VertexPipelineStoresAndAtomics bool `json:"vertexPipelineStoresAndAtomics,omitempty"`
+	FragmentStoresAndAtomics bool `json:"fragmentStoresAndAtomics,omitempty"`
+	ShaderTessellationAndGeometryPointSize bool `json:"shaderTessellationAndGeometryPointSize,omitempty"`
+	ShaderImageGatherExtended bool `json:"shaderImageGatherExtended,omitempty"`
+	ShaderStorageImageExtendedFormats bool `json:"shaderStorageImageExtendedFormats,omitempty"`
+	ShaderStorageImageMultisample bool `json:"shaderStorageImageMultisample,omitempty"`
+	ShaderStorageImageReadWithoutFormat bool `json:"shaderStorageImageReadWithoutFormat,omitempty"`
+	ShaderStorageImageWriteWithoutFormat bool `json:"shaderStorageImageWriteWithoutFormat,omitempty"`
+	ShaderUniformBufferArrayDynamicIndexing bool `json:"shaderUniformBufferArrayDynamicIndexing,omitempty"`
+	ShaderSampledImageArrayDynamicIndexing bool `json:"shaderSampledImageArrayDynamicIndexing,omitempty"`
+	ShaderStorageBufferArrayDynamicIndexing bool `json:"shaderStorageBufferArrayDynamicIndexing,omitempty"`
+	ShaderStorageImageArrayDynamicIndexing bool `json:"shaderStorageImageArrayDynamicIndexing,omitempty"`
+	ShaderClipDistance bool `json:"shaderClipDistance,omitempty"`
+	ShaderCullDistance bool `json:"shaderCullDistance,omitempty"`
+	ShaderFloat64 bool `json:"shaderFloat64,omitempty"`
+	ShaderInt64 bool `json:"shaderInt64,omitempty"`
+	ShaderInt16 bool `json:"shaderInt16,omitempty"`
+	ShaderResourceResidency bool `json:"shaderResourceResidency,omitempty"`
+	ShaderResourceMinLod bool `json:"shaderResourceMinLod,omitempty"`
+	SparseBinding bool `json:"sparseBinding,omitempty"`
+	SparseResidencyBuffer bool `json:"sparseResidencyBuffer,omitempty"`
+	SparseResidencyImage2D bool `json:"sparseResidencyImage2D,omitempty"`
+	SparseResidencyImage3D bool `json:"sparseResidencyImage3D,omitempty"`
+	SparseResidency2Samples bool `json:"sparseResidency2Samples,omitempty"`
+	SparseResidency4Samples bool `json:"sparseResidency4Samples,omitempty"`
+	SparseResidency8Samples bool `json:"sparseResidency8Samples,omitempty"`
+	SparseResidency16Samples bool `json:"sparseResidency16Samples,omitempty"`
+	SparseResidencyAliased bool `json:"sparseResidencyAliased,omitempty"`
+	VariableMultisampleRate bool `json:"variableMultisampleRate,omitempty"`
+	InheritedQueries bool `json:"inheritedQueries,omitempty"`
 }
 func (VkPhysicalDeviceFeatures) extension() string {
 	return ""
@@ -1533,7 +3017,7 @@ func (s VkPhysicalDeviceFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceFormatPackFeaturesARM struct {
-	FormatPack bool
+	FormatPack bool `json:"formatPack,omitempty"`
 }
 func (VkPhysicalDeviceFormatPackFeaturesARM) extension() string {
 	return "VK_ARM_format_pack"
@@ -1549,7 +3033,7 @@ func (s VkPhysicalDeviceFormatPackFeaturesARM) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceFragmentDensityMap2FeaturesEXT struct {
-	FragmentDensityMapDeferred bool
+	FragmentDensityMapDeferred bool `json:"fragmentDensityMapDeferred,omitempty"`
 }
 func (VkPhysicalDeviceFragmentDensityMap2FeaturesEXT) extension() string {
 	return "VK_EXT_fragment_density_map2"
@@ -1565,9 +3049,9 @@ func (s VkPhysicalDeviceFragmentDensityMap2FeaturesEXT) enabledList() []C.size_t
 	return list
 }
 type VkPhysicalDeviceFragmentDensityMapFeaturesEXT struct {
-	FragmentDensityMap bool
-	FragmentDensityMapDynamic bool
-	FragmentDensityMapNonSubsampledImages bool
+	FragmentDensityMap bool `json:"fragmentDensityMap,omitempty"`
+	FragmentDensityMapDynamic bool `json:"fragmentDensityMapDynamic,omitempty"`
+	FragmentDensityMapNonSubsampledImages bool `json:"fragmentDensityMapNonSubsampledImages,omitempty"`
 }
 func (VkPhysicalDeviceFragmentDensityMapFeaturesEXT) extension() string {
 	return "VK_EXT_fragment_density_map"
@@ -1589,7 +3073,7 @@ func (s VkPhysicalDeviceFragmentDensityMapFeaturesEXT) enabledList() []C.size_t 
 	return list
 }
 type VkPhysicalDeviceFragmentDensityMapLayeredFeaturesVALVE struct {
-	FragmentDensityMapLayered bool
+	FragmentDensityMapLayered bool `json:"fragmentDensityMapLayered,omitempty"`
 }
 func (VkPhysicalDeviceFragmentDensityMapLayeredFeaturesVALVE) extension() string {
 	return "VK_VALVE_fragment_density_map_layered"
@@ -1605,7 +3089,7 @@ func (s VkPhysicalDeviceFragmentDensityMapLayeredFeaturesVALVE) enabledList() []
 	return list
 }
 type VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT struct {
-	FragmentDensityMapOffset bool
+	FragmentDensityMapOffset bool `json:"fragmentDensityMapOffset,omitempty"`
 }
 func (VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT) extension() string {
 	return "VK_EXT_fragment_density_map_offset"
@@ -1621,7 +3105,7 @@ func (s VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT) enabledList() []C.s
 	return list
 }
 type VkPhysicalDeviceFragmentDensityMapOffsetFeaturesQCOM struct {
-	FragmentDensityMapOffset bool
+	FragmentDensityMapOffset bool `json:"fragmentDensityMapOffset,omitempty"`
 }
 func (VkPhysicalDeviceFragmentDensityMapOffsetFeaturesQCOM) extension() string {
 	return "VK_QCOM_fragment_density_map_offset"
@@ -1637,7 +3121,7 @@ func (s VkPhysicalDeviceFragmentDensityMapOffsetFeaturesQCOM) enabledList() []C.
 	return list
 }
 type VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR struct {
-	FragmentShaderBarycentric bool
+	FragmentShaderBarycentric bool `json:"fragmentShaderBarycentric,omitempty"`
 }
 func (VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR) extension() string {
 	return "VK_KHR_fragment_shader_barycentric"
@@ -1653,7 +3137,7 @@ func (s VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR) enabledList() []C.
 	return list
 }
 type VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV struct {
-	FragmentShaderBarycentric bool
+	FragmentShaderBarycentric bool `json:"fragmentShaderBarycentric,omitempty"`
 }
 func (VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV) extension() string {
 	return "VK_NV_fragment_shader_barycentric"
@@ -1669,9 +3153,9 @@ func (s VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV) enabledList() []C.s
 	return list
 }
 type VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT struct {
-	FragmentShaderSampleInterlock bool
-	FragmentShaderPixelInterlock bool
-	FragmentShaderShadingRateInterlock bool
+	FragmentShaderSampleInterlock bool `json:"fragmentShaderSampleInterlock,omitempty"`
+	FragmentShaderPixelInterlock bool `json:"fragmentShaderPixelInterlock,omitempty"`
+	FragmentShaderShadingRateInterlock bool `json:"fragmentShaderShadingRateInterlock,omitempty"`
 }
 func (VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT) extension() string {
 	return "VK_EXT_fragment_shader_interlock"
@@ -1693,9 +3177,9 @@ func (s VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT) enabledList() []C.si
 	return list
 }
 type VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV struct {
-	FragmentShadingRateEnums bool
-	SupersampleFragmentShadingRates bool
-	NoInvocationFragmentShadingRates bool
+	FragmentShadingRateEnums bool `json:"fragmentShadingRateEnums,omitempty"`
+	SupersampleFragmentShadingRates bool `json:"supersampleFragmentShadingRates,omitempty"`
+	NoInvocationFragmentShadingRates bool `json:"noInvocationFragmentShadingRates,omitempty"`
 }
 func (VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV) extension() string {
 	return "VK_NV_fragment_shading_rate_enums"
@@ -1717,9 +3201,9 @@ func (s VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV) enabledList() []C.si
 	return list
 }
 type VkPhysicalDeviceFragmentShadingRateFeaturesKHR struct {
-	PipelineFragmentShadingRate bool
-	PrimitiveFragmentShadingRate bool
-	AttachmentFragmentShadingRate bool
+	PipelineFragmentShadingRate bool `json:"pipelineFragmentShadingRate,omitempty"`
+	PrimitiveFragmentShadingRate bool `json:"primitiveFragmentShadingRate,omitempty"`
+	AttachmentFragmentShadingRate bool `json:"attachmentFragmentShadingRate,omitempty"`
 }
 func (VkPhysicalDeviceFragmentShadingRateFeaturesKHR) extension() string {
 	return "VK_KHR_fragment_shading_rate"
@@ -1741,7 +3225,7 @@ func (s VkPhysicalDeviceFragmentShadingRateFeaturesKHR) enabledList() []C.size_t
 	return list
 }
 type VkPhysicalDeviceFrameBoundaryFeaturesEXT struct {
-	FrameBoundary bool
+	FrameBoundary bool `json:"frameBoundary,omitempty"`
 }
 func (VkPhysicalDeviceFrameBoundaryFeaturesEXT) extension() string {
 	return "VK_EXT_frame_boundary"
@@ -1757,7 +3241,7 @@ func (s VkPhysicalDeviceFrameBoundaryFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceGlobalPriorityQueryFeatures struct {
-	GlobalPriorityQuery bool
+	GlobalPriorityQuery bool `json:"globalPriorityQuery,omitempty"`
 }
 func (VkPhysicalDeviceGlobalPriorityQueryFeatures) extension() string {
 	return ""
@@ -1773,7 +3257,7 @@ func (s VkPhysicalDeviceGlobalPriorityQueryFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceGlobalPriorityQueryFeaturesEXT struct {
-	GlobalPriorityQuery bool
+	GlobalPriorityQuery bool `json:"globalPriorityQuery,omitempty"`
 }
 func (VkPhysicalDeviceGlobalPriorityQueryFeaturesEXT) extension() string {
 	return "VK_EXT_global_priority_query"
@@ -1789,7 +3273,7 @@ func (s VkPhysicalDeviceGlobalPriorityQueryFeaturesEXT) enabledList() []C.size_t
 	return list
 }
 type VkPhysicalDeviceGlobalPriorityQueryFeaturesKHR struct {
-	GlobalPriorityQuery bool
+	GlobalPriorityQuery bool `json:"globalPriorityQuery,omitempty"`
 }
 func (VkPhysicalDeviceGlobalPriorityQueryFeaturesKHR) extension() string {
 	return "VK_KHR_global_priority"
@@ -1805,7 +3289,7 @@ func (s VkPhysicalDeviceGlobalPriorityQueryFeaturesKHR) enabledList() []C.size_t
 	return list
 }
 type VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT struct {
-	GraphicsPipelineLibrary bool
+	GraphicsPipelineLibrary bool `json:"graphicsPipelineLibrary,omitempty"`
 }
 func (VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT) extension() string {
 	return "VK_EXT_graphics_pipeline_library"
@@ -1821,7 +3305,7 @@ func (s VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT) enabledList() []C.si
 	return list
 }
 type VkPhysicalDeviceHdrVividFeaturesHUAWEI struct {
-	HdrVivid bool
+	HdrVivid bool `json:"hdrVivid,omitempty"`
 }
 func (VkPhysicalDeviceHdrVividFeaturesHUAWEI) extension() string {
 	return "VK_HUAWEI_hdr_vivid"
@@ -1837,7 +3321,7 @@ func (s VkPhysicalDeviceHdrVividFeaturesHUAWEI) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceHostImageCopyFeatures struct {
-	HostImageCopy bool
+	HostImageCopy bool `json:"hostImageCopy,omitempty"`
 }
 func (VkPhysicalDeviceHostImageCopyFeatures) extension() string {
 	return ""
@@ -1853,7 +3337,7 @@ func (s VkPhysicalDeviceHostImageCopyFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceHostImageCopyFeaturesEXT struct {
-	HostImageCopy bool
+	HostImageCopy bool `json:"hostImageCopy,omitempty"`
 }
 func (VkPhysicalDeviceHostImageCopyFeaturesEXT) extension() string {
 	return "VK_EXT_host_image_copy"
@@ -1869,7 +3353,7 @@ func (s VkPhysicalDeviceHostImageCopyFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceHostQueryResetFeatures struct {
-	HostQueryReset bool
+	HostQueryReset bool `json:"hostQueryReset,omitempty"`
 }
 func (VkPhysicalDeviceHostQueryResetFeatures) extension() string {
 	return ""
@@ -1885,8 +3369,8 @@ func (s VkPhysicalDeviceHostQueryResetFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceImage2DViewOf3DFeaturesEXT struct {
-	Image2DViewOf3D bool
-	Sampler2DViewOf3D bool
+	Image2DViewOf3D bool `json:"image2DViewOf3D,omitempty"`
+	Sampler2DViewOf3D bool `json:"sampler2DViewOf3D,omitempty"`
 }
 func (VkPhysicalDeviceImage2DViewOf3DFeaturesEXT) extension() string {
 	return "VK_EXT_image_2d_view_of_3d"
@@ -1905,7 +3389,7 @@ func (s VkPhysicalDeviceImage2DViewOf3DFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceImageAlignmentControlFeaturesMESA struct {
-	ImageAlignmentControl bool
+	ImageAlignmentControl bool `json:"imageAlignmentControl,omitempty"`
 }
 func (VkPhysicalDeviceImageAlignmentControlFeaturesMESA) extension() string {
 	return "VK_MESA_image_alignment_control"
@@ -1921,7 +3405,7 @@ func (s VkPhysicalDeviceImageAlignmentControlFeaturesMESA) enabledList() []C.siz
 	return list
 }
 type VkPhysicalDeviceImageCompressionControlFeaturesEXT struct {
-	ImageCompressionControl bool
+	ImageCompressionControl bool `json:"imageCompressionControl,omitempty"`
 }
 func (VkPhysicalDeviceImageCompressionControlFeaturesEXT) extension() string {
 	return "VK_EXT_image_compression_control"
@@ -1937,7 +3421,7 @@ func (s VkPhysicalDeviceImageCompressionControlFeaturesEXT) enabledList() []C.si
 	return list
 }
 type VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT struct {
-	ImageCompressionControlSwapchain bool
+	ImageCompressionControlSwapchain bool `json:"imageCompressionControlSwapchain,omitempty"`
 }
 func (VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT) extension() string {
 	return "VK_EXT_image_compression_control_swapchain"
@@ -1953,7 +3437,7 @@ func (s VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT) enabledList
 	return list
 }
 type VkPhysicalDeviceImageProcessing2FeaturesQCOM struct {
-	TextureBlockMatch2 bool
+	TextureBlockMatch2 bool `json:"textureBlockMatch2,omitempty"`
 }
 func (VkPhysicalDeviceImageProcessing2FeaturesQCOM) extension() string {
 	return "VK_QCOM_image_processing2"
@@ -1969,9 +3453,9 @@ func (s VkPhysicalDeviceImageProcessing2FeaturesQCOM) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceImageProcessingFeaturesQCOM struct {
-	TextureSampleWeighted bool
-	TextureBoxFilter bool
-	TextureBlockMatch bool
+	TextureSampleWeighted bool `json:"textureSampleWeighted,omitempty"`
+	TextureBoxFilter bool `json:"textureBoxFilter,omitempty"`
+	TextureBlockMatch bool `json:"textureBlockMatch,omitempty"`
 }
 func (VkPhysicalDeviceImageProcessingFeaturesQCOM) extension() string {
 	return "VK_QCOM_image_processing"
@@ -1993,7 +3477,7 @@ func (s VkPhysicalDeviceImageProcessingFeaturesQCOM) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceImageRobustnessFeatures struct {
-	RobustImageAccess bool
+	RobustImageAccess bool `json:"robustImageAccess,omitempty"`
 }
 func (VkPhysicalDeviceImageRobustnessFeatures) extension() string {
 	return ""
@@ -2009,7 +3493,7 @@ func (s VkPhysicalDeviceImageRobustnessFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT struct {
-	ImageSlicedViewOf3D bool
+	ImageSlicedViewOf3D bool `json:"imageSlicedViewOf3D,omitempty"`
 }
 func (VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT) extension() string {
 	return "VK_EXT_image_sliced_view_of_3d"
@@ -2025,7 +3509,7 @@ func (s VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT) enabledList() []C.size_t
 	return list
 }
 type VkPhysicalDeviceImageViewMinLodFeaturesEXT struct {
-	MinLod bool
+	MinLod bool `json:"minLod,omitempty"`
 }
 func (VkPhysicalDeviceImageViewMinLodFeaturesEXT) extension() string {
 	return "VK_EXT_image_view_min_lod"
@@ -2041,7 +3525,7 @@ func (s VkPhysicalDeviceImageViewMinLodFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceImagelessFramebufferFeatures struct {
-	ImagelessFramebuffer bool
+	ImagelessFramebuffer bool `json:"imagelessFramebuffer,omitempty"`
 }
 func (VkPhysicalDeviceImagelessFramebufferFeatures) extension() string {
 	return ""
@@ -2057,7 +3541,7 @@ func (s VkPhysicalDeviceImagelessFramebufferFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceIndexTypeUint8Features struct {
-	IndexTypeUint8 bool
+	IndexTypeUint8 bool `json:"indexTypeUint8,omitempty"`
 }
 func (VkPhysicalDeviceIndexTypeUint8Features) extension() string {
 	return ""
@@ -2073,7 +3557,7 @@ func (s VkPhysicalDeviceIndexTypeUint8Features) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceIndexTypeUint8FeaturesEXT struct {
-	IndexTypeUint8 bool
+	IndexTypeUint8 bool `json:"indexTypeUint8,omitempty"`
 }
 func (VkPhysicalDeviceIndexTypeUint8FeaturesEXT) extension() string {
 	return "VK_EXT_index_type_uint8"
@@ -2089,7 +3573,7 @@ func (s VkPhysicalDeviceIndexTypeUint8FeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceIndexTypeUint8FeaturesKHR struct {
-	IndexTypeUint8 bool
+	IndexTypeUint8 bool `json:"indexTypeUint8,omitempty"`
 }
 func (VkPhysicalDeviceIndexTypeUint8FeaturesKHR) extension() string {
 	return "VK_KHR_index_type_uint8"
@@ -2105,7 +3589,7 @@ func (s VkPhysicalDeviceIndexTypeUint8FeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceInheritedViewportScissorFeaturesNV struct {
-	InheritedViewportScissor2D bool
+	InheritedViewportScissor2D bool `json:"inheritedViewportScissor2D,omitempty"`
 }
 func (VkPhysicalDeviceInheritedViewportScissorFeaturesNV) extension() string {
 	return "VK_NV_inherited_viewport_scissor"
@@ -2121,8 +3605,8 @@ func (s VkPhysicalDeviceInheritedViewportScissorFeaturesNV) enabledList() []C.si
 	return list
 }
 type VkPhysicalDeviceInlineUniformBlockFeatures struct {
-	InlineUniformBlock bool
-	DescriptorBindingInlineUniformBlockUpdateAfterBind bool
+	InlineUniformBlock bool `json:"inlineUniformBlock,omitempty"`
+	DescriptorBindingInlineUniformBlockUpdateAfterBind bool `json:"descriptorBindingInlineUniformBlockUpdateAfterBind,omitempty"`
 }
 func (VkPhysicalDeviceInlineUniformBlockFeatures) extension() string {
 	return ""
@@ -2141,7 +3625,7 @@ func (s VkPhysicalDeviceInlineUniformBlockFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceInvocationMaskFeaturesHUAWEI struct {
-	InvocationMask bool
+	InvocationMask bool `json:"invocationMask,omitempty"`
 }
 func (VkPhysicalDeviceInvocationMaskFeaturesHUAWEI) extension() string {
 	return "VK_HUAWEI_invocation_mask"
@@ -2157,7 +3641,7 @@ func (s VkPhysicalDeviceInvocationMaskFeaturesHUAWEI) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceLegacyDitheringFeaturesEXT struct {
-	LegacyDithering bool
+	LegacyDithering bool `json:"legacyDithering,omitempty"`
 }
 func (VkPhysicalDeviceLegacyDitheringFeaturesEXT) extension() string {
 	return "VK_EXT_legacy_dithering"
@@ -2173,7 +3657,7 @@ func (s VkPhysicalDeviceLegacyDitheringFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT struct {
-	LegacyVertexAttributes bool
+	LegacyVertexAttributes bool `json:"legacyVertexAttributes,omitempty"`
 }
 func (VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT) extension() string {
 	return "VK_EXT_legacy_vertex_attributes"
@@ -2189,12 +3673,12 @@ func (s VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT) enabledList() []C.siz
 	return list
 }
 type VkPhysicalDeviceLineRasterizationFeatures struct {
-	RectangularLines bool
-	BresenhamLines bool
-	SmoothLines bool
-	StippledRectangularLines bool
-	StippledBresenhamLines bool
-	StippledSmoothLines bool
+	RectangularLines bool `json:"rectangularLines,omitempty"`
+	BresenhamLines bool `json:"bresenhamLines,omitempty"`
+	SmoothLines bool `json:"smoothLines,omitempty"`
+	StippledRectangularLines bool `json:"stippledRectangularLines,omitempty"`
+	StippledBresenhamLines bool `json:"stippledBresenhamLines,omitempty"`
+	StippledSmoothLines bool `json:"stippledSmoothLines,omitempty"`
 }
 func (VkPhysicalDeviceLineRasterizationFeatures) extension() string {
 	return ""
@@ -2225,12 +3709,12 @@ func (s VkPhysicalDeviceLineRasterizationFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceLineRasterizationFeaturesEXT struct {
-	RectangularLines bool
-	BresenhamLines bool
-	SmoothLines bool
-	StippledRectangularLines bool
-	StippledBresenhamLines bool
-	StippledSmoothLines bool
+	RectangularLines bool `json:"rectangularLines,omitempty"`
+	BresenhamLines bool `json:"bresenhamLines,omitempty"`
+	SmoothLines bool `json:"smoothLines,omitempty"`
+	StippledRectangularLines bool `json:"stippledRectangularLines,omitempty"`
+	StippledBresenhamLines bool `json:"stippledBresenhamLines,omitempty"`
+	StippledSmoothLines bool `json:"stippledSmoothLines,omitempty"`
 }
 func (VkPhysicalDeviceLineRasterizationFeaturesEXT) extension() string {
 	return "VK_EXT_line_rasterization"
@@ -2261,12 +3745,12 @@ func (s VkPhysicalDeviceLineRasterizationFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceLineRasterizationFeaturesKHR struct {
-	RectangularLines bool
-	BresenhamLines bool
-	SmoothLines bool
-	StippledRectangularLines bool
-	StippledBresenhamLines bool
-	StippledSmoothLines bool
+	RectangularLines bool `json:"rectangularLines,omitempty"`
+	BresenhamLines bool `json:"bresenhamLines,omitempty"`
+	SmoothLines bool `json:"smoothLines,omitempty"`
+	StippledRectangularLines bool `json:"stippledRectangularLines,omitempty"`
+	StippledBresenhamLines bool `json:"stippledBresenhamLines,omitempty"`
+	StippledSmoothLines bool `json:"stippledSmoothLines,omitempty"`
 }
 func (VkPhysicalDeviceLineRasterizationFeaturesKHR) extension() string {
 	return "VK_KHR_line_rasterization"
@@ -2297,7 +3781,7 @@ func (s VkPhysicalDeviceLineRasterizationFeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceLinearColorAttachmentFeaturesNV struct {
-	LinearColorAttachment bool
+	LinearColorAttachment bool `json:"linearColorAttachment,omitempty"`
 }
 func (VkPhysicalDeviceLinearColorAttachmentFeaturesNV) extension() string {
 	return "VK_NV_linear_color_attachment"
@@ -2313,7 +3797,7 @@ func (s VkPhysicalDeviceLinearColorAttachmentFeaturesNV) enabledList() []C.size_
 	return list
 }
 type VkPhysicalDeviceMaintenance4Features struct {
-	Maintenance4 bool
+	Maintenance4 bool `json:"maintenance4,omitempty"`
 }
 func (VkPhysicalDeviceMaintenance4Features) extension() string {
 	return ""
@@ -2329,7 +3813,7 @@ func (s VkPhysicalDeviceMaintenance4Features) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceMaintenance5Features struct {
-	Maintenance5 bool
+	Maintenance5 bool `json:"maintenance5,omitempty"`
 }
 func (VkPhysicalDeviceMaintenance5Features) extension() string {
 	return ""
@@ -2345,7 +3829,7 @@ func (s VkPhysicalDeviceMaintenance5Features) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceMaintenance5FeaturesKHR struct {
-	Maintenance5 bool
+	Maintenance5 bool `json:"maintenance5,omitempty"`
 }
 func (VkPhysicalDeviceMaintenance5FeaturesKHR) extension() string {
 	return "VK_KHR_maintenance5"
@@ -2361,7 +3845,7 @@ func (s VkPhysicalDeviceMaintenance5FeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceMaintenance6Features struct {
-	Maintenance6 bool
+	Maintenance6 bool `json:"maintenance6,omitempty"`
 }
 func (VkPhysicalDeviceMaintenance6Features) extension() string {
 	return ""
@@ -2377,7 +3861,7 @@ func (s VkPhysicalDeviceMaintenance6Features) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceMaintenance6FeaturesKHR struct {
-	Maintenance6 bool
+	Maintenance6 bool `json:"maintenance6,omitempty"`
 }
 func (VkPhysicalDeviceMaintenance6FeaturesKHR) extension() string {
 	return "VK_KHR_maintenance6"
@@ -2393,7 +3877,7 @@ func (s VkPhysicalDeviceMaintenance6FeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceMaintenance7FeaturesKHR struct {
-	Maintenance7 bool
+	Maintenance7 bool `json:"maintenance7,omitempty"`
 }
 func (VkPhysicalDeviceMaintenance7FeaturesKHR) extension() string {
 	return "VK_KHR_maintenance7"
@@ -2409,7 +3893,7 @@ func (s VkPhysicalDeviceMaintenance7FeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceMaintenance8FeaturesKHR struct {
-	Maintenance8 bool
+	Maintenance8 bool `json:"maintenance8,omitempty"`
 }
 func (VkPhysicalDeviceMaintenance8FeaturesKHR) extension() string {
 	return "VK_KHR_maintenance8"
@@ -2425,7 +3909,7 @@ func (s VkPhysicalDeviceMaintenance8FeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceMaintenance9FeaturesKHR struct {
-	Maintenance9 bool
+	Maintenance9 bool `json:"maintenance9,omitempty"`
 }
 func (VkPhysicalDeviceMaintenance9FeaturesKHR) extension() string {
 	return "VK_KHR_maintenance9"
@@ -2441,9 +3925,9 @@ func (s VkPhysicalDeviceMaintenance9FeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceMapMemoryPlacedFeaturesEXT struct {
-	MemoryMapPlaced bool
-	MemoryMapRangePlaced bool
-	MemoryUnmapReserve bool
+	MemoryMapPlaced bool `json:"memoryMapPlaced,omitempty"`
+	MemoryMapRangePlaced bool `json:"memoryMapRangePlaced,omitempty"`
+	MemoryUnmapReserve bool `json:"memoryUnmapReserve,omitempty"`
 }
 func (VkPhysicalDeviceMapMemoryPlacedFeaturesEXT) extension() string {
 	return "VK_EXT_map_memory_placed"
@@ -2465,7 +3949,7 @@ func (s VkPhysicalDeviceMapMemoryPlacedFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceMemoryDecompressionFeaturesNV struct {
-	MemoryDecompression bool
+	MemoryDecompression bool `json:"memoryDecompression,omitempty"`
 }
 func (VkPhysicalDeviceMemoryDecompressionFeaturesNV) extension() string {
 	return "VK_NV_memory_decompression"
@@ -2481,7 +3965,7 @@ func (s VkPhysicalDeviceMemoryDecompressionFeaturesNV) enabledList() []C.size_t 
 	return list
 }
 type VkPhysicalDeviceMemoryPriorityFeaturesEXT struct {
-	MemoryPriority bool
+	MemoryPriority bool `json:"memoryPriority,omitempty"`
 }
 func (VkPhysicalDeviceMemoryPriorityFeaturesEXT) extension() string {
 	return "VK_EXT_memory_priority"
@@ -2497,11 +3981,11 @@ func (s VkPhysicalDeviceMemoryPriorityFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceMeshShaderFeaturesEXT struct {
-	TaskShader bool
-	MeshShader bool
-	MultiviewMeshShader bool
-	PrimitiveFragmentShadingRateMeshShader bool
-	MeshShaderQueries bool
+	TaskShader bool `json:"taskShader,omitempty"`
+	MeshShader bool `json:"meshShader,omitempty"`
+	MultiviewMeshShader bool `json:"multiviewMeshShader,omitempty"`
+	PrimitiveFragmentShadingRateMeshShader bool `json:"primitiveFragmentShadingRateMeshShader,omitempty"`
+	MeshShaderQueries bool `json:"meshShaderQueries,omitempty"`
 }
 func (VkPhysicalDeviceMeshShaderFeaturesEXT) extension() string {
 	return "VK_EXT_mesh_shader"
@@ -2529,8 +4013,8 @@ func (s VkPhysicalDeviceMeshShaderFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceMeshShaderFeaturesNV struct {
-	TaskShader bool
-	MeshShader bool
+	TaskShader bool `json:"taskShader,omitempty"`
+	MeshShader bool `json:"meshShader,omitempty"`
 }
 func (VkPhysicalDeviceMeshShaderFeaturesNV) extension() string {
 	return "VK_NV_mesh_shader"
@@ -2549,7 +4033,7 @@ func (s VkPhysicalDeviceMeshShaderFeaturesNV) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceMultiDrawFeaturesEXT struct {
-	MultiDraw bool
+	MultiDraw bool `json:"multiDraw,omitempty"`
 }
 func (VkPhysicalDeviceMultiDrawFeaturesEXT) extension() string {
 	return "VK_EXT_multi_draw"
@@ -2565,7 +4049,7 @@ func (s VkPhysicalDeviceMultiDrawFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT struct {
-	MultisampledRenderToSingleSampled bool
+	MultisampledRenderToSingleSampled bool `json:"multisampledRenderToSingleSampled,omitempty"`
 }
 func (VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT) extension() string {
 	return "VK_EXT_multisampled_render_to_single_sampled"
@@ -2581,9 +4065,9 @@ func (s VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT) enabledLis
 	return list
 }
 type VkPhysicalDeviceMultiviewFeatures struct {
-	Multiview bool
-	MultiviewGeometryShader bool
-	MultiviewTessellationShader bool
+	Multiview bool `json:"multiview,omitempty"`
+	MultiviewGeometryShader bool `json:"multiviewGeometryShader,omitempty"`
+	MultiviewTessellationShader bool `json:"multiviewTessellationShader,omitempty"`
 }
 func (VkPhysicalDeviceMultiviewFeatures) extension() string {
 	return ""
@@ -2605,7 +4089,7 @@ func (s VkPhysicalDeviceMultiviewFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM struct {
-	MultiviewPerViewRenderAreas bool
+	MultiviewPerViewRenderAreas bool `json:"multiviewPerViewRenderAreas,omitempty"`
 }
 func (VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM) extension() string {
 	return "VK_QCOM_multiview_per_view_render_areas"
@@ -2621,7 +4105,7 @@ func (s VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM) enabledList() [
 	return list
 }
 type VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM struct {
-	MultiviewPerViewViewports bool
+	MultiviewPerViewViewports bool `json:"multiviewPerViewViewports,omitempty"`
 }
 func (VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM) extension() string {
 	return "VK_QCOM_multiview_per_view_viewports"
@@ -2637,7 +4121,7 @@ func (s VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM) enabledList() []C
 	return list
 }
 type VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT struct {
-	MutableDescriptorType bool
+	MutableDescriptorType bool `json:"mutableDescriptorType,omitempty"`
 }
 func (VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT) extension() string {
 	return "VK_EXT_mutable_descriptor_type"
@@ -2653,7 +4137,7 @@ func (s VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT) enabledList() []C.size
 	return list
 }
 type VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE struct {
-	MutableDescriptorType bool
+	MutableDescriptorType bool `json:"mutableDescriptorType,omitempty"`
 }
 func (VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE) extension() string {
 	return "VK_VALVE_mutable_descriptor_type"
@@ -2669,9 +4153,9 @@ func (s VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE) enabledList() []C.si
 	return list
 }
 type VkPhysicalDeviceNestedCommandBufferFeaturesEXT struct {
-	NestedCommandBuffer bool
-	NestedCommandBufferRendering bool
-	NestedCommandBufferSimultaneousUse bool
+	NestedCommandBuffer bool `json:"nestedCommandBuffer,omitempty"`
+	NestedCommandBufferRendering bool `json:"nestedCommandBufferRendering,omitempty"`
+	NestedCommandBufferSimultaneousUse bool `json:"nestedCommandBufferSimultaneousUse,omitempty"`
 }
 func (VkPhysicalDeviceNestedCommandBufferFeaturesEXT) extension() string {
 	return "VK_EXT_nested_command_buffer"
@@ -2693,7 +4177,7 @@ func (s VkPhysicalDeviceNestedCommandBufferFeaturesEXT) enabledList() []C.size_t
 	return list
 }
 type VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT struct {
-	NonSeamlessCubeMap bool
+	NonSeamlessCubeMap bool `json:"nonSeamlessCubeMap,omitempty"`
 }
 func (VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT) extension() string {
 	return "VK_EXT_non_seamless_cube_map"
@@ -2709,9 +4193,9 @@ func (s VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT) enabledList() []C.size_t 
 	return list
 }
 type VkPhysicalDeviceOpacityMicromapFeaturesEXT struct {
-	Micromap bool
-	MicromapCaptureReplay bool
-	MicromapHostCommands bool
+	Micromap bool `json:"micromap,omitempty"`
+	MicromapCaptureReplay bool `json:"micromapCaptureReplay,omitempty"`
+	MicromapHostCommands bool `json:"micromapHostCommands,omitempty"`
 }
 func (VkPhysicalDeviceOpacityMicromapFeaturesEXT) extension() string {
 	return "VK_EXT_opacity_micromap"
@@ -2733,7 +4217,7 @@ func (s VkPhysicalDeviceOpacityMicromapFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceOpticalFlowFeaturesNV struct {
-	OpticalFlow bool
+	OpticalFlow bool `json:"opticalFlow,omitempty"`
 }
 func (VkPhysicalDeviceOpticalFlowFeaturesNV) extension() string {
 	return "VK_NV_optical_flow"
@@ -2749,7 +4233,7 @@ func (s VkPhysicalDeviceOpticalFlowFeaturesNV) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT struct {
-	PageableDeviceLocalMemory bool
+	PageableDeviceLocalMemory bool `json:"pageableDeviceLocalMemory,omitempty"`
 }
 func (VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT) extension() string {
 	return "VK_EXT_pageable_device_local_memory"
@@ -2765,7 +4249,7 @@ func (s VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT) enabledList() []C.
 	return list
 }
 type VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV struct {
-	PartitionedAccelerationStructure bool
+	PartitionedAccelerationStructure bool `json:"partitionedAccelerationStructure,omitempty"`
 }
 func (VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV) extension() string {
 	return "VK_NV_partitioned_acceleration_structure"
@@ -2781,8 +4265,8 @@ func (s VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV) enabledList(
 	return list
 }
 type VkPhysicalDevicePerStageDescriptorSetFeaturesNV struct {
-	PerStageDescriptorSet bool
-	DynamicPipelineLayout bool
+	PerStageDescriptorSet bool `json:"perStageDescriptorSet,omitempty"`
+	DynamicPipelineLayout bool `json:"dynamicPipelineLayout,omitempty"`
 }
 func (VkPhysicalDevicePerStageDescriptorSetFeaturesNV) extension() string {
 	return "VK_NV_per_stage_descriptor_set"
@@ -2801,8 +4285,8 @@ func (s VkPhysicalDevicePerStageDescriptorSetFeaturesNV) enabledList() []C.size_
 	return list
 }
 type VkPhysicalDevicePerformanceQueryFeaturesKHR struct {
-	PerformanceCounterQueryPools bool
-	PerformanceCounterMultipleQueryPools bool
+	PerformanceCounterQueryPools bool `json:"performanceCounterQueryPools,omitempty"`
+	PerformanceCounterMultipleQueryPools bool `json:"performanceCounterMultipleQueryPools,omitempty"`
 }
 func (VkPhysicalDevicePerformanceQueryFeaturesKHR) extension() string {
 	return "VK_KHR_performance_query"
@@ -2821,7 +4305,7 @@ func (s VkPhysicalDevicePerformanceQueryFeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDevicePipelineBinaryFeaturesKHR struct {
-	PipelineBinaries bool
+	PipelineBinaries bool `json:"pipelineBinaries,omitempty"`
 }
 func (VkPhysicalDevicePipelineBinaryFeaturesKHR) extension() string {
 	return "VK_KHR_pipeline_binary"
@@ -2837,7 +4321,7 @@ func (s VkPhysicalDevicePipelineBinaryFeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDevicePipelineCacheIncrementalModeFeaturesSEC struct {
-	PipelineCacheIncrementalMode bool
+	PipelineCacheIncrementalMode bool `json:"pipelineCacheIncrementalMode,omitempty"`
 }
 func (VkPhysicalDevicePipelineCacheIncrementalModeFeaturesSEC) extension() string {
 	return "VK_SEC_pipeline_cache_incremental_mode"
@@ -2853,7 +4337,7 @@ func (s VkPhysicalDevicePipelineCacheIncrementalModeFeaturesSEC) enabledList() [
 	return list
 }
 type VkPhysicalDevicePipelineCreationCacheControlFeatures struct {
-	PipelineCreationCacheControl bool
+	PipelineCreationCacheControl bool `json:"pipelineCreationCacheControl,omitempty"`
 }
 func (VkPhysicalDevicePipelineCreationCacheControlFeatures) extension() string {
 	return ""
@@ -2869,7 +4353,7 @@ func (s VkPhysicalDevicePipelineCreationCacheControlFeatures) enabledList() []C.
 	return list
 }
 type VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR struct {
-	PipelineExecutableInfo bool
+	PipelineExecutableInfo bool `json:"pipelineExecutableInfo,omitempty"`
 }
 func (VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR) extension() string {
 	return "VK_KHR_pipeline_executable_properties"
@@ -2885,7 +4369,7 @@ func (s VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR) enabledList() [
 	return list
 }
 type VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT struct {
-	PipelineLibraryGroupHandles bool
+	PipelineLibraryGroupHandles bool `json:"pipelineLibraryGroupHandles,omitempty"`
 }
 func (VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT) extension() string {
 	return "VK_EXT_pipeline_library_group_handles"
@@ -2901,7 +4385,7 @@ func (s VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT) enabledList() []
 	return list
 }
 type VkPhysicalDevicePipelineOpacityMicromapFeaturesARM struct {
-	PipelineOpacityMicromap bool
+	PipelineOpacityMicromap bool `json:"pipelineOpacityMicromap,omitempty"`
 }
 func (VkPhysicalDevicePipelineOpacityMicromapFeaturesARM) extension() string {
 	return "VK_ARM_pipeline_opacity_micromap"
@@ -2917,7 +4401,7 @@ func (s VkPhysicalDevicePipelineOpacityMicromapFeaturesARM) enabledList() []C.si
 	return list
 }
 type VkPhysicalDevicePipelinePropertiesFeaturesEXT struct {
-	PipelinePropertiesIdentifier bool
+	PipelinePropertiesIdentifier bool `json:"pipelinePropertiesIdentifier,omitempty"`
 }
 func (VkPhysicalDevicePipelinePropertiesFeaturesEXT) extension() string {
 	return "VK_EXT_pipeline_properties"
@@ -2933,7 +4417,7 @@ func (s VkPhysicalDevicePipelinePropertiesFeaturesEXT) enabledList() []C.size_t 
 	return list
 }
 type VkPhysicalDevicePipelineProtectedAccessFeatures struct {
-	PipelineProtectedAccess bool
+	PipelineProtectedAccess bool `json:"pipelineProtectedAccess,omitempty"`
 }
 func (VkPhysicalDevicePipelineProtectedAccessFeatures) extension() string {
 	return ""
@@ -2949,7 +4433,7 @@ func (s VkPhysicalDevicePipelineProtectedAccessFeatures) enabledList() []C.size_
 	return list
 }
 type VkPhysicalDevicePipelineProtectedAccessFeaturesEXT struct {
-	PipelineProtectedAccess bool
+	PipelineProtectedAccess bool `json:"pipelineProtectedAccess,omitempty"`
 }
 func (VkPhysicalDevicePipelineProtectedAccessFeaturesEXT) extension() string {
 	return "VK_EXT_pipeline_protected_access"
@@ -2965,7 +4449,7 @@ func (s VkPhysicalDevicePipelineProtectedAccessFeaturesEXT) enabledList() []C.si
 	return list
 }
 type VkPhysicalDevicePipelineRobustnessFeatures struct {
-	PipelineRobustness bool
+	PipelineRobustness bool `json:"pipelineRobustness,omitempty"`
 }
 func (VkPhysicalDevicePipelineRobustnessFeatures) extension() string {
 	return ""
@@ -2981,7 +4465,7 @@ func (s VkPhysicalDevicePipelineRobustnessFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDevicePipelineRobustnessFeaturesEXT struct {
-	PipelineRobustness bool
+	PipelineRobustness bool `json:"pipelineRobustness,omitempty"`
 }
 func (VkPhysicalDevicePipelineRobustnessFeaturesEXT) extension() string {
 	return "VK_EXT_pipeline_robustness"
@@ -2997,7 +4481,7 @@ func (s VkPhysicalDevicePipelineRobustnessFeaturesEXT) enabledList() []C.size_t 
 	return list
 }
 type VkPhysicalDevicePresentBarrierFeaturesNV struct {
-	PresentBarrier bool
+	PresentBarrier bool `json:"presentBarrier,omitempty"`
 }
 func (VkPhysicalDevicePresentBarrierFeaturesNV) extension() string {
 	return "VK_NV_present_barrier"
@@ -3013,7 +4497,7 @@ func (s VkPhysicalDevicePresentBarrierFeaturesNV) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDevicePresentId2FeaturesKHR struct {
-	PresentId2 bool
+	PresentId2 bool `json:"presentId2,omitempty"`
 }
 func (VkPhysicalDevicePresentId2FeaturesKHR) extension() string {
 	return "VK_KHR_present_id2"
@@ -3029,7 +4513,7 @@ func (s VkPhysicalDevicePresentId2FeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDevicePresentIdFeaturesKHR struct {
-	PresentId bool
+	PresentId bool `json:"presentId,omitempty"`
 }
 func (VkPhysicalDevicePresentIdFeaturesKHR) extension() string {
 	return "VK_KHR_present_id"
@@ -3045,7 +4529,7 @@ func (s VkPhysicalDevicePresentIdFeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT struct {
-	PresentModeFifoLatestReady bool
+	PresentModeFifoLatestReady bool `json:"presentModeFifoLatestReady,omitempty"`
 }
 func (VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT) extension() string {
 	return "VK_EXT_present_mode_fifo_latest_ready"
@@ -3061,7 +4545,7 @@ func (s VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT) enabledList() []C
 	return list
 }
 type VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR struct {
-	PresentModeFifoLatestReady bool
+	PresentModeFifoLatestReady bool `json:"presentModeFifoLatestReady,omitempty"`
 }
 func (VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR) extension() string {
 	return "VK_KHR_present_mode_fifo_latest_ready"
@@ -3077,7 +4561,7 @@ func (s VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR) enabledList() []C
 	return list
 }
 type VkPhysicalDevicePresentWait2FeaturesKHR struct {
-	PresentWait2 bool
+	PresentWait2 bool `json:"presentWait2,omitempty"`
 }
 func (VkPhysicalDevicePresentWait2FeaturesKHR) extension() string {
 	return "VK_KHR_present_wait2"
@@ -3093,7 +4577,7 @@ func (s VkPhysicalDevicePresentWait2FeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDevicePresentWaitFeaturesKHR struct {
-	PresentWait bool
+	PresentWait bool `json:"presentWait,omitempty"`
 }
 func (VkPhysicalDevicePresentWaitFeaturesKHR) extension() string {
 	return "VK_KHR_present_wait"
@@ -3109,8 +4593,8 @@ func (s VkPhysicalDevicePresentWaitFeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT struct {
-	PrimitiveTopologyListRestart bool
-	PrimitiveTopologyPatchListRestart bool
+	PrimitiveTopologyListRestart bool `json:"primitiveTopologyListRestart,omitempty"`
+	PrimitiveTopologyPatchListRestart bool `json:"primitiveTopologyPatchListRestart,omitempty"`
 }
 func (VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT) extension() string {
 	return "VK_EXT_primitive_topology_list_restart"
@@ -3129,9 +4613,9 @@ func (s VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT) enabledList() [
 	return list
 }
 type VkPhysicalDevicePrimitivesGeneratedQueryFeaturesEXT struct {
-	PrimitivesGeneratedQuery bool
-	PrimitivesGeneratedQueryWithRasterizerDiscard bool
-	PrimitivesGeneratedQueryWithNonZeroStreams bool
+	PrimitivesGeneratedQuery bool `json:"primitivesGeneratedQuery,omitempty"`
+	PrimitivesGeneratedQueryWithRasterizerDiscard bool `json:"primitivesGeneratedQueryWithRasterizerDiscard,omitempty"`
+	PrimitivesGeneratedQueryWithNonZeroStreams bool `json:"primitivesGeneratedQueryWithNonZeroStreams,omitempty"`
 }
 func (VkPhysicalDevicePrimitivesGeneratedQueryFeaturesEXT) extension() string {
 	return "VK_EXT_primitives_generated_query"
@@ -3153,7 +4637,7 @@ func (s VkPhysicalDevicePrimitivesGeneratedQueryFeaturesEXT) enabledList() []C.s
 	return list
 }
 type VkPhysicalDevicePrivateDataFeatures struct {
-	PrivateData bool
+	PrivateData bool `json:"privateData,omitempty"`
 }
 func (VkPhysicalDevicePrivateDataFeatures) extension() string {
 	return ""
@@ -3169,7 +4653,7 @@ func (s VkPhysicalDevicePrivateDataFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceProtectedMemoryFeatures struct {
-	ProtectedMemory bool
+	ProtectedMemory bool `json:"protectedMemory,omitempty"`
 }
 func (VkPhysicalDeviceProtectedMemoryFeatures) extension() string {
 	return ""
@@ -3185,8 +4669,8 @@ func (s VkPhysicalDeviceProtectedMemoryFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceProvokingVertexFeaturesEXT struct {
-	ProvokingVertexLast bool
-	TransformFeedbackPreservesProvokingVertex bool
+	ProvokingVertexLast bool `json:"provokingVertexLast,omitempty"`
+	TransformFeedbackPreservesProvokingVertex bool `json:"transformFeedbackPreservesProvokingVertex,omitempty"`
 }
 func (VkPhysicalDeviceProvokingVertexFeaturesEXT) extension() string {
 	return "VK_EXT_provoking_vertex"
@@ -3205,7 +4689,7 @@ func (s VkPhysicalDeviceProvokingVertexFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceRGBA10X6FormatsFeaturesEXT struct {
-	FormatRgba10x6WithoutYCbCrSampler bool
+	FormatRgba10x6WithoutYCbCrSampler bool `json:"formatRgba10x6WithoutYCbCrSampler,omitempty"`
 }
 func (VkPhysicalDeviceRGBA10X6FormatsFeaturesEXT) extension() string {
 	return "VK_EXT_rgba10x6_formats"
@@ -3221,9 +4705,9 @@ func (s VkPhysicalDeviceRGBA10X6FormatsFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM struct {
-	RasterizationOrderColorAttachmentAccess bool
-	RasterizationOrderDepthAttachmentAccess bool
-	RasterizationOrderStencilAttachmentAccess bool
+	RasterizationOrderColorAttachmentAccess bool `json:"rasterizationOrderColorAttachmentAccess,omitempty"`
+	RasterizationOrderDepthAttachmentAccess bool `json:"rasterizationOrderDepthAttachmentAccess,omitempty"`
+	RasterizationOrderStencilAttachmentAccess bool `json:"rasterizationOrderStencilAttachmentAccess,omitempty"`
 }
 func (VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM) extension() string {
 	return "VK_ARM_rasterization_order_attachment_access"
@@ -3245,9 +4729,9 @@ func (s VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM) enabledLi
 	return list
 }
 type VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT struct {
-	RasterizationOrderColorAttachmentAccess bool
-	RasterizationOrderDepthAttachmentAccess bool
-	RasterizationOrderStencilAttachmentAccess bool
+	RasterizationOrderColorAttachmentAccess bool `json:"rasterizationOrderColorAttachmentAccess,omitempty"`
+	RasterizationOrderDepthAttachmentAccess bool `json:"rasterizationOrderDepthAttachmentAccess,omitempty"`
+	RasterizationOrderStencilAttachmentAccess bool `json:"rasterizationOrderStencilAttachmentAccess,omitempty"`
 }
 func (VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT) extension() string {
 	return "VK_EXT_rasterization_order_attachment_access"
@@ -3269,7 +4753,7 @@ func (s VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT) enabledLi
 	return list
 }
 type VkPhysicalDeviceRawAccessChainsFeaturesNV struct {
-	ShaderRawAccessChains bool
+	ShaderRawAccessChains bool `json:"shaderRawAccessChains,omitempty"`
 }
 func (VkPhysicalDeviceRawAccessChainsFeaturesNV) extension() string {
 	return "VK_NV_raw_access_chains"
@@ -3285,7 +4769,7 @@ func (s VkPhysicalDeviceRawAccessChainsFeaturesNV) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceRayQueryFeaturesKHR struct {
-	RayQuery bool
+	RayQuery bool `json:"rayQuery,omitempty"`
 }
 func (VkPhysicalDeviceRayQueryFeaturesKHR) extension() string {
 	return "VK_KHR_ray_query"
@@ -3301,7 +4785,7 @@ func (s VkPhysicalDeviceRayQueryFeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV struct {
-	RayTracingInvocationReorder bool
+	RayTracingInvocationReorder bool `json:"rayTracingInvocationReorder,omitempty"`
 }
 func (VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV) extension() string {
 	return "VK_NV_ray_tracing_invocation_reorder"
@@ -3317,8 +4801,8 @@ func (s VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV) enabledList() []C
 	return list
 }
 type VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV struct {
-	Spheres bool
-	LinearSweptSpheres bool
+	Spheres bool `json:"spheres,omitempty"`
+	LinearSweptSpheres bool `json:"linearSweptSpheres,omitempty"`
 }
 func (VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV) extension() string {
 	return "VK_NV_ray_tracing_linear_swept_spheres"
@@ -3337,8 +4821,8 @@ func (s VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV) enabledList() []
 	return list
 }
 type VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR struct {
-	RayTracingMaintenance1 bool
-	RayTracingPipelineTraceRaysIndirect2 bool
+	RayTracingMaintenance1 bool `json:"rayTracingMaintenance1,omitempty"`
+	RayTracingPipelineTraceRaysIndirect2 bool `json:"rayTracingPipelineTraceRaysIndirect2,omitempty"`
 }
 func (VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR) extension() string {
 	return "VK_KHR_ray_tracing_maintenance1"
@@ -3357,8 +4841,8 @@ func (s VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR) enabledList() []C.siz
 	return list
 }
 type VkPhysicalDeviceRayTracingMotionBlurFeaturesNV struct {
-	RayTracingMotionBlur bool
-	RayTracingMotionBlurPipelineTraceRaysIndirect bool
+	RayTracingMotionBlur bool `json:"rayTracingMotionBlur,omitempty"`
+	RayTracingMotionBlurPipelineTraceRaysIndirect bool `json:"rayTracingMotionBlurPipelineTraceRaysIndirect,omitempty"`
 }
 func (VkPhysicalDeviceRayTracingMotionBlurFeaturesNV) extension() string {
 	return "VK_NV_ray_tracing_motion_blur"
@@ -3377,11 +4861,11 @@ func (s VkPhysicalDeviceRayTracingMotionBlurFeaturesNV) enabledList() []C.size_t
 	return list
 }
 type VkPhysicalDeviceRayTracingPipelineFeaturesKHR struct {
-	RayTracingPipeline bool
-	RayTracingPipelineShaderGroupHandleCaptureReplay bool
-	RayTracingPipelineShaderGroupHandleCaptureReplayMixed bool
-	RayTracingPipelineTraceRaysIndirect bool
-	RayTraversalPrimitiveCulling bool
+	RayTracingPipeline bool `json:"rayTracingPipeline,omitempty"`
+	RayTracingPipelineShaderGroupHandleCaptureReplay bool `json:"rayTracingPipelineShaderGroupHandleCaptureReplay,omitempty"`
+	RayTracingPipelineShaderGroupHandleCaptureReplayMixed bool `json:"rayTracingPipelineShaderGroupHandleCaptureReplayMixed,omitempty"`
+	RayTracingPipelineTraceRaysIndirect bool `json:"rayTracingPipelineTraceRaysIndirect,omitempty"`
+	RayTraversalPrimitiveCulling bool `json:"rayTraversalPrimitiveCulling,omitempty"`
 }
 func (VkPhysicalDeviceRayTracingPipelineFeaturesKHR) extension() string {
 	return "VK_KHR_ray_tracing_pipeline"
@@ -3409,7 +4893,7 @@ func (s VkPhysicalDeviceRayTracingPipelineFeaturesKHR) enabledList() []C.size_t 
 	return list
 }
 type VkPhysicalDeviceRayTracingPositionFetchFeaturesKHR struct {
-	RayTracingPositionFetch bool
+	RayTracingPositionFetch bool `json:"rayTracingPositionFetch,omitempty"`
 }
 func (VkPhysicalDeviceRayTracingPositionFetchFeaturesKHR) extension() string {
 	return "VK_KHR_ray_tracing_position_fetch"
@@ -3425,7 +4909,7 @@ func (s VkPhysicalDeviceRayTracingPositionFetchFeaturesKHR) enabledList() []C.si
 	return list
 }
 type VkPhysicalDeviceRayTracingValidationFeaturesNV struct {
-	RayTracingValidation bool
+	RayTracingValidation bool `json:"rayTracingValidation,omitempty"`
 }
 func (VkPhysicalDeviceRayTracingValidationFeaturesNV) extension() string {
 	return "VK_NV_ray_tracing_validation"
@@ -3441,7 +4925,7 @@ func (s VkPhysicalDeviceRayTracingValidationFeaturesNV) enabledList() []C.size_t
 	return list
 }
 type VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG struct {
-	RelaxedLineRasterization bool
+	RelaxedLineRasterization bool `json:"relaxedLineRasterization,omitempty"`
 }
 func (VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG) extension() string {
 	return "VK_IMG_relaxed_line_rasterization"
@@ -3457,7 +4941,7 @@ func (s VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG) enabledList() []C.s
 	return list
 }
 type VkPhysicalDeviceRenderPassStripedFeaturesARM struct {
-	RenderPassStriped bool
+	RenderPassStriped bool `json:"renderPassStriped,omitempty"`
 }
 func (VkPhysicalDeviceRenderPassStripedFeaturesARM) extension() string {
 	return "VK_ARM_render_pass_striped"
@@ -3473,7 +4957,7 @@ func (s VkPhysicalDeviceRenderPassStripedFeaturesARM) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV struct {
-	RepresentativeFragmentTest bool
+	RepresentativeFragmentTest bool `json:"representativeFragmentTest,omitempty"`
 }
 func (VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV) extension() string {
 	return "VK_NV_representative_fragment_test"
@@ -3489,9 +4973,9 @@ func (s VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV) enabledList() []C.
 	return list
 }
 type VkPhysicalDeviceRobustness2FeaturesEXT struct {
-	RobustBufferAccess2 bool
-	RobustImageAccess2 bool
-	NullDescriptor bool
+	RobustBufferAccess2 bool `json:"robustBufferAccess2,omitempty"`
+	RobustImageAccess2 bool `json:"robustImageAccess2,omitempty"`
+	NullDescriptor bool `json:"nullDescriptor,omitempty"`
 }
 func (VkPhysicalDeviceRobustness2FeaturesEXT) extension() string {
 	return "VK_EXT_robustness2"
@@ -3513,9 +4997,9 @@ func (s VkPhysicalDeviceRobustness2FeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceRobustness2FeaturesKHR struct {
-	RobustBufferAccess2 bool
-	RobustImageAccess2 bool
-	NullDescriptor bool
+	RobustBufferAccess2 bool `json:"robustBufferAccess2,omitempty"`
+	RobustImageAccess2 bool `json:"robustImageAccess2,omitempty"`
+	NullDescriptor bool `json:"nullDescriptor,omitempty"`
 }
 func (VkPhysicalDeviceRobustness2FeaturesKHR) extension() string {
 	return "VK_KHR_robustness2"
@@ -3537,7 +5021,7 @@ func (s VkPhysicalDeviceRobustness2FeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceSamplerYCbCrConversionFeatures struct {
-	SamplerYCbCrConversion bool
+	SamplerYCbCrConversion bool `json:"samplerYcbcrConversion,omitempty"`
 }
 func (VkPhysicalDeviceSamplerYCbCrConversionFeatures) extension() string {
 	return ""
@@ -3553,7 +5037,7 @@ func (s VkPhysicalDeviceSamplerYCbCrConversionFeatures) enabledList() []C.size_t
 	return list
 }
 type VkPhysicalDeviceScalarBlockLayoutFeatures struct {
-	ScalarBlockLayout bool
+	ScalarBlockLayout bool `json:"scalarBlockLayout,omitempty"`
 }
 func (VkPhysicalDeviceScalarBlockLayoutFeatures) extension() string {
 	return ""
@@ -3569,7 +5053,7 @@ func (s VkPhysicalDeviceScalarBlockLayoutFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceSchedulingControlsFeaturesARM struct {
-	SchedulingControls bool
+	SchedulingControls bool `json:"schedulingControls,omitempty"`
 }
 func (VkPhysicalDeviceSchedulingControlsFeaturesARM) extension() string {
 	return "VK_ARM_scheduling_controls"
@@ -3585,7 +5069,7 @@ func (s VkPhysicalDeviceSchedulingControlsFeaturesARM) enabledList() []C.size_t 
 	return list
 }
 type VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures struct {
-	SeparateDepthStencilLayouts bool
+	SeparateDepthStencilLayouts bool `json:"separateDepthStencilLayouts,omitempty"`
 }
 func (VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures) extension() string {
 	return ""
@@ -3601,7 +5085,7 @@ func (s VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures) enabledList() []C.s
 	return list
 }
 type VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV struct {
-	ShaderFloat16VectorAtomics bool
+	ShaderFloat16VectorAtomics bool `json:"shaderFloat16VectorAtomics,omitempty"`
 }
 func (VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV) extension() string {
 	return "VK_NV_shader_atomic_float16_vector"
@@ -3617,18 +5101,18 @@ func (s VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV) enabledList() []C.s
 	return list
 }
 type VkPhysicalDeviceShaderAtomicFloat2FeaturesEXT struct {
-	ShaderBufferFloat16Atomics bool
-	ShaderBufferFloat16AtomicAdd bool
-	ShaderBufferFloat16AtomicMinMax bool
-	ShaderBufferFloat32AtomicMinMax bool
-	ShaderBufferFloat64AtomicMinMax bool
-	ShaderSharedFloat16Atomics bool
-	ShaderSharedFloat16AtomicAdd bool
-	ShaderSharedFloat16AtomicMinMax bool
-	ShaderSharedFloat32AtomicMinMax bool
-	ShaderSharedFloat64AtomicMinMax bool
-	ShaderImageFloat32AtomicMinMax bool
-	SparseImageFloat32AtomicMinMax bool
+	ShaderBufferFloat16Atomics bool `json:"shaderBufferFloat16Atomics,omitempty"`
+	ShaderBufferFloat16AtomicAdd bool `json:"shaderBufferFloat16AtomicAdd,omitempty"`
+	ShaderBufferFloat16AtomicMinMax bool `json:"shaderBufferFloat16AtomicMinMax,omitempty"`
+	ShaderBufferFloat32AtomicMinMax bool `json:"shaderBufferFloat32AtomicMinMax,omitempty"`
+	ShaderBufferFloat64AtomicMinMax bool `json:"shaderBufferFloat64AtomicMinMax,omitempty"`
+	ShaderSharedFloat16Atomics bool `json:"shaderSharedFloat16Atomics,omitempty"`
+	ShaderSharedFloat16AtomicAdd bool `json:"shaderSharedFloat16AtomicAdd,omitempty"`
+	ShaderSharedFloat16AtomicMinMax bool `json:"shaderSharedFloat16AtomicMinMax,omitempty"`
+	ShaderSharedFloat32AtomicMinMax bool `json:"shaderSharedFloat32AtomicMinMax,omitempty"`
+	ShaderSharedFloat64AtomicMinMax bool `json:"shaderSharedFloat64AtomicMinMax,omitempty"`
+	ShaderImageFloat32AtomicMinMax bool `json:"shaderImageFloat32AtomicMinMax,omitempty"`
+	SparseImageFloat32AtomicMinMax bool `json:"sparseImageFloat32AtomicMinMax,omitempty"`
 }
 func (VkPhysicalDeviceShaderAtomicFloat2FeaturesEXT) extension() string {
 	return "VK_EXT_shader_atomic_float2"
@@ -3677,18 +5161,18 @@ func (s VkPhysicalDeviceShaderAtomicFloat2FeaturesEXT) enabledList() []C.size_t 
 	return list
 }
 type VkPhysicalDeviceShaderAtomicFloatFeaturesEXT struct {
-	ShaderBufferFloat32Atomics bool
-	ShaderBufferFloat32AtomicAdd bool
-	ShaderBufferFloat64Atomics bool
-	ShaderBufferFloat64AtomicAdd bool
-	ShaderSharedFloat32Atomics bool
-	ShaderSharedFloat32AtomicAdd bool
-	ShaderSharedFloat64Atomics bool
-	ShaderSharedFloat64AtomicAdd bool
-	ShaderImageFloat32Atomics bool
-	ShaderImageFloat32AtomicAdd bool
-	SparseImageFloat32Atomics bool
-	SparseImageFloat32AtomicAdd bool
+	ShaderBufferFloat32Atomics bool `json:"shaderBufferFloat32Atomics,omitempty"`
+	ShaderBufferFloat32AtomicAdd bool `json:"shaderBufferFloat32AtomicAdd,omitempty"`
+	ShaderBufferFloat64Atomics bool `json:"shaderBufferFloat64Atomics,omitempty"`
+	ShaderBufferFloat64AtomicAdd bool `json:"shaderBufferFloat64AtomicAdd,omitempty"`
+	ShaderSharedFloat32Atomics bool `json:"shaderSharedFloat32Atomics,omitempty"`
+	ShaderSharedFloat32AtomicAdd bool `json:"shaderSharedFloat32AtomicAdd,omitempty"`
+	ShaderSharedFloat64Atomics bool `json:"shaderSharedFloat64Atomics,omitempty"`
+	ShaderSharedFloat64AtomicAdd bool `json:"shaderSharedFloat64AtomicAdd,omitempty"`
+	ShaderImageFloat32Atomics bool `json:"shaderImageFloat32Atomics,omitempty"`
+	ShaderImageFloat32AtomicAdd bool `json:"shaderImageFloat32AtomicAdd,omitempty"`
+	SparseImageFloat32Atomics bool `json:"sparseImageFloat32Atomics,omitempty"`
+	SparseImageFloat32AtomicAdd bool `json:"sparseImageFloat32AtomicAdd,omitempty"`
 }
 func (VkPhysicalDeviceShaderAtomicFloatFeaturesEXT) extension() string {
 	return "VK_EXT_shader_atomic_float"
@@ -3737,8 +5221,8 @@ func (s VkPhysicalDeviceShaderAtomicFloatFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceShaderAtomicInt64Features struct {
-	ShaderBufferInt64Atomics bool
-	ShaderSharedInt64Atomics bool
+	ShaderBufferInt64Atomics bool `json:"shaderBufferInt64Atomics,omitempty"`
+	ShaderSharedInt64Atomics bool `json:"shaderSharedInt64Atomics,omitempty"`
 }
 func (VkPhysicalDeviceShaderAtomicInt64Features) extension() string {
 	return ""
@@ -3757,9 +5241,9 @@ func (s VkPhysicalDeviceShaderAtomicInt64Features) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceShaderBfloat16FeaturesKHR struct {
-	ShaderBFloat16Type bool
-	ShaderBFloat16DotProduct bool
-	ShaderBFloat16CooperativeMatrix bool
+	ShaderBFloat16Type bool `json:"shaderBFloat16Type,omitempty"`
+	ShaderBFloat16DotProduct bool `json:"shaderBFloat16DotProduct,omitempty"`
+	ShaderBFloat16CooperativeMatrix bool `json:"shaderBFloat16CooperativeMatrix,omitempty"`
 }
 func (VkPhysicalDeviceShaderBfloat16FeaturesKHR) extension() string {
 	return "VK_KHR_shader_bfloat16"
@@ -3781,8 +5265,8 @@ func (s VkPhysicalDeviceShaderBfloat16FeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceShaderClockFeaturesKHR struct {
-	ShaderSubgroupClock bool
-	ShaderDeviceClock bool
+	ShaderSubgroupClock bool `json:"shaderSubgroupClock,omitempty"`
+	ShaderDeviceClock bool `json:"shaderDeviceClock,omitempty"`
 }
 func (VkPhysicalDeviceShaderClockFeaturesKHR) extension() string {
 	return "VK_KHR_shader_clock"
@@ -3801,7 +5285,7 @@ func (s VkPhysicalDeviceShaderClockFeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM struct {
-	ShaderCoreBuiltins bool
+	ShaderCoreBuiltins bool `json:"shaderCoreBuiltins,omitempty"`
 }
 func (VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM) extension() string {
 	return "VK_ARM_shader_core_builtins"
@@ -3817,7 +5301,7 @@ func (s VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM) enabledList() []C.size_t 
 	return list
 }
 type VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures struct {
-	ShaderDemoteToHelperInvocation bool
+	ShaderDemoteToHelperInvocation bool `json:"shaderDemoteToHelperInvocation,omitempty"`
 }
 func (VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures) extension() string {
 	return ""
@@ -3833,7 +5317,7 @@ func (s VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures) enabledList() []
 	return list
 }
 type VkPhysicalDeviceShaderDrawParametersFeatures struct {
-	ShaderDrawParameters bool
+	ShaderDrawParameters bool `json:"shaderDrawParameters,omitempty"`
 }
 func (VkPhysicalDeviceShaderDrawParametersFeatures) extension() string {
 	return ""
@@ -3849,7 +5333,7 @@ func (s VkPhysicalDeviceShaderDrawParametersFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD struct {
-	ShaderEarlyAndLateFragmentTests bool
+	ShaderEarlyAndLateFragmentTests bool `json:"shaderEarlyAndLateFragmentTests,omitempty"`
 }
 func (VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD) extension() string {
 	return "VK_AMD_shader_early_and_late_fragment_tests"
@@ -3865,7 +5349,7 @@ func (s VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD) enabledList(
 	return list
 }
 type VkPhysicalDeviceShaderExpectAssumeFeatures struct {
-	ShaderExpectAssume bool
+	ShaderExpectAssume bool `json:"shaderExpectAssume,omitempty"`
 }
 func (VkPhysicalDeviceShaderExpectAssumeFeatures) extension() string {
 	return ""
@@ -3881,7 +5365,7 @@ func (s VkPhysicalDeviceShaderExpectAssumeFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceShaderExpectAssumeFeaturesKHR struct {
-	ShaderExpectAssume bool
+	ShaderExpectAssume bool `json:"shaderExpectAssume,omitempty"`
 }
 func (VkPhysicalDeviceShaderExpectAssumeFeaturesKHR) extension() string {
 	return "VK_KHR_shader_expect_assume"
@@ -3897,8 +5381,8 @@ func (s VkPhysicalDeviceShaderExpectAssumeFeaturesKHR) enabledList() []C.size_t 
 	return list
 }
 type VkPhysicalDeviceShaderFloat16Int8Features struct {
-	ShaderFloat16 bool
-	ShaderInt8 bool
+	ShaderFloat16 bool `json:"shaderFloat16,omitempty"`
+	ShaderInt8 bool `json:"shaderInt8,omitempty"`
 }
 func (VkPhysicalDeviceShaderFloat16Int8Features) extension() string {
 	return ""
@@ -3917,8 +5401,8 @@ func (s VkPhysicalDeviceShaderFloat16Int8Features) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceShaderFloat8FeaturesEXT struct {
-	ShaderFloat8 bool
-	ShaderFloat8CooperativeMatrix bool
+	ShaderFloat8 bool `json:"shaderFloat8,omitempty"`
+	ShaderFloat8CooperativeMatrix bool `json:"shaderFloat8CooperativeMatrix,omitempty"`
 }
 func (VkPhysicalDeviceShaderFloat8FeaturesEXT) extension() string {
 	return "VK_EXT_shader_float8"
@@ -3937,7 +5421,7 @@ func (s VkPhysicalDeviceShaderFloat8FeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceShaderFloatControls2Features struct {
-	ShaderFloatControls2 bool
+	ShaderFloatControls2 bool `json:"shaderFloatControls2,omitempty"`
 }
 func (VkPhysicalDeviceShaderFloatControls2Features) extension() string {
 	return ""
@@ -3953,7 +5437,7 @@ func (s VkPhysicalDeviceShaderFloatControls2Features) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceShaderFloatControls2FeaturesKHR struct {
-	ShaderFloatControls2 bool
+	ShaderFloatControls2 bool `json:"shaderFloatControls2,omitempty"`
 }
 func (VkPhysicalDeviceShaderFloatControls2FeaturesKHR) extension() string {
 	return "VK_KHR_shader_float_controls2"
@@ -3969,8 +5453,8 @@ func (s VkPhysicalDeviceShaderFloatControls2FeaturesKHR) enabledList() []C.size_
 	return list
 }
 type VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT struct {
-	ShaderImageInt64Atomics bool
-	SparseImageInt64Atomics bool
+	ShaderImageInt64Atomics bool `json:"shaderImageInt64Atomics,omitempty"`
+	SparseImageInt64Atomics bool `json:"sparseImageInt64Atomics,omitempty"`
 }
 func (VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT) extension() string {
 	return "VK_EXT_shader_image_atomic_int64"
@@ -3989,7 +5473,7 @@ func (s VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT) enabledList() []C.siz
 	return list
 }
 type VkPhysicalDeviceShaderImageFootprintFeaturesNV struct {
-	ImageFootprint bool
+	ImageFootprint bool `json:"imageFootprint,omitempty"`
 }
 func (VkPhysicalDeviceShaderImageFootprintFeaturesNV) extension() string {
 	return "VK_NV_shader_image_footprint"
@@ -4005,7 +5489,7 @@ func (s VkPhysicalDeviceShaderImageFootprintFeaturesNV) enabledList() []C.size_t
 	return list
 }
 type VkPhysicalDeviceShaderIntegerDotProductFeatures struct {
-	ShaderIntegerDotProduct bool
+	ShaderIntegerDotProduct bool `json:"shaderIntegerDotProduct,omitempty"`
 }
 func (VkPhysicalDeviceShaderIntegerDotProductFeatures) extension() string {
 	return ""
@@ -4021,7 +5505,7 @@ func (s VkPhysicalDeviceShaderIntegerDotProductFeatures) enabledList() []C.size_
 	return list
 }
 type VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL struct {
-	ShaderIntegerFunctions2 bool
+	ShaderIntegerFunctions2 bool `json:"shaderIntegerFunctions2,omitempty"`
 }
 func (VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL) extension() string {
 	return "VK_INTEL_shader_integer_functions2"
@@ -4037,7 +5521,7 @@ func (s VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL) enabledList() []C.
 	return list
 }
 type VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR struct {
-	ShaderMaximalReconvergence bool
+	ShaderMaximalReconvergence bool `json:"shaderMaximalReconvergence,omitempty"`
 }
 func (VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR) extension() string {
 	return "VK_KHR_shader_maximal_reconvergence"
@@ -4053,7 +5537,7 @@ func (s VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR) enabledList() []C
 	return list
 }
 type VkPhysicalDeviceShaderModuleIdentifierFeaturesEXT struct {
-	ShaderModuleIdentifier bool
+	ShaderModuleIdentifier bool `json:"shaderModuleIdentifier,omitempty"`
 }
 func (VkPhysicalDeviceShaderModuleIdentifierFeaturesEXT) extension() string {
 	return "VK_EXT_shader_module_identifier"
@@ -4069,7 +5553,7 @@ func (s VkPhysicalDeviceShaderModuleIdentifierFeaturesEXT) enabledList() []C.siz
 	return list
 }
 type VkPhysicalDeviceShaderObjectFeaturesEXT struct {
-	ShaderObject bool
+	ShaderObject bool `json:"shaderObject,omitempty"`
 }
 func (VkPhysicalDeviceShaderObjectFeaturesEXT) extension() string {
 	return "VK_EXT_shader_object"
@@ -4085,7 +5569,7 @@ func (s VkPhysicalDeviceShaderObjectFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceShaderQuadControlFeaturesKHR struct {
-	ShaderQuadControl bool
+	ShaderQuadControl bool `json:"shaderQuadControl,omitempty"`
 }
 func (VkPhysicalDeviceShaderQuadControlFeaturesKHR) extension() string {
 	return "VK_KHR_shader_quad_control"
@@ -4101,7 +5585,7 @@ func (s VkPhysicalDeviceShaderQuadControlFeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceShaderRelaxedExtendedInstructionFeaturesKHR struct {
-	ShaderRelaxedExtendedInstruction bool
+	ShaderRelaxedExtendedInstruction bool `json:"shaderRelaxedExtendedInstruction,omitempty"`
 }
 func (VkPhysicalDeviceShaderRelaxedExtendedInstructionFeaturesKHR) extension() string {
 	return "VK_KHR_shader_relaxed_extended_instruction"
@@ -4117,7 +5601,7 @@ func (s VkPhysicalDeviceShaderRelaxedExtendedInstructionFeaturesKHR) enabledList
 	return list
 }
 type VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT struct {
-	ShaderReplicatedComposites bool
+	ShaderReplicatedComposites bool `json:"shaderReplicatedComposites,omitempty"`
 }
 func (VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT) extension() string {
 	return "VK_EXT_shader_replicated_composites"
@@ -4133,7 +5617,7 @@ func (s VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT) enabledList() []C
 	return list
 }
 type VkPhysicalDeviceShaderSMBuiltinsFeaturesNV struct {
-	ShaderSMBuiltins bool
+	ShaderSMBuiltins bool `json:"shaderSMBuiltins,omitempty"`
 }
 func (VkPhysicalDeviceShaderSMBuiltinsFeaturesNV) extension() string {
 	return "VK_NV_shader_sm_builtins"
@@ -4149,7 +5633,7 @@ func (s VkPhysicalDeviceShaderSMBuiltinsFeaturesNV) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures struct {
-	ShaderSubgroupExtendedTypes bool
+	ShaderSubgroupExtendedTypes bool `json:"shaderSubgroupExtendedTypes,omitempty"`
 }
 func (VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures) extension() string {
 	return ""
@@ -4165,8 +5649,8 @@ func (s VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures) enabledList() []C.s
 	return list
 }
 type VkPhysicalDeviceShaderSubgroupRotateFeatures struct {
-	ShaderSubgroupRotate bool
-	ShaderSubgroupRotateClustered bool
+	ShaderSubgroupRotate bool `json:"shaderSubgroupRotate,omitempty"`
+	ShaderSubgroupRotateClustered bool `json:"shaderSubgroupRotateClustered,omitempty"`
 }
 func (VkPhysicalDeviceShaderSubgroupRotateFeatures) extension() string {
 	return ""
@@ -4185,8 +5669,8 @@ func (s VkPhysicalDeviceShaderSubgroupRotateFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceShaderSubgroupRotateFeaturesKHR struct {
-	ShaderSubgroupRotate bool
-	ShaderSubgroupRotateClustered bool
+	ShaderSubgroupRotate bool `json:"shaderSubgroupRotate,omitempty"`
+	ShaderSubgroupRotateClustered bool `json:"shaderSubgroupRotateClustered,omitempty"`
 }
 func (VkPhysicalDeviceShaderSubgroupRotateFeaturesKHR) extension() string {
 	return "VK_KHR_shader_subgroup_rotate"
@@ -4205,7 +5689,7 @@ func (s VkPhysicalDeviceShaderSubgroupRotateFeaturesKHR) enabledList() []C.size_
 	return list
 }
 type VkPhysicalDeviceShaderSubgroupUniformControlFlowFeaturesKHR struct {
-	ShaderSubgroupUniformControlFlow bool
+	ShaderSubgroupUniformControlFlow bool `json:"shaderSubgroupUniformControlFlow,omitempty"`
 }
 func (VkPhysicalDeviceShaderSubgroupUniformControlFlowFeaturesKHR) extension() string {
 	return "VK_KHR_shader_subgroup_uniform_control_flow"
@@ -4221,7 +5705,7 @@ func (s VkPhysicalDeviceShaderSubgroupUniformControlFlowFeaturesKHR) enabledList
 	return list
 }
 type VkPhysicalDeviceShaderTerminateInvocationFeatures struct {
-	ShaderTerminateInvocation bool
+	ShaderTerminateInvocation bool `json:"shaderTerminateInvocation,omitempty"`
 }
 func (VkPhysicalDeviceShaderTerminateInvocationFeatures) extension() string {
 	return ""
@@ -4237,9 +5721,9 @@ func (s VkPhysicalDeviceShaderTerminateInvocationFeatures) enabledList() []C.siz
 	return list
 }
 type VkPhysicalDeviceShaderTileImageFeaturesEXT struct {
-	ShaderTileImageColorReadAccess bool
-	ShaderTileImageDepthReadAccess bool
-	ShaderTileImageStencilReadAccess bool
+	ShaderTileImageColorReadAccess bool `json:"shaderTileImageColorReadAccess,omitempty"`
+	ShaderTileImageDepthReadAccess bool `json:"shaderTileImageDepthReadAccess,omitempty"`
+	ShaderTileImageStencilReadAccess bool `json:"shaderTileImageStencilReadAccess,omitempty"`
 }
 func (VkPhysicalDeviceShaderTileImageFeaturesEXT) extension() string {
 	return "VK_EXT_shader_tile_image"
@@ -4261,8 +5745,8 @@ func (s VkPhysicalDeviceShaderTileImageFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceShadingRateImageFeaturesNV struct {
-	ShadingRateImage bool
-	ShadingRateCoarseSampleOrder bool
+	ShadingRateImage bool `json:"shadingRateImage,omitempty"`
+	ShadingRateCoarseSampleOrder bool `json:"shadingRateCoarseSampleOrder,omitempty"`
 }
 func (VkPhysicalDeviceShadingRateImageFeaturesNV) extension() string {
 	return "VK_NV_shading_rate_image"
@@ -4281,8 +5765,8 @@ func (s VkPhysicalDeviceShadingRateImageFeaturesNV) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceSubgroupSizeControlFeatures struct {
-	SubgroupSizeControl bool
-	ComputeFullSubgroups bool
+	SubgroupSizeControl bool `json:"subgroupSizeControl,omitempty"`
+	ComputeFullSubgroups bool `json:"computeFullSubgroups,omitempty"`
 }
 func (VkPhysicalDeviceSubgroupSizeControlFeatures) extension() string {
 	return ""
@@ -4301,7 +5785,7 @@ func (s VkPhysicalDeviceSubgroupSizeControlFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT struct {
-	SubpassMergeFeedback bool
+	SubpassMergeFeedback bool `json:"subpassMergeFeedback,omitempty"`
 }
 func (VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT) extension() string {
 	return "VK_EXT_subpass_merge_feedback"
@@ -4317,7 +5801,7 @@ func (s VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT) enabledList() []C.size_
 	return list
 }
 type VkPhysicalDeviceSubpassShadingFeaturesHUAWEI struct {
-	SubpassShading bool
+	SubpassShading bool `json:"subpassShading,omitempty"`
 }
 func (VkPhysicalDeviceSubpassShadingFeaturesHUAWEI) extension() string {
 	return "VK_HUAWEI_subpass_shading"
@@ -4333,7 +5817,7 @@ func (s VkPhysicalDeviceSubpassShadingFeaturesHUAWEI) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT struct {
-	SwapchainMaintenance1 bool
+	SwapchainMaintenance1 bool `json:"swapchainMaintenance1,omitempty"`
 }
 func (VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT) extension() string {
 	return "VK_EXT_swapchain_maintenance1"
@@ -4349,7 +5833,7 @@ func (s VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT) enabledList() []C.size
 	return list
 }
 type VkPhysicalDeviceSwapchainMaintenance1FeaturesKHR struct {
-	SwapchainMaintenance1 bool
+	SwapchainMaintenance1 bool `json:"swapchainMaintenance1,omitempty"`
 }
 func (VkPhysicalDeviceSwapchainMaintenance1FeaturesKHR) extension() string {
 	return "VK_KHR_swapchain_maintenance1"
@@ -4365,7 +5849,7 @@ func (s VkPhysicalDeviceSwapchainMaintenance1FeaturesKHR) enabledList() []C.size
 	return list
 }
 type VkPhysicalDeviceSynchronization2Features struct {
-	Synchronization2 bool
+	Synchronization2 bool `json:"synchronization2,omitempty"`
 }
 func (VkPhysicalDeviceSynchronization2Features) extension() string {
 	return ""
@@ -4381,12 +5865,12 @@ func (s VkPhysicalDeviceSynchronization2Features) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceTensorFeaturesARM struct {
-	TensorNonPacked bool
-	ShaderTensorAccess bool
-	ShaderStorageTensorArrayDynamicIndexing bool
-	ShaderStorageTensorArrayNonUniformIndexing bool
-	DescriptorBindingStorageTensorUpdateAfterBind bool
-	Tensors bool
+	TensorNonPacked bool `json:"tensorNonPacked,omitempty"`
+	ShaderTensorAccess bool `json:"shaderTensorAccess,omitempty"`
+	ShaderStorageTensorArrayDynamicIndexing bool `json:"shaderStorageTensorArrayDynamicIndexing,omitempty"`
+	ShaderStorageTensorArrayNonUniformIndexing bool `json:"shaderStorageTensorArrayNonUniformIndexing,omitempty"`
+	DescriptorBindingStorageTensorUpdateAfterBind bool `json:"descriptorBindingStorageTensorUpdateAfterBind,omitempty"`
+	Tensors bool `json:"tensors,omitempty"`
 }
 func (VkPhysicalDeviceTensorFeaturesARM) extension() string {
 	return "VK_ARM_tensors"
@@ -4417,7 +5901,7 @@ func (s VkPhysicalDeviceTensorFeaturesARM) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceTextureCompressionASTCHDRFeatures struct {
-	TextureCompressionASTC_HDR bool
+	TextureCompressionASTC_HDR bool `json:"textureCompressionASTC_HDR,omitempty"`
 }
 func (VkPhysicalDeviceTextureCompressionASTCHDRFeatures) extension() string {
 	return ""
@@ -4433,7 +5917,7 @@ func (s VkPhysicalDeviceTextureCompressionASTCHDRFeatures) enabledList() []C.siz
 	return list
 }
 type VkPhysicalDeviceTileMemoryHeapFeaturesQCOM struct {
-	TileMemoryHeap bool
+	TileMemoryHeap bool `json:"tileMemoryHeap,omitempty"`
 }
 func (VkPhysicalDeviceTileMemoryHeapFeaturesQCOM) extension() string {
 	return "VK_QCOM_tile_memory_heap"
@@ -4449,7 +5933,7 @@ func (s VkPhysicalDeviceTileMemoryHeapFeaturesQCOM) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceTilePropertiesFeaturesQCOM struct {
-	TileProperties bool
+	TileProperties bool `json:"tileProperties,omitempty"`
 }
 func (VkPhysicalDeviceTilePropertiesFeaturesQCOM) extension() string {
 	return "VK_QCOM_tile_properties"
@@ -4465,20 +5949,20 @@ func (s VkPhysicalDeviceTilePropertiesFeaturesQCOM) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceTileShadingFeaturesQCOM struct {
-	TileShading bool
-	TileShadingFragmentStage bool
-	TileShadingColorAttachments bool
-	TileShadingDepthAttachments bool
-	TileShadingStencilAttachments bool
-	TileShadingInputAttachments bool
-	TileShadingSampledAttachments bool
-	TileShadingPerTileDraw bool
-	TileShadingPerTileDispatch bool
-	TileShadingDispatchTile bool
-	TileShadingApron bool
-	TileShadingAnisotropicApron bool
-	TileShadingAtomicOps bool
-	TileShadingImageProcessing bool
+	TileShading bool `json:"tileShading,omitempty"`
+	TileShadingFragmentStage bool `json:"tileShadingFragmentStage,omitempty"`
+	TileShadingColorAttachments bool `json:"tileShadingColorAttachments,omitempty"`
+	TileShadingDepthAttachments bool `json:"tileShadingDepthAttachments,omitempty"`
+	TileShadingStencilAttachments bool `json:"tileShadingStencilAttachments,omitempty"`
+	TileShadingInputAttachments bool `json:"tileShadingInputAttachments,omitempty"`
+	TileShadingSampledAttachments bool `json:"tileShadingSampledAttachments,omitempty"`
+	TileShadingPerTileDraw bool `json:"tileShadingPerTileDraw,omitempty"`
+	TileShadingPerTileDispatch bool `json:"tileShadingPerTileDispatch,omitempty"`
+	TileShadingDispatchTile bool `json:"tileShadingDispatchTile,omitempty"`
+	TileShadingApron bool `json:"tileShadingApron,omitempty"`
+	TileShadingAnisotropicApron bool `json:"tileShadingAnisotropicApron,omitempty"`
+	TileShadingAtomicOps bool `json:"tileShadingAtomicOps,omitempty"`
+	TileShadingImageProcessing bool `json:"tileShadingImageProcessing,omitempty"`
 }
 func (VkPhysicalDeviceTileShadingFeaturesQCOM) extension() string {
 	return "VK_QCOM_tile_shading"
@@ -4533,7 +6017,7 @@ func (s VkPhysicalDeviceTileShadingFeaturesQCOM) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceTimelineSemaphoreFeatures struct {
-	TimelineSemaphore bool
+	TimelineSemaphore bool `json:"timelineSemaphore,omitempty"`
 }
 func (VkPhysicalDeviceTimelineSemaphoreFeatures) extension() string {
 	return ""
@@ -4549,8 +6033,8 @@ func (s VkPhysicalDeviceTimelineSemaphoreFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceTransformFeedbackFeaturesEXT struct {
-	TransformFeedback bool
-	GeometryStreams bool
+	TransformFeedback bool `json:"transformFeedback,omitempty"`
+	GeometryStreams bool `json:"geometryStreams,omitempty"`
 }
 func (VkPhysicalDeviceTransformFeedbackFeaturesEXT) extension() string {
 	return "VK_EXT_transform_feedback"
@@ -4569,8 +6053,8 @@ func (s VkPhysicalDeviceTransformFeedbackFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceUnifiedImageLayoutsFeaturesKHR struct {
-	UnifiedImageLayouts bool
-	UnifiedImageLayoutsVideo bool
+	UnifiedImageLayouts bool `json:"unifiedImageLayouts,omitempty"`
+	UnifiedImageLayoutsVideo bool `json:"unifiedImageLayoutsVideo,omitempty"`
 }
 func (VkPhysicalDeviceUnifiedImageLayoutsFeaturesKHR) extension() string {
 	return "VK_KHR_unified_image_layouts"
@@ -4589,7 +6073,7 @@ func (s VkPhysicalDeviceUnifiedImageLayoutsFeaturesKHR) enabledList() []C.size_t
 	return list
 }
 type VkPhysicalDeviceUniformBufferStandardLayoutFeatures struct {
-	UniformBufferStandardLayout bool
+	UniformBufferStandardLayout bool `json:"uniformBufferStandardLayout,omitempty"`
 }
 func (VkPhysicalDeviceUniformBufferStandardLayoutFeatures) extension() string {
 	return ""
@@ -4605,8 +6089,8 @@ func (s VkPhysicalDeviceUniformBufferStandardLayoutFeatures) enabledList() []C.s
 	return list
 }
 type VkPhysicalDeviceVariablePointersFeatures struct {
-	VariablePointersStorageBuffer bool
-	VariablePointers bool
+	VariablePointersStorageBuffer bool `json:"variablePointersStorageBuffer,omitempty"`
+	VariablePointers bool `json:"variablePointers,omitempty"`
 }
 func (VkPhysicalDeviceVariablePointersFeatures) extension() string {
 	return ""
@@ -4625,8 +6109,8 @@ func (s VkPhysicalDeviceVariablePointersFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceVertexAttributeDivisorFeatures struct {
-	VertexAttributeInstanceRateDivisor bool
-	VertexAttributeInstanceRateZeroDivisor bool
+	VertexAttributeInstanceRateDivisor bool `json:"vertexAttributeInstanceRateDivisor,omitempty"`
+	VertexAttributeInstanceRateZeroDivisor bool `json:"vertexAttributeInstanceRateZeroDivisor,omitempty"`
 }
 func (VkPhysicalDeviceVertexAttributeDivisorFeatures) extension() string {
 	return ""
@@ -4645,8 +6129,8 @@ func (s VkPhysicalDeviceVertexAttributeDivisorFeatures) enabledList() []C.size_t
 	return list
 }
 type VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT struct {
-	VertexAttributeInstanceRateDivisor bool
-	VertexAttributeInstanceRateZeroDivisor bool
+	VertexAttributeInstanceRateDivisor bool `json:"vertexAttributeInstanceRateDivisor,omitempty"`
+	VertexAttributeInstanceRateZeroDivisor bool `json:"vertexAttributeInstanceRateZeroDivisor,omitempty"`
 }
 func (VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT) extension() string {
 	return "VK_EXT_vertex_attribute_divisor"
@@ -4665,8 +6149,8 @@ func (s VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT) enabledList() []C.siz
 	return list
 }
 type VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR struct {
-	VertexAttributeInstanceRateDivisor bool
-	VertexAttributeInstanceRateZeroDivisor bool
+	VertexAttributeInstanceRateDivisor bool `json:"vertexAttributeInstanceRateDivisor,omitempty"`
+	VertexAttributeInstanceRateZeroDivisor bool `json:"vertexAttributeInstanceRateZeroDivisor,omitempty"`
 }
 func (VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR) extension() string {
 	return "VK_KHR_vertex_attribute_divisor"
@@ -4685,7 +6169,7 @@ func (s VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR) enabledList() []C.siz
 	return list
 }
 type VkPhysicalDeviceVertexAttributeRobustnessFeaturesEXT struct {
-	VertexAttributeRobustness bool
+	VertexAttributeRobustness bool `json:"vertexAttributeRobustness,omitempty"`
 }
 func (VkPhysicalDeviceVertexAttributeRobustnessFeaturesEXT) extension() string {
 	return "VK_EXT_vertex_attribute_robustness"
@@ -4701,7 +6185,7 @@ func (s VkPhysicalDeviceVertexAttributeRobustnessFeaturesEXT) enabledList() []C.
 	return list
 }
 type VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT struct {
-	VertexInputDynamicState bool
+	VertexInputDynamicState bool `json:"vertexInputDynamicState,omitempty"`
 }
 func (VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT) extension() string {
 	return "VK_EXT_vertex_input_dynamic_state"
@@ -4717,7 +6201,7 @@ func (s VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT) enabledList() []C.si
 	return list
 }
 type VkPhysicalDeviceVideoDecodeVP9FeaturesKHR struct {
-	VideoDecodeVP9 bool
+	VideoDecodeVP9 bool `json:"videoDecodeVP9,omitempty"`
 }
 func (VkPhysicalDeviceVideoDecodeVP9FeaturesKHR) extension() string {
 	return "VK_KHR_video_decode_vp9"
@@ -4733,7 +6217,7 @@ func (s VkPhysicalDeviceVideoDecodeVP9FeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceVideoEncodeAV1FeaturesKHR struct {
-	VideoEncodeAV1 bool
+	VideoEncodeAV1 bool `json:"videoEncodeAV1,omitempty"`
 }
 func (VkPhysicalDeviceVideoEncodeAV1FeaturesKHR) extension() string {
 	return "VK_KHR_video_encode_av1"
@@ -4749,7 +6233,7 @@ func (s VkPhysicalDeviceVideoEncodeAV1FeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceVideoEncodeIntraRefreshFeaturesKHR struct {
-	VideoEncodeIntraRefresh bool
+	VideoEncodeIntraRefresh bool `json:"videoEncodeIntraRefresh,omitempty"`
 }
 func (VkPhysicalDeviceVideoEncodeIntraRefreshFeaturesKHR) extension() string {
 	return "VK_KHR_video_encode_intra_refresh"
@@ -4765,7 +6249,7 @@ func (s VkPhysicalDeviceVideoEncodeIntraRefreshFeaturesKHR) enabledList() []C.si
 	return list
 }
 type VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR struct {
-	VideoEncodeQuantizationMap bool
+	VideoEncodeQuantizationMap bool `json:"videoEncodeQuantizationMap,omitempty"`
 }
 func (VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR) extension() string {
 	return "VK_KHR_video_encode_quantization_map"
@@ -4781,7 +6265,7 @@ func (s VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR) enabledList() []C
 	return list
 }
 type VkPhysicalDeviceVideoMaintenance1FeaturesKHR struct {
-	VideoMaintenance1 bool
+	VideoMaintenance1 bool `json:"videoMaintenance1,omitempty"`
 }
 func (VkPhysicalDeviceVideoMaintenance1FeaturesKHR) extension() string {
 	return "VK_KHR_video_maintenance1"
@@ -4797,7 +6281,7 @@ func (s VkPhysicalDeviceVideoMaintenance1FeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceVideoMaintenance2FeaturesKHR struct {
-	VideoMaintenance2 bool
+	VideoMaintenance2 bool `json:"videoMaintenance2,omitempty"`
 }
 func (VkPhysicalDeviceVideoMaintenance2FeaturesKHR) extension() string {
 	return "VK_KHR_video_maintenance2"
@@ -4813,18 +6297,18 @@ func (s VkPhysicalDeviceVideoMaintenance2FeaturesKHR) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceVulkan11Features struct {
-	StorageBuffer16BitAccess bool
-	UniformAndStorageBuffer16BitAccess bool
-	StoragePushConstant16 bool
-	StorageInputOutput16 bool
-	Multiview bool
-	MultiviewGeometryShader bool
-	MultiviewTessellationShader bool
-	VariablePointersStorageBuffer bool
-	VariablePointers bool
-	ProtectedMemory bool
-	SamplerYCbCrConversion bool
-	ShaderDrawParameters bool
+	StorageBuffer16BitAccess bool `json:"storageBuffer16BitAccess,omitempty"`
+	UniformAndStorageBuffer16BitAccess bool `json:"uniformAndStorageBuffer16BitAccess,omitempty"`
+	StoragePushConstant16 bool `json:"storagePushConstant16,omitempty"`
+	StorageInputOutput16 bool `json:"storageInputOutput16,omitempty"`
+	Multiview bool `json:"multiview,omitempty"`
+	MultiviewGeometryShader bool `json:"multiviewGeometryShader,omitempty"`
+	MultiviewTessellationShader bool `json:"multiviewTessellationShader,omitempty"`
+	VariablePointersStorageBuffer bool `json:"variablePointersStorageBuffer,omitempty"`
+	VariablePointers bool `json:"variablePointers,omitempty"`
+	ProtectedMemory bool `json:"protectedMemory,omitempty"`
+	SamplerYCbCrConversion bool `json:"samplerYcbcrConversion,omitempty"`
+	ShaderDrawParameters bool `json:"shaderDrawParameters,omitempty"`
 }
 func (VkPhysicalDeviceVulkan11Features) extension() string {
 	return ""
@@ -4873,53 +6357,53 @@ func (s VkPhysicalDeviceVulkan11Features) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceVulkan12Features struct {
-	SamplerMirrorClampToEdge bool
-	DrawIndirectCount bool
-	StorageBuffer8BitAccess bool
-	UniformAndStorageBuffer8BitAccess bool
-	StoragePushConstant8 bool
-	ShaderBufferInt64Atomics bool
-	ShaderSharedInt64Atomics bool
-	ShaderFloat16 bool
-	ShaderInt8 bool
-	DescriptorIndexing bool
-	ShaderInputAttachmentArrayDynamicIndexing bool
-	ShaderUniformTexelBufferArrayDynamicIndexing bool
-	ShaderStorageTexelBufferArrayDynamicIndexing bool
-	ShaderUniformBufferArrayNonUniformIndexing bool
-	ShaderSampledImageArrayNonUniformIndexing bool
-	ShaderStorageBufferArrayNonUniformIndexing bool
-	ShaderStorageImageArrayNonUniformIndexing bool
-	ShaderInputAttachmentArrayNonUniformIndexing bool
-	ShaderUniformTexelBufferArrayNonUniformIndexing bool
-	ShaderStorageTexelBufferArrayNonUniformIndexing bool
-	DescriptorBindingUniformBufferUpdateAfterBind bool
-	DescriptorBindingSampledImageUpdateAfterBind bool
-	DescriptorBindingStorageImageUpdateAfterBind bool
-	DescriptorBindingStorageBufferUpdateAfterBind bool
-	DescriptorBindingUniformTexelBufferUpdateAfterBind bool
-	DescriptorBindingStorageTexelBufferUpdateAfterBind bool
-	DescriptorBindingUpdateUnusedWhilePending bool
-	DescriptorBindingPartiallyBound bool
-	DescriptorBindingVariableDescriptorCount bool
-	RuntimeDescriptorArray bool
-	SamplerFilterMinmax bool
-	ScalarBlockLayout bool
-	ImagelessFramebuffer bool
-	UniformBufferStandardLayout bool
-	ShaderSubgroupExtendedTypes bool
-	SeparateDepthStencilLayouts bool
-	HostQueryReset bool
-	TimelineSemaphore bool
-	BufferDeviceAddress bool
-	BufferDeviceAddressCaptureReplay bool
-	BufferDeviceAddressMultiDevice bool
-	VulkanMemoryModel bool
-	VulkanMemoryModelDeviceScope bool
-	VulkanMemoryModelAvailabilityVisibilityChains bool
-	ShaderOutputViewportIndex bool
-	ShaderOutputLayer bool
-	SubgroupBroadcastDynamicId bool
+	SamplerMirrorClampToEdge bool `json:"samplerMirrorClampToEdge,omitempty"`
+	DrawIndirectCount bool `json:"drawIndirectCount,omitempty"`
+	StorageBuffer8BitAccess bool `json:"storageBuffer8BitAccess,omitempty"`
+	UniformAndStorageBuffer8BitAccess bool `json:"uniformAndStorageBuffer8BitAccess,omitempty"`
+	StoragePushConstant8 bool `json:"storagePushConstant8,omitempty"`
+	ShaderBufferInt64Atomics bool `json:"shaderBufferInt64Atomics,omitempty"`
+	ShaderSharedInt64Atomics bool `json:"shaderSharedInt64Atomics,omitempty"`
+	ShaderFloat16 bool `json:"shaderFloat16,omitempty"`
+	ShaderInt8 bool `json:"shaderInt8,omitempty"`
+	DescriptorIndexing bool `json:"descriptorIndexing,omitempty"`
+	ShaderInputAttachmentArrayDynamicIndexing bool `json:"shaderInputAttachmentArrayDynamicIndexing,omitempty"`
+	ShaderUniformTexelBufferArrayDynamicIndexing bool `json:"shaderUniformTexelBufferArrayDynamicIndexing,omitempty"`
+	ShaderStorageTexelBufferArrayDynamicIndexing bool `json:"shaderStorageTexelBufferArrayDynamicIndexing,omitempty"`
+	ShaderUniformBufferArrayNonUniformIndexing bool `json:"shaderUniformBufferArrayNonUniformIndexing,omitempty"`
+	ShaderSampledImageArrayNonUniformIndexing bool `json:"shaderSampledImageArrayNonUniformIndexing,omitempty"`
+	ShaderStorageBufferArrayNonUniformIndexing bool `json:"shaderStorageBufferArrayNonUniformIndexing,omitempty"`
+	ShaderStorageImageArrayNonUniformIndexing bool `json:"shaderStorageImageArrayNonUniformIndexing,omitempty"`
+	ShaderInputAttachmentArrayNonUniformIndexing bool `json:"shaderInputAttachmentArrayNonUniformIndexing,omitempty"`
+	ShaderUniformTexelBufferArrayNonUniformIndexing bool `json:"shaderUniformTexelBufferArrayNonUniformIndexing,omitempty"`
+	ShaderStorageTexelBufferArrayNonUniformIndexing bool `json:"shaderStorageTexelBufferArrayNonUniformIndexing,omitempty"`
+	DescriptorBindingUniformBufferUpdateAfterBind bool `json:"descriptorBindingUniformBufferUpdateAfterBind,omitempty"`
+	DescriptorBindingSampledImageUpdateAfterBind bool `json:"descriptorBindingSampledImageUpdateAfterBind,omitempty"`
+	DescriptorBindingStorageImageUpdateAfterBind bool `json:"descriptorBindingStorageImageUpdateAfterBind,omitempty"`
+	DescriptorBindingStorageBufferUpdateAfterBind bool `json:"descriptorBindingStorageBufferUpdateAfterBind,omitempty"`
+	DescriptorBindingUniformTexelBufferUpdateAfterBind bool `json:"descriptorBindingUniformTexelBufferUpdateAfterBind,omitempty"`
+	DescriptorBindingStorageTexelBufferUpdateAfterBind bool `json:"descriptorBindingStorageTexelBufferUpdateAfterBind,omitempty"`
+	DescriptorBindingUpdateUnusedWhilePending bool `json:"descriptorBindingUpdateUnusedWhilePending,omitempty"`
+	DescriptorBindingPartiallyBound bool `json:"descriptorBindingPartiallyBound,omitempty"`
+	DescriptorBindingVariableDescriptorCount bool `json:"descriptorBindingVariableDescriptorCount,omitempty"`
+	RuntimeDescriptorArray bool `json:"runtimeDescriptorArray,omitempty"`
+	SamplerFilterMinmax bool `json:"samplerFilterMinmax,omitempty"`
+	ScalarBlockLayout bool `json:"scalarBlockLayout,omitempty"`
+	ImagelessFramebuffer bool `json:"imagelessFramebuffer,omitempty"`
+	UniformBufferStandardLayout bool `json:"uniformBufferStandardLayout,omitempty"`
+	ShaderSubgroupExtendedTypes bool `json:"shaderSubgroupExtendedTypes,omitempty"`
+	SeparateDepthStencilLayouts bool `json:"separateDepthStencilLayouts,omitempty"`
+	HostQueryReset bool `json:"hostQueryReset,omitempty"`
+	TimelineSemaphore bool `json:"timelineSemaphore,omitempty"`
+	BufferDeviceAddress bool `json:"bufferDeviceAddress,omitempty"`
+	BufferDeviceAddressCaptureReplay bool `json:"bufferDeviceAddressCaptureReplay,omitempty"`
+	BufferDeviceAddressMultiDevice bool `json:"bufferDeviceAddressMultiDevice,omitempty"`
+	VulkanMemoryModel bool `json:"vulkanMemoryModel,omitempty"`
+	VulkanMemoryModelDeviceScope bool `json:"vulkanMemoryModelDeviceScope,omitempty"`
+	VulkanMemoryModelAvailabilityVisibilityChains bool `json:"vulkanMemoryModelAvailabilityVisibilityChains,omitempty"`
+	ShaderOutputViewportIndex bool `json:"shaderOutputViewportIndex,omitempty"`
+	ShaderOutputLayer bool `json:"shaderOutputLayer,omitempty"`
+	SubgroupBroadcastDynamicId bool `json:"subgroupBroadcastDynamicId,omitempty"`
 }
 func (VkPhysicalDeviceVulkan12Features) extension() string {
 	return ""
@@ -5073,21 +6557,21 @@ func (s VkPhysicalDeviceVulkan12Features) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceVulkan13Features struct {
-	RobustImageAccess bool
-	InlineUniformBlock bool
-	DescriptorBindingInlineUniformBlockUpdateAfterBind bool
-	PipelineCreationCacheControl bool
-	PrivateData bool
-	ShaderDemoteToHelperInvocation bool
-	ShaderTerminateInvocation bool
-	SubgroupSizeControl bool
-	ComputeFullSubgroups bool
-	Synchronization2 bool
-	TextureCompressionASTC_HDR bool
-	ShaderZeroInitializeWorkgroupMemory bool
-	DynamicRendering bool
-	ShaderIntegerDotProduct bool
-	Maintenance4 bool
+	RobustImageAccess bool `json:"robustImageAccess,omitempty"`
+	InlineUniformBlock bool `json:"inlineUniformBlock,omitempty"`
+	DescriptorBindingInlineUniformBlockUpdateAfterBind bool `json:"descriptorBindingInlineUniformBlockUpdateAfterBind,omitempty"`
+	PipelineCreationCacheControl bool `json:"pipelineCreationCacheControl,omitempty"`
+	PrivateData bool `json:"privateData,omitempty"`
+	ShaderDemoteToHelperInvocation bool `json:"shaderDemoteToHelperInvocation,omitempty"`
+	ShaderTerminateInvocation bool `json:"shaderTerminateInvocation,omitempty"`
+	SubgroupSizeControl bool `json:"subgroupSizeControl,omitempty"`
+	ComputeFullSubgroups bool `json:"computeFullSubgroups,omitempty"`
+	Synchronization2 bool `json:"synchronization2,omitempty"`
+	TextureCompressionASTC_HDR bool `json:"textureCompressionASTC_HDR,omitempty"`
+	ShaderZeroInitializeWorkgroupMemory bool `json:"shaderZeroInitializeWorkgroupMemory,omitempty"`
+	DynamicRendering bool `json:"dynamicRendering,omitempty"`
+	ShaderIntegerDotProduct bool `json:"shaderIntegerDotProduct,omitempty"`
+	Maintenance4 bool `json:"maintenance4,omitempty"`
 }
 func (VkPhysicalDeviceVulkan13Features) extension() string {
 	return ""
@@ -5145,27 +6629,27 @@ func (s VkPhysicalDeviceVulkan13Features) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceVulkan14Features struct {
-	GlobalPriorityQuery bool
-	ShaderSubgroupRotate bool
-	ShaderSubgroupRotateClustered bool
-	ShaderFloatControls2 bool
-	ShaderExpectAssume bool
-	RectangularLines bool
-	BresenhamLines bool
-	SmoothLines bool
-	StippledRectangularLines bool
-	StippledBresenhamLines bool
-	StippledSmoothLines bool
-	VertexAttributeInstanceRateDivisor bool
-	VertexAttributeInstanceRateZeroDivisor bool
-	IndexTypeUint8 bool
-	DynamicRenderingLocalRead bool
-	Maintenance5 bool
-	Maintenance6 bool
-	PipelineProtectedAccess bool
-	PipelineRobustness bool
-	HostImageCopy bool
-	PushDescriptor bool
+	GlobalPriorityQuery bool `json:"globalPriorityQuery,omitempty"`
+	ShaderSubgroupRotate bool `json:"shaderSubgroupRotate,omitempty"`
+	ShaderSubgroupRotateClustered bool `json:"shaderSubgroupRotateClustered,omitempty"`
+	ShaderFloatControls2 bool `json:"shaderFloatControls2,omitempty"`
+	ShaderExpectAssume bool `json:"shaderExpectAssume,omitempty"`
+	RectangularLines bool `json:"rectangularLines,omitempty"`
+	BresenhamLines bool `json:"bresenhamLines,omitempty"`
+	SmoothLines bool `json:"smoothLines,omitempty"`
+	StippledRectangularLines bool `json:"stippledRectangularLines,omitempty"`
+	StippledBresenhamLines bool `json:"stippledBresenhamLines,omitempty"`
+	StippledSmoothLines bool `json:"stippledSmoothLines,omitempty"`
+	VertexAttributeInstanceRateDivisor bool `json:"vertexAttributeInstanceRateDivisor,omitempty"`
+	VertexAttributeInstanceRateZeroDivisor bool `json:"vertexAttributeInstanceRateZeroDivisor,omitempty"`
+	IndexTypeUint8 bool `json:"indexTypeUint8,omitempty"`
+	DynamicRenderingLocalRead bool `json:"dynamicRenderingLocalRead,omitempty"`
+	Maintenance5 bool `json:"maintenance5,omitempty"`
+	Maintenance6 bool `json:"maintenance6,omitempty"`
+	PipelineProtectedAccess bool `json:"pipelineProtectedAccess,omitempty"`
+	PipelineRobustness bool `json:"pipelineRobustness,omitempty"`
+	HostImageCopy bool `json:"hostImageCopy,omitempty"`
+	PushDescriptor bool `json:"pushDescriptor,omitempty"`
 }
 func (VkPhysicalDeviceVulkan14Features) extension() string {
 	return ""
@@ -5241,9 +6725,9 @@ func (s VkPhysicalDeviceVulkan14Features) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceVulkanMemoryModelFeatures struct {
-	VulkanMemoryModel bool
-	VulkanMemoryModelDeviceScope bool
-	VulkanMemoryModelAvailabilityVisibilityChains bool
+	VulkanMemoryModel bool `json:"vulkanMemoryModel,omitempty"`
+	VulkanMemoryModelDeviceScope bool `json:"vulkanMemoryModelDeviceScope,omitempty"`
+	VulkanMemoryModelAvailabilityVisibilityChains bool `json:"vulkanMemoryModelAvailabilityVisibilityChains,omitempty"`
 }
 func (VkPhysicalDeviceVulkanMemoryModelFeatures) extension() string {
 	return ""
@@ -5265,10 +6749,10 @@ func (s VkPhysicalDeviceVulkanMemoryModelFeatures) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR struct {
-	WorkgroupMemoryExplicitLayout bool
-	WorkgroupMemoryExplicitLayoutScalarBlockLayout bool
-	WorkgroupMemoryExplicitLayout8BitAccess bool
-	WorkgroupMemoryExplicitLayout16BitAccess bool
+	WorkgroupMemoryExplicitLayout bool `json:"workgroupMemoryExplicitLayout,omitempty"`
+	WorkgroupMemoryExplicitLayoutScalarBlockLayout bool `json:"workgroupMemoryExplicitLayoutScalarBlockLayout,omitempty"`
+	WorkgroupMemoryExplicitLayout8BitAccess bool `json:"workgroupMemoryExplicitLayout8BitAccess,omitempty"`
+	WorkgroupMemoryExplicitLayout16BitAccess bool `json:"workgroupMemoryExplicitLayout16BitAccess,omitempty"`
 }
 func (VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR) extension() string {
 	return "VK_KHR_workgroup_memory_explicit_layout"
@@ -5293,7 +6777,7 @@ func (s VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR) enabledList() 
 	return list
 }
 type VkPhysicalDeviceYCbCrDegammaFeaturesQCOM struct {
-	YCbCrDegamma bool
+	YCbCrDegamma bool `json:"ycbcrDegamma,omitempty"`
 }
 func (VkPhysicalDeviceYCbCrDegammaFeaturesQCOM) extension() string {
 	return "VK_QCOM_ycbcr_degamma"
@@ -5309,7 +6793,7 @@ func (s VkPhysicalDeviceYCbCrDegammaFeaturesQCOM) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceYCbCrImageArraysFeaturesEXT struct {
-	YCbCrImageArrays bool
+	YCbCrImageArrays bool `json:"ycbcrImageArrays,omitempty"`
 }
 func (VkPhysicalDeviceYCbCrImageArraysFeaturesEXT) extension() string {
 	return "VK_EXT_ycbcr_image_arrays"
@@ -5325,7 +6809,7 @@ func (s VkPhysicalDeviceYCbCrImageArraysFeaturesEXT) enabledList() []C.size_t {
 	return list
 }
 type VkPhysicalDeviceZeroInitializeDeviceMemoryFeaturesEXT struct {
-	ZeroInitializeDeviceMemory bool
+	ZeroInitializeDeviceMemory bool `json:"zeroInitializeDeviceMemory,omitempty"`
 }
 func (VkPhysicalDeviceZeroInitializeDeviceMemoryFeaturesEXT) extension() string {
 	return "VK_EXT_zero_initialize_device_memory"
@@ -5341,7 +6825,7 @@ func (s VkPhysicalDeviceZeroInitializeDeviceMemoryFeaturesEXT) enabledList() []C
 	return list
 }
 type VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeatures struct {
-	ShaderZeroInitializeWorkgroupMemory bool
+	ShaderZeroInitializeWorkgroupMemory bool `json:"shaderZeroInitializeWorkgroupMemory,omitempty"`
 }
 func (VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeatures) extension() string {
 	return ""
