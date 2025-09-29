@@ -46,8 +46,9 @@ const (
 	// PipelineStageEarlyFragmentTests     PipelineStage = vk.PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT
 	// PipelineStageLateFragmentTests      PipelineStage = vk.PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT
 	PipelineStageFragmentTests PipelineStage = vk.PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT | vk.PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT
-	// VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT actually also includes depth so drop the color label
-	PipelineStageRenderAttachmentWrite PipelineStage = vk.PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
+	// VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT actually also includes depth resolve so drop the color label
+	// might as well also add late fragment so it applies to any attachment write
+	PipelineStageRenderAttachmentWrite PipelineStage = vk.PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT | vk.PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT
 	PipelineStageGraphics              PipelineStage = vk.PIPELINE_STAGE_2_ALL_GRAPHICS_BIT
 	PipelineStageTransfer              PipelineStage = vk.PIPELINE_STAGE_2_ALL_TRANSFER_BIT
 	PipelineStageAll                   PipelineStage = vk.PIPELINE_STAGE_2_ALL_COMMANDS_BIT
