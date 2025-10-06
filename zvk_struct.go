@@ -179,6 +179,12 @@ func (m VkFeatureMap) UnmarshalJSON(b []byte) error {
 				return err
 			}
 			m[k] = target
+		case "VkPhysicalDeviceCopyMemoryIndirectFeaturesKHR":
+			target := VkPhysicalDeviceCopyMemoryIndirectFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
 		case "VkPhysicalDeviceCopyMemoryIndirectFeaturesNV":
 			target := VkPhysicalDeviceCopyMemoryIndirectFeaturesNV{}
 			if err := json.Unmarshal([]byte(v), &target); err != nil {
@@ -1265,6 +1271,12 @@ func (m VkFeatureMap) UnmarshalJSON(b []byte) error {
 				return err
 			}
 			m[k] = target
+		case "VkPhysicalDeviceShaderUntypedPointersFeaturesKHR":
+			target := VkPhysicalDeviceShaderUntypedPointersFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
 		case "VkPhysicalDeviceShadingRateImageFeaturesNV":
 			target := VkPhysicalDeviceShadingRateImageFeaturesNV{}
 			if err := json.Unmarshal([]byte(v), &target); err != nil {
@@ -1417,6 +1429,12 @@ func (m VkFeatureMap) UnmarshalJSON(b []byte) error {
 			m[k] = target
 		case "VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR":
 			target := VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR{}
+			if err := json.Unmarshal([]byte(v), &target); err != nil {
+				return err
+			}
+			m[k] = target
+		case "VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE":
+			target := VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE{}
 			if err := json.Unmarshal([]byte(v), &target); err != nil {
 				return err
 			}
@@ -1996,6 +2014,26 @@ func (s VkPhysicalDeviceCooperativeVectorFeaturesNV) enabledList() []C.size_t {
 		list = append(list, 2)
 	}
 	if s.CooperativeVectorTraining {
+		list = append(list, 3)
+	}
+	return list
+}
+type VkPhysicalDeviceCopyMemoryIndirectFeaturesKHR struct {
+	IndirectMemoryCopy bool `json:"indirectMemoryCopy,omitempty"`
+	IndirectMemoryToImageCopy bool `json:"indirectMemoryToImageCopy,omitempty"`
+}
+func (VkPhysicalDeviceCopyMemoryIndirectFeaturesKHR) extension() string {
+	return "VK_KHR_copy_memory_indirect"
+}
+func (VkPhysicalDeviceCopyMemoryIndirectFeaturesKHR) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_KHR
+}
+func (s VkPhysicalDeviceCopyMemoryIndirectFeaturesKHR) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 2)
+	if s.IndirectMemoryCopy {
+		list = append(list, 2)
+	}
+	if s.IndirectMemoryToImageCopy {
 		list = append(list, 3)
 	}
 	return list
@@ -5744,6 +5782,22 @@ func (s VkPhysicalDeviceShaderTileImageFeaturesEXT) enabledList() []C.size_t {
 	}
 	return list
 }
+type VkPhysicalDeviceShaderUntypedPointersFeaturesKHR struct {
+	ShaderUntypedPointers bool `json:"shaderUntypedPointers,omitempty"`
+}
+func (VkPhysicalDeviceShaderUntypedPointersFeaturesKHR) extension() string {
+	return "VK_KHR_shader_untyped_pointers"
+}
+func (VkPhysicalDeviceShaderUntypedPointersFeaturesKHR) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_UNTYPED_POINTERS_FEATURES_KHR
+}
+func (s VkPhysicalDeviceShaderUntypedPointersFeaturesKHR) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.ShaderUntypedPointers {
+		list = append(list, 2)
+	}
+	return list
+}
 type VkPhysicalDeviceShadingRateImageFeaturesNV struct {
 	ShadingRateImage bool `json:"shadingRateImage,omitempty"`
 	ShadingRateCoarseSampleOrder bool `json:"shadingRateCoarseSampleOrder,omitempty"`
@@ -6260,6 +6314,22 @@ func (VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR) sType() C.VkStructu
 func (s VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR) enabledList() []C.size_t {
 	list := make([]C.size_t, 0, 1)
 	if s.VideoEncodeQuantizationMap {
+		list = append(list, 2)
+	}
+	return list
+}
+type VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE struct {
+	VideoEncodeRgbConversion bool `json:"videoEncodeRgbConversion,omitempty"`
+}
+func (VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE) extension() string {
+	return "VK_VALVE_video_encode_rgb_conversion"
+}
+func (VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE) sType() C.VkStructureType {
+	return vk.STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_RGB_CONVERSION_FEATURES_VALVE
+}
+func (s VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE) enabledList() []C.size_t {
+	list := make([]C.size_t, 0, 1)
+	if s.VideoEncodeRgbConversion {
 		list = append(list, 2)
 	}
 	return list

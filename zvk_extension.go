@@ -129,6 +129,8 @@ func getExtensionDependencies(name string) []string {
 		return []string{"VK_EXT_descriptor_indexing", "VK_KHR_buffer_device_address", "VK_KHR_deferred_host_operations"}
 	case "VK_KHR_buffer_device_address":
 		return []string{"VK_KHR_device_group"}
+	case "VK_KHR_copy_memory_indirect":
+		return []string{"VK_KHR_buffer_device_address"}
 	case "VK_KHR_create_renderpass2":
 		return []string{"VK_KHR_multiview", "VK_KHR_maintenance2"}
 	case "VK_KHR_dedicated_allocation":
@@ -295,6 +297,8 @@ func getExtensionDependencies(name string) []string {
 		return []string{"VK_KHR_maintenance5", "VK_EXT_fragment_density_map"}
 	case "VK_VALVE_mutable_descriptor_type":
 		return []string{"VK_KHR_maintenance3"}
+	case "VK_VALVE_video_encode_rgb_conversion":
+		return []string{"VK_KHR_video_encode_queue", "VK_KHR_sampler_ycbcr_conversion"}
 	}
 	return nil
 }

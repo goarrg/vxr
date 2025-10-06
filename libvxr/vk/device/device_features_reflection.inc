@@ -242,6 +242,13 @@ static constexpr internal::structChainTypeImpl<4> typeVkPhysicalDeviceCooperativ
 	structField{type::vkBool32, offsetof(VkPhysicalDeviceCooperativeVectorFeaturesNV, cooperativeVector), "cooperativeVector"},
 	structField{type::vkBool32, offsetof(VkPhysicalDeviceCooperativeVectorFeaturesNV, cooperativeVectorTraining), "cooperativeVectorTraining"},
 };
+static constexpr internal::structChainTypeImpl<4> typeVkPhysicalDeviceCopyMemoryIndirectFeaturesKHR {
+	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_KHR, "VkPhysicalDeviceCopyMemoryIndirectFeaturesKHR", sizeof(VkPhysicalDeviceCopyMemoryIndirectFeaturesKHR),
+	structField{type::vkStructureType, offsetof(VkPhysicalDeviceCopyMemoryIndirectFeaturesKHR, sType), "sType"},
+	structField{type::voidPtr, offsetof(VkPhysicalDeviceCopyMemoryIndirectFeaturesKHR, pNext), "pNext"},
+	structField{type::vkBool32, offsetof(VkPhysicalDeviceCopyMemoryIndirectFeaturesKHR, indirectMemoryCopy), "indirectMemoryCopy"},
+	structField{type::vkBool32, offsetof(VkPhysicalDeviceCopyMemoryIndirectFeaturesKHR, indirectMemoryToImageCopy), "indirectMemoryToImageCopy"},
+};
 static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceCopyMemoryIndirectFeaturesNV {
 	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_NV, "VkPhysicalDeviceCopyMemoryIndirectFeaturesNV", sizeof(VkPhysicalDeviceCopyMemoryIndirectFeaturesNV),
 	structField{type::vkStructureType, offsetof(VkPhysicalDeviceCopyMemoryIndirectFeaturesNV, sType), "sType"},
@@ -1347,6 +1354,12 @@ static constexpr internal::structChainTypeImpl<5> typeVkPhysicalDeviceShaderTile
 	structField{type::vkBool32, offsetof(VkPhysicalDeviceShaderTileImageFeaturesEXT, shaderTileImageDepthReadAccess), "shaderTileImageDepthReadAccess"},
 	structField{type::vkBool32, offsetof(VkPhysicalDeviceShaderTileImageFeaturesEXT, shaderTileImageStencilReadAccess), "shaderTileImageStencilReadAccess"},
 };
+static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceShaderUntypedPointersFeaturesKHR {
+	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_UNTYPED_POINTERS_FEATURES_KHR, "VkPhysicalDeviceShaderUntypedPointersFeaturesKHR", sizeof(VkPhysicalDeviceShaderUntypedPointersFeaturesKHR),
+	structField{type::vkStructureType, offsetof(VkPhysicalDeviceShaderUntypedPointersFeaturesKHR, sType), "sType"},
+	structField{type::voidPtr, offsetof(VkPhysicalDeviceShaderUntypedPointersFeaturesKHR, pNext), "pNext"},
+	structField{type::vkBool32, offsetof(VkPhysicalDeviceShaderUntypedPointersFeaturesKHR, shaderUntypedPointers), "shaderUntypedPointers"},
+};
 static constexpr internal::structChainTypeImpl<4> typeVkPhysicalDeviceShadingRateImageFeaturesNV {
 	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV, "VkPhysicalDeviceShadingRateImageFeaturesNV", sizeof(VkPhysicalDeviceShadingRateImageFeaturesNV),
 	structField{type::vkStructureType, offsetof(VkPhysicalDeviceShadingRateImageFeaturesNV, sType), "sType"},
@@ -1514,6 +1527,12 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceVideoEncod
 	structField{type::vkStructureType, offsetof(VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR, sType), "sType"},
 	structField{type::voidPtr, offsetof(VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR, pNext), "pNext"},
 	structField{type::vkBool32, offsetof(VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR, videoEncodeQuantizationMap), "videoEncodeQuantizationMap"},
+};
+static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE {
+	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_RGB_CONVERSION_FEATURES_VALVE, "VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE", sizeof(VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE),
+	structField{type::vkStructureType, offsetof(VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE, sType), "sType"},
+	structField{type::voidPtr, offsetof(VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE, pNext), "pNext"},
+	structField{type::vkBool32, offsetof(VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE, videoEncodeRgbConversion), "videoEncodeRgbConversion"},
 };
 static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceVideoMaintenance1FeaturesKHR {
 	VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_MAINTENANCE_1_FEATURES_KHR, "VkPhysicalDeviceVideoMaintenance1FeaturesKHR", sizeof(VkPhysicalDeviceVideoMaintenance1FeaturesKHR),
@@ -1743,6 +1762,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return &typeVkPhysicalDeviceCooperativeMatrixFeaturesNV;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_VECTOR_FEATURES_NV:
 			return &typeVkPhysicalDeviceCooperativeVectorFeaturesNV;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_KHR:
+			return &typeVkPhysicalDeviceCopyMemoryIndirectFeaturesKHR;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_NV:
 			return &typeVkPhysicalDeviceCopyMemoryIndirectFeaturesNV;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV:
@@ -2063,6 +2084,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return &typeVkPhysicalDeviceShaderTerminateInvocationFeatures;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TILE_IMAGE_FEATURES_EXT:
 			return &typeVkPhysicalDeviceShaderTileImageFeaturesEXT;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_UNTYPED_POINTERS_FEATURES_KHR:
+			return &typeVkPhysicalDeviceShaderUntypedPointersFeaturesKHR;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV:
 			return &typeVkPhysicalDeviceShadingRateImageFeaturesNV;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_SIZE_CONTROL_FEATURES:
@@ -2111,6 +2134,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return &typeVkPhysicalDeviceVideoEncodeIntraRefreshFeaturesKHR;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_QUANTIZATION_MAP_FEATURES_KHR:
 			return &typeVkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR;
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_RGB_CONVERSION_FEATURES_VALVE:
+			return &typeVkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_MAINTENANCE_1_FEATURES_KHR:
 			return &typeVkPhysicalDeviceVideoMaintenance1FeaturesKHR;
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_MAINTENANCE_2_FEATURES_KHR:
@@ -2200,6 +2225,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceCooperativeMatrixFeaturesNV.numField()>{&typeVkPhysicalDeviceCooperativeMatrixFeaturesNV, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_VECTOR_FEATURES_NV:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceCooperativeVectorFeaturesNV.numField()>{&typeVkPhysicalDeviceCooperativeVectorFeaturesNV, ptr};
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_KHR:
+			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceCopyMemoryIndirectFeaturesKHR.numField()>{&typeVkPhysicalDeviceCopyMemoryIndirectFeaturesKHR, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_NV:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceCopyMemoryIndirectFeaturesNV.numField()>{&typeVkPhysicalDeviceCopyMemoryIndirectFeaturesNV, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV:
@@ -2520,6 +2547,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceShaderTerminateInvocationFeatures.numField()>{&typeVkPhysicalDeviceShaderTerminateInvocationFeatures, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TILE_IMAGE_FEATURES_EXT:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceShaderTileImageFeaturesEXT.numField()>{&typeVkPhysicalDeviceShaderTileImageFeaturesEXT, ptr};
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_UNTYPED_POINTERS_FEATURES_KHR:
+			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceShaderUntypedPointersFeaturesKHR.numField()>{&typeVkPhysicalDeviceShaderUntypedPointersFeaturesKHR, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceShadingRateImageFeaturesNV.numField()>{&typeVkPhysicalDeviceShadingRateImageFeaturesNV, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_SIZE_CONTROL_FEATURES:
@@ -2568,6 +2597,8 @@ static constexpr internal::structChainTypeImpl<3> typeVkPhysicalDeviceZeroInitia
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceVideoEncodeIntraRefreshFeaturesKHR.numField()>{&typeVkPhysicalDeviceVideoEncodeIntraRefreshFeaturesKHR, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_QUANTIZATION_MAP_FEATURES_KHR:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR.numField()>{&typeVkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR, ptr};
+		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_RGB_CONVERSION_FEATURES_VALVE:
+			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE.numField()>{&typeVkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_MAINTENANCE_1_FEATURES_KHR:
 			return new (::std::nothrow) internal::structValueImpl<typeVkPhysicalDeviceVideoMaintenance1FeaturesKHR.numField()>{&typeVkPhysicalDeviceVideoMaintenance1FeaturesKHR, ptr};
 		case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_MAINTENANCE_2_FEATURES_KHR:

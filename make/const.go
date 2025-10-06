@@ -4,18 +4,18 @@
 package vxr
 
 const(
-shadercVersion = "v2025.3"
-shadercSHA256 = "a8e4a25e5c2686fd36981e527ed05e451fcfc226bddf350f4e76181371190937"
+shadercVersion = "v2025.4"
+shadercSHA256 = "8a89fb6612ace8954470aae004623374a8fc8b7a34a4277bee5527173b064faf"
 
-glslangVersion = "vulkan-sdk-1.4.321"
-glslangSHA256 = "057e9dba023042b873afc4d1fade8b40664b93d203d4adab5b375c559f4b477f"
+glslangVersion = "vulkan-sdk-1.4.328"
+glslangSHA256 = "87668bae71abc1a3a5fa2b534a4445fce2a244d73643e63d2eb8d8fff3ba190e"
 
-spirvHeadersVersion = "vulkan-sdk-1.4.321"
-spirvHeadersSHA256 = "f8bc5f7a8259daa52010e52f87e655f3aa3176bd4ce6b44b2134ae248d355bb3"
+spirvHeadersVersion = "vulkan-sdk-1.4.328"
+spirvHeadersSHA256 = "6fc0fa636dfa22d89ed1c6645c0d16d6b9e3aaec34e4dab2750fac1d9bfc7329"
 
-spirvToolsVersion = "vulkan-sdk-1.4.321"
-spirvToolsSHA256 = "6f797ae78a742aeeb849bd2f042550ddd9a423ceb9c44588a9fd5fe5bcf902cd"
+spirvToolsVersion = "vulkan-sdk-1.4.328"
+spirvToolsSHA256 = "706b6812e800d6c8b89a15a9de79b7a9cc6036314b3474e9b3fa9efad092bc79"
 
-spirvCrossVersion = "vulkan-sdk-1.4.321"
-spirvCrossSHA256 = "4b4bb02effc7a58790e5c61b483065c33144f72e99c6a2707925422bb399091a"
+spirvCrossVersion = "vulkan-sdk-1.4.328"
+spirvCrossSHA256 = "6f9a5bbd35f821b3fc07d0b82032457e330f87f7704fd292a5b29da4feb688dd"
 )
