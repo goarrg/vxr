@@ -87,40 +87,38 @@ compiler::result compiler::compile(vxr_vk_shader_compileInfo info) const noexcep
 		this->shadercCompiler, reinterpret_cast<const char*>(info.content), info.contentSize,
 		shaderc_glsl_infer_from_source, info.name, "main", options);
 	const shaderc_compilation_status status = shaderc_result_get_compilation_status(result);
-	if (status != shaderc_compilation_status_success) {
-		const char* err;
-		switch (status) {
-			case shaderc_compilation_status_success:
-				break;
+	const char* err = "unknown_error";
+	switch (status) {
+		case shaderc_compilation_status_success:
+			return result;
 
-			case shaderc_compilation_status_invalid_stage:
-				err = "invalid_stage";
-				break;
-			case shaderc_compilation_status_compilation_error:
-				err = "compilation_error";
-				break;
-			case shaderc_compilation_status_internal_error:
-				err = "internal_error";
-				break;
-			case shaderc_compilation_status_null_result_object:
-				err = "null_result_object";
-				break;
-			case shaderc_compilation_status_invalid_assembly:
-				err = "invalid_assembly";
-				break;
-			case shaderc_compilation_status_validation_error:
-				err = "validation_error";
-				break;
-			case shaderc_compilation_status_transformation_error:
-				err = "transformation_error";
-				break;
-			case shaderc_compilation_status_configuration_error:
-				err = "configuration_error";
-				break;
-		}
-		vxr::std::ePrintf("Failed to compile shader: (%s) %s", err, shaderc_result_get_error_message(result));
-		vxr::std::abort();
+		case shaderc_compilation_status_invalid_stage:
+			err = "invalid_stage";
+			break;
+		case shaderc_compilation_status_compilation_error:
+			err = "compilation_error";
+			break;
+		case shaderc_compilation_status_internal_error:
+			err = "internal_error";
+			break;
+		case shaderc_compilation_status_null_result_object:
+			err = "null_result_object";
+			break;
+		case shaderc_compilation_status_invalid_assembly:
+			err = "invalid_assembly";
+			break;
+		case shaderc_compilation_status_validation_error:
+			err = "validation_error";
+			break;
+		case shaderc_compilation_status_transformation_error:
+			err = "transformation_error";
+			break;
+		case shaderc_compilation_status_configuration_error:
+			err = "configuration_error";
+			break;
 	}
+	vxr::std::ePrintf("Failed to compile shader: (%d: %s) %s", status, err, shaderc_result_get_error_message(result));
+	vxr::std::abort();
 	return result;
 }
 

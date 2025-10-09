@@ -75,8 +75,8 @@ constexpr T* strncpy(T* dst, const T* src, size_t n) noexcept {
 		abort("Null args");
 	}
 
-	T* ptr = dst;
-	while (n-- && (*dst++ = *src++)) {	// NOLINT(clang-analyzer-core.NullDereference)
+	T* ptr = dst;						// NOLINT(misc-const-correctness)
+	while (n-- && (*dst++ = *src++)) {	// NOLINT(clang-analyzer-core.NullDereference, clang-analyzer-security.ArrayBound)
 	}
 	return ptr;
 }
