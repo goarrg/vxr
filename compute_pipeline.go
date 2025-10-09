@@ -67,7 +67,7 @@ func NewComputePipeline(pipelineLayout *PipelineLayout, s *Shader, entryPoint Sh
 	if computeEntryPoint.LocalSize[2].IsSpecConstant {
 		localSize.Z = info.SpecConstants[localSize.Z]
 	}
-	if !localSize.InRange(gmath.Extent3[uint32]{}, instance.deviceProperties.Limits.Compute.MaxLocalSize) {
+	if !localSize.InRange(gmath.Extent3u32{}, instance.deviceProperties.Limits.Compute.MaxLocalSize) {
 		limit := instance.deviceProperties.Limits.Compute.MaxLocalSize
 		abort("Shader's local sizes [%d,%d,%d] is greater than Properties.Limits.Compute.MaxLocalSize [%d,%d,%d]",
 			localSize.X, localSize.Y, localSize.Z, limit.X, limit.Y, limit.Z)
